@@ -84,7 +84,7 @@ class OLWidget(forms.Textarea):
         if value:
             try:
                 ogr = value.ogr
-                ogr.transform('900913')
+                ogr.transform('4326')
                 wkt = ogr.wkt
             except OGRException:
                 pass

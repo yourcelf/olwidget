@@ -15,24 +15,39 @@ var olwidget = {
      * WKT transformations
      */
     wkt_format: new OpenLayers.Format.WKT(),
-    display_projection: new OpenLayers.Projection("EPSG:4326"),
-    projection: new OpenLayers.Projection("EPSG:900913"),
-    feature_to_ewkt: function(feature) {
-        return 'SRID=900913;' + this.wkt_format.write(feature);
+    feature_to_ewkt: function(feature, proj) {
+        // convert "EPSG:" in projCode to 'SRID='
+        var srid = 'SRID=' + proj.projCode.substring(5) + ';';
+        return srid + this.wkt_format.write(feature);
     },
-    ewkt_to_wkt_re: new RegExp("^SRID=\\d+;(.+)", "i"),
-    ewkt_to_wkt: function(wkt) {
-        // OpenLayers cannot handle EWKT -- this converts to WKT (strips SRID)
-        var match = this.ewkt_to_wkt_re.exec(wkt);
+    strip_srid_re: new RegExp("^SRID=\\d+;(.+)", "i"),
+    ewkt_to_feature: function(wkt) {
+        var match = this.strip_srid_re.exec(wkt);
         if (match) {
             wkt = match[1];
         }
         return this.wkt_format.read(wkt);
     },
-    transform_lon_lat: function(lon, lat) {
-        return (new OpenLayers.LonLat(lon, lat)).transform(
-                this.display_projection, 
-                this.projection);
+    /*
+     * Projection transformation
+     */
+    transform_vector: function(vector, from_proj, to_proj) {
+        // Transform the projection of a feature vector or an array of feature
+        // vectors (as used in a collection) between the given projections.
+        if (from_proj.projCode == to_proj.projCode) {
+            return vector;
+        }
+        var transformed;
+        if (vector.constructor == Array) {
+            transformed = [];
+            for (var i = 0; i < vector.length; i++) {
+                transformed.push(this.transform_vector(vector[i], from_proj, to_proj));
+            }
+        } else {
+            var cloned = vector.geometry.clone();
+            transformed = new OpenLayers.Feature.Vector(cloned.transform(from_proj, to_proj));
+        }
+        return transformed;
     },
     /*
      * Constructors for layers
@@ -111,9 +126,9 @@ var olwidget = {
      * Map object
      */
 
-    Map: function(textarea_id, options) {
-        if (options == undefined) {
-            options = {};
+    Map: function(textarea_id, user_options) {
+        if (user_options == undefined) {
+            user_options = {};
         }
         /*
          * Constructor and initialization routines
@@ -123,68 +138,48 @@ var olwidget = {
 
             // this order must be preserved.  Functions are separated for
             // semantic clarity.
-            this.init_style();
             this.init_options();
             this.init_map();
             this.init_wkt_and_center();
             this.init_controls();
         }
-        this.init_style = function() {
-            // The parameters for map styling require special treatment,
-            // because all required OpenLayers attributes must be provided, or
-            // the geometries won't show up.  Copy OpenLayers default overlay
-            // style, to get all required attributes, then override with 
-            // olwidget defaults, then user provided styling, if any.
-
-            var overlay_style = {};
-            for (var p in OpenLayers.Feature.Vector.style["default"]) {
-                overlay_style[p] = OpenLayers.Feature.Vector.style["default"][p];
-            }
-            // override with olwidget defaults
-            for (var p in this.opts.overlay_style) {
-                overlay_style[p] = this.opts.overlay_style[p];
-            }
-            // Increase stroke width for linestrings, unless set by user
-            if (options.geometry == "linestring" && (!options.overlay_style || 
-                    options.overlay_style.strokeWidth == undefined)) {
-                overlay_style.strokeWidth = 3;
-            }
-            
-            // override remaining styles with user overlay_style
-            if (options.overlay_style) {
-                for (var p in options.overlay_style) {
-                    overlay_style[p] = options.overlay_style[p];
-                }
-                // prevent us from overriding below.
-                delete options['overlay_style'];
-            }
-            this.opts.overlay_style = overlay_style;
-        }
         this.init_options = function() {
             // Initialize remaining options, and construct OL objects from JSON
             // map_options parameters.
 
+            // deep copy map_options defaults
+            this.opts.map_options = olwidget.join_objects(
+                    this.opts.map_options, 
+                    user_options.map_options);
+            delete user_options.map_options;
+
+            // deep copy overlay_style defaults
+            this.opts.overlay_style = olwidget.join_objects(
+                    OpenLayers.Feature.Vector.style["default"],
+                    this.opts.overlay_style,
+                    user_options.overlay_style
+            );
+            // Increase stroke width for linestrings, unless set by user
+            if (user_options.geometry == "linestring" && (!user_options.overlay_style || 
+                    user_options.overlay_style.strokeWidth == undefined)) {
+                this.opts.overlay_style.strokeWidth = 3;
+            }
+            delete user_options.overlay_style;
+            
             // Get the rest of the user options
-            for (var opt in options) {
-                this.opts[opt] = options[opt];
+            for (var opt in user_options) {
+                this.opts[opt] = user_options[opt];
             }
             if (this.opts.name == undefined) {
                 this.opts.name = textarea_id;
             }
-            // Construct OL objects from JSON map_options parameters
-            // Copy to ensure we aren't overriding references to defaults.
-            var map_options = {};
-            for (var p in this.opts.map_options) {
-                map_options[p] = this.opts.map_options[p];
-            }
-            var me = map_options.maxExtent;
-            map_options.maxExtent = new OpenLayers.Bounds(me[0], me[1], me[2], me[3]);
-            map_options.projection = new OpenLayers.Projection(map_options.projection);
-            map_options.displayProjection = new OpenLayers.Projection(map_options.displayProjection);
-            this.opts.map_options = map_options;
-            this.opts.default_center = olwidget.transform_lon_lat( this.opts.default_lon,
-                    this.opts.default_lat);
-            console.log(this.opts.default_center);
+            var me = this.opts.map_options.maxExtent;
+            this.opts.map_options.maxExtent = new OpenLayers.Bounds(me[0], me[1], me[2], me[3]);
+            this.opts.map_options.projection = new OpenLayers.Projection(this.opts.map_options.projection);
+            this.opts.map_options.displayProjection = new OpenLayers.Projection(this.opts.map_options.displayProjection);
+            this.opts.default_center = new OpenLayers.LonLat(this.opts.default_lon, this.opts.default_lat);
+            this.opts.default_center.transform(this.opts.map_options.displayProjection, 
+                this.opts.map_options.projection);
         }
         this.init_map = function() {
             // Create the map div, and attach it to an OpenLayers map with all
@@ -221,13 +216,17 @@ var olwidget = {
             this.map.addLayers(layers);
         }
         this.init_wkt_and_center = function() {
-            // Read any initial WKT from the text field
+            // Read any initial WKT from the text field.  We assume that the
+            // WKT uses the projection given in "displayProjection", and ignore
+            // any initial SRID.
+
             var wkt = this.textarea.value;
             if (wkt) {
                 // After reading into geometry, immediately write back to 
                 // WKT <textarea> as EWKT (so the SRID is included if it wasn't
                 // before).
-                var geom = olwidget.ewkt_to_wkt(wkt);
+                var geom = olwidget.ewkt_to_feature(wkt);
+                geom = olwidget.transform_vector(geom, this.map.displayProjection, this.map.projection);
                 this.feature_to_textarea(geom);
 
                 if (this.opts.is_collection) {
@@ -265,11 +264,6 @@ var olwidget = {
                         {toggle: true, clickout: true, hover: false});
                 this.map.addControl(select);
                 select.activate();
-                //if (wkt) {
-                //    this.enableEditing();
-                //} else {
-                //    this.enableDrawing();
-                //}
             }
             // Then add optional visual controls
             this.map.addControl(new OpenLayers.Control.MousePosition());
@@ -288,33 +282,44 @@ var olwidget = {
             this.vector_layer.removeFeatures(this.vector_layer.features);
             this.vector_layer.destroyFeatures();
             this.textarea.value = '';
-            this.setDefaultCenter();
-        }
-        this.enableDrawing = function() {
-            this.map.getControlsByClass('OpenLayers.Control.DrawFeature')[0].activate();
-        }
-        this.enableEditing = function() {
-            this.map.getControlsByClass('OpenLayers.Control.ModifyFeature')[0].activate();
         }
         this.buildPanel = function(layer) {
             var panel = new OpenLayers.Control.Panel({displayClass: 'olControlEditingToolbar'});
-            var nav = new OpenLayers.Control.Navigation();
-            var draw_control;
-            if (this.opts.geometry == 'linestring') {
-                draw_control = new OpenLayers.Control.DrawFeature(layer, 
-                    OpenLayers.Handler.Path, 
-                    {'displayClass': 'olControlDrawFeaturePath'});
-            } else if (this.opts.geometry == 'polygon') {
-                draw_control = new OpenLayers.Control.DrawFeature(layer,
-                    OpenLayers.Handler.Polygon,
-                    {'displayClass': 'olControlDrawFeaturePolygon'});
-            } else if (this.opts.geometry == 'point') {
-                draw_control = new OpenLayers.Control.DrawFeature(layer,
-                    OpenLayers.Handler.Point,
-                    {'displayClass': 'olControlDrawFeaturePoint'});
-            }
-            var mod = new OpenLayers.Control.ModifyFeature(layer);
+            var controls = [];
 
+            var nav = new OpenLayers.Control.Navigation();
+            controls.push(nav);
+
+            // Drawing control(s)
+            var geometries;
+            if (this.opts.geometry instanceof Array) {
+                geometries = this.opts.geometry; 
+            } else {
+                geometries = [this.opts.geometry];
+            }
+            for (var i = 0; i < geometries.length; i++) {
+                var draw_control;
+                if (geometries[i] == 'linestring') {
+                    draw_control = new OpenLayers.Control.DrawFeature(layer, 
+                        OpenLayers.Handler.Path, 
+                        {'displayClass': 'olControlDrawFeaturePath'});
+                } else if (geometries[i] == 'polygon') {
+                    draw_control = new OpenLayers.Control.DrawFeature(layer,
+                        OpenLayers.Handler.Polygon,
+                        {'displayClass': 'olControlDrawFeaturePolygon'});
+                } else if (geometries[i] == 'point') {
+                    draw_control = new OpenLayers.Control.DrawFeature(layer,
+                        OpenLayers.Handler.Point,
+                        {'displayClass': 'olControlDrawFeaturePoint'});
+                }
+                controls.push(draw_control);
+            }
+                
+            // Modify feature control
+            var mod = new OpenLayers.Control.ModifyFeature(layer);
+            controls.push(mod);
+
+            // Clear all control
             var closured_this = this;
             var del = new OpenLayers.Control.Button({
                 displayClass: 'olControlClearFeatures', 
@@ -323,7 +328,8 @@ var olwidget = {
                 }
             });
 
-            panel.addControls([nav, draw_control, mod, del]);
+            controls.push(del);
+            panel.addControls(controls);
             return panel;
         }
         // Callback for openlayers "featureadded" 
@@ -363,9 +369,26 @@ var olwidget = {
             } else {
                 this.num_geom = 1;
             }
-            this.textarea.value = olwidget.feature_to_ewkt(feature);
+            feature = olwidget.transform_vector(feature, 
+                    this.map.projection, this.map.displayProjection);
+            this.textarea.value = olwidget.feature_to_ewkt(feature, this.map.displayProjection);
         }
         // Call constructor
         this.init();
-    }
+    },
+    /*
+     * Utility
+     */
+    join_objects: function() {
+        // Create a new object which copies (one-level deep) the properties of
+        // the objects passed as arguments.  Argument order determines priority;
+        // later arguments override values of earlier arguments.
+        var obj = {}
+        for (var i = 0; i < arguments.length; i++) {
+            for (var p in arguments[i]) {
+                obj[p] = arguments[i][p];
+            }
+        }
+        return obj;
+    },
 }

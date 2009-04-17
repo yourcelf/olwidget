@@ -11,3 +11,6 @@
     background-image: url(../img/clear_all.png);
     background-repeat: no-repeat;
 }
+div.olControlEditingToolbar {
+    width: 210px;
+}

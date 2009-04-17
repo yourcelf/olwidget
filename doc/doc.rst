@@ -2,11 +2,12 @@ olwidget
 ========
 .. contents:: Contents
 
-``olwidget`` is a simple javascript library to turn a textarea containing
-(E)WKT geometry into an editable map, using openlayers.  The map writes EWKT
-geometry to the textarea for later processing in forms.  This is useful for
-anywhere you need a form to enter or edit precise geographic geometries for
-storage in a GIS database such as `PostGIS <http://postgis.refractions.net/>`_.
+``olwidget`` is a simple javascript library to turn a textarea containing `WKT
+<http://en.wikipedia.org/wiki/Well-known_text>`_ geometry into an editable map,
+using openlayers.  The map writes EWKT geometry (WKT with explicit SRID) to the
+textarea for later processing in forms.  This is useful for anywhere you need a
+form to enter or edit precise geographic geometries for storage in a GIS
+database such as `PostGIS <http://postgis.refractions.net/>`_.
 
 ``olwidget`` supports multiple geometry types, any number of maps per page,
 multiple map providers, read-only maps, and much more (see options_ below).  A
@@ -36,6 +37,8 @@ Examples
 * Custom `starting locations and colors <examples/custom_start_point_and_colors.html>`_
 * `Other map providers <examples/other_providers.html>`_, including Google,
   Yahoo, Microsoft, OpenStreetMaps, and MetaCarta.
+* `Multiple geometry types <examples/multiple_geometries.html>`_
+* `Other projections <examples/other_projections.html>`_
 
 Documentation
 ~~~~~~~~~~~~~
@@ -55,8 +58,10 @@ options
 ........
 ``name`` (string; defaults to the given ``textarea_id``) 
     The name of the overlay layer for the map.
-``geometry`` (``'point'``, ``'linestring'``, or ``'polygon'``; default ``'point'``) 
-    The geometry to use for this map.
+``geometry`` (Array or string; defaults to ``'point'``)
+    The geometry to use for this map.  Choices are ``'point'``,
+    ``'linestring'``, and ``'polygon'``.  To allow multiple geometries, use an
+    array such as ``['point', 'linestring', 'polygon']``.
 ``is_collection`` (boolean, default ``false``) 
     If true, allows multiple points/lines/polygons.
 ``editable`` (boolean, default ``true``) 
@@ -87,25 +92,46 @@ options
     A set of CSS style definitions to apply to the div which is created to
     contain the map.
 ``map_options`` (object) 
-    Options to pass to the OpenLayers map constructor.  See 
-    `OpenLayers.Map.Constructor
-    <http://dev.openlayers.org/docs/files/OpenLayers/Map-js.html#OpenLayers.Map.Constructor>`_.
+    An object containing options for the OpenLayers Map.  Properties may
+    include:
 
-Utilities
----------
+    * ``units``: (string) default ``'m'`` (meters)
+    * ``projection``: (string) default ``"EPSG:900913"`` (the projection used
+      by google, OSM, yahoo, and VirtualEarth -- See `Projections`_ below).
+    * ``displayProjection``: (string) default ``"EPSG:4326"`` (the latitude
+      and longitude we're all familiar with -- See `Projections`_ below).
+    * ``maxResolution``: (float) default ``156543.0339``.  Value should be
+      expressed in the projection specified in ``projection``.
+    * ``maxExtent``: default ``[-20037508.34, -20037508.34, 20037508.34,
+      20037508.34]``.  Values should be expressed in the projection specified
+      in ``projection``.
 
-``olwidget.transform_lon_lat(lon, lat)``:
-    Method which takes two floats, longitude and latitude, and returns an
-    ``OpenLayers.LonLat`` instance using the map's projection.
+    Any additional parameters available to the `OpenLayers.Map.Constructor
+    <http://dev.openlayers.org/docs/files/OpenLayers/Map-js.html#OpenLayers.Map.Constructor>`_
+    may be included, and will be passed directly.
 
-Limitations
-~~~~~~~~~~~
 
-Currently, ``olwidget`` only supports editing collections that contain a
-single geometry type (either points, linestrings, or polygons), not
-combinations of geometries.  It also does not support transformation of
-incoming or outgoing (E)WKT to and from different projections (it requires SRID
-900913).
+Projections
+-----------
+
+``olwidget`` uses the projections given in ``map_options`` to determine the
+input and output of WKT data.  By default, it expects incoming WKT data to use
+``"EPSG:4326"`` (familiar latitudes and longitudes), which is transformed
+internally to the map projection (by default, ``"EPSG:900913"``, the projection
+used by OpenStreetMaps, Google, and others).  Currently, ``olwidget`` ignores
+the SRID present in any initial WKT data, and uses the projection specified in
+``map_options.displayProjection`` to read the data.
+
+To change the projection used for WKT, define the
+``map_options.displayProjection``.  For example, the following will use
+``EPSG:900913`` for all WKT data in addition to map display::
+
+    new olwidget.Map('textarea_id', {
+        map_options: {
+            projection: "EPSG:900913",
+            displayProjection: "EPSG:900913"
+        }
+    });
 
 Authors
 ~~~~~~~
