@@ -1,0 +1,37 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <script type='text/javascript' src='http://openlayers.org/api/2.7/OpenLayers.js'></script>
+        <script type='text/javascript' src='http://openstreetmap.org/openlayers/OpenStreetMap.js'></script>
+        <script type='text/javascript' src='../../js/olwidget.js'></script>
+        <link rel="stylesheet" type="text/css" media="all" href="../../css/olwidget.css" />
+        <title>Custom start point and colors</title>
+        <style type='text/css'>
+            textarea {
+                width: 300px;
+                height: 200px;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Custom start point and colors</h1>
+        <textarea id='my_textarea'></textarea>
+        <script type='text/javascript'>//<![CDATA[
+            new olwidget.Map('my_textarea', {
+                geometry: 'polygon',
+                default_lon: -71.5, 
+                default_lat: 42.3,
+                default_zoom: 10,
+                overlay_style: {
+                    fillColor: "#ff0000",
+                    strokeColor: "#00ff00",
+                    fillOpacity: 0.7,
+                    strokeWidth: 10
+                }
+            }); 
+        //]]></script>
+            <a href='#' onclick='document.getElementById("my_textarea").style.display="block";'>show textarea</a>
+
+    </body>
+</html>

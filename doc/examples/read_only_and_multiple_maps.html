@@ -1,0 +1,23 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <script type='text/javascript' src='http://openlayers.org/api/2.7/OpenLayers.js'></script>
+        <script type='text/javascript' src='http://openstreetmap.org/openlayers/OpenStreetMap.js'></script>
+        <script type='text/javascript' src='../../js/olwidget.js'></script>
+        <link rel="stylesheet" type="text/css" media="all" href="../../css/olwidget.css" />
+        <title>Multiple maps and read only</title>
+    </head>
+    <body>
+        <h1>Multiple maps on one page</h1>
+        <h2>Read only map</h2>
+        <textarea id='my_textarea'>SRID=900913;POLYGON((-7915117.603784657 5214444.476963197,-7913646.190990431 5215399.93981659,-7912681.1735085035 5215294.838902717,-7915031.612127852 5214253.384392519,-7915117.603784657 5214444.476963197))</textarea>
+        <h2>Another map (this one editable)</h2>
+        <textarea id="my_second_textarea"></textarea>
+
+        <script type='text/javascript'>//<![CDATA[
+            new olwidget.Map('my_textarea', {editable: false, geometry: 'polygon'}); 
+            new olwidget.Map('my_second_textarea', {geometry: 'polygon'}); 
+        //]]></script>
+    </body>
+</html>

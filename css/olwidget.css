@@ -1,0 +1,13 @@
+.olControlEditingToolbar .olControlModifyFeatureItemInactive {
+    background-image: url(../img/move_vertex_off.png);
+    background-repeat: no-repeat;
+}
+.olControlEditingToolbar .olControlModifyFeatureItemActive {
+    background-image: url(../img/move_vertex_on.png);
+    background-repeat: no-repeat;
+}
+.olControlEditingToolbar .olControlClearFeaturesItemInactive,
+.olControlEditingToolbar .olControlClearFeaturesItemActive {
+    background-image: url(../img/clear_all.png);
+    background-repeat: no-repeat;
+}
