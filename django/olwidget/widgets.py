@@ -13,13 +13,42 @@ try:
 except AttributeError:
     OLWIDGET_MEDIA_URL = join(settings.MEDIA_URL, "olwidget")
 
+try:
+    GOOGLE_API_KEY = settings.GOOGLE_API_KEY
+except AttributeError:
+    GOOGLE_API_KEY = ""
 
-GOOGLE_API = "http://maps.google.com/maps?file=api&v=2&key=%s" 
-YAHOO_API = "http://api.maps.yahoo.com/ajaxymap?v=3.0&appid=%s"
+try:
+    YAHOO_APP_ID = settings.YAHOO_APP_ID
+except AttributeError:
+    YAHOO_APP_ID = ""
+
+
+GOOGLE_API = "http://maps.google.com/maps?file=api&v=2&key=%s" % GOOGLE_API_KEY
+YAHOO_API = "http://api.maps.yahoo.com/ajaxymap?v=3.0&appid=%s" % YAHOO_APP_ID
 MS_VE_API = "http://dev.virtualearth.net/mapcontrol/mapcontrol.ashx?v=6.1"
 OSM_API = "http://openstreetmap.org/openlayers/OpenStreetMap.js"
 OL_API = "http://openlayers.org/api/2.7/OpenLayers.js"
 OLWIDGET_JS = join(OLWIDGET_MEDIA_URL, "js/olwidget.js")
+OLWIDGET_CSS = join(OLWIDGET_MEDIA_URL, "css/olwidget.css")
+
+def get_wkt(value, geometry=None):
+    if isinstance(value, basestring):
+        try:
+            value = GEOSGeometry(value)
+        except (GEOSException, ValueError):
+            value = None
+
+    wkt = ''
+    if value:
+        try:
+            ogr = value.ogr
+            ogr.transform('4326')
+            wkt = ogr.wkt
+        except OGRException:
+            pass
+    return wkt
+
 
 class OLWidget(forms.Textarea):
     def __init__(self, *args, **kwargs):
@@ -52,16 +81,6 @@ class OLWidget(forms.Textarea):
 
         self.template = kwargs.get('template', 'olwidget/olwidget.html')
 
-        # API ids
-        try:
-            self.GOOGLE_API_KEY = self.kwargs.get('GOOGLE_API_KEY', settings.GOOGLE_API_KEY) 
-        except AttributeError:
-            self.GOOGLE_API_KEY = ""
-        try:
-            self.YAHOO_APP_ID = self.kwargs.get('YAHOO_APP_ID', settings.YAHOO_APP_ID)
-        except AttributeError:
-            self.YAHOO_APP_ID = ""
-
         super(OLWidget, self).__init__(*args, **kwargs)
 
     def render(self, name, value, attrs=None):
@@ -71,31 +90,13 @@ class OLWidget(forms.Textarea):
         if not attrs['id']:
             attrs['id'] = "id_%s" % name
 
-        if isinstance(value, basestring):
-            try:
-                value = GEOSGeometry(value)
-            except (GEOSException, ValueError):
-                value = None
-
-        if value and value.geom_type.lower() != self.options['geometry']:
-            value = None
-
-        wkt = ''
-        if value:
-            try:
-                ogr = value.ogr
-                ogr.transform('4326')
-                wkt = ogr.wkt
-            except OGRException:
-                pass
-
         self.options['name'] = name
         map_opts = simplejson.dumps(self.options)
 
         context = {
             'id': attrs['id'],
             'name': name,
-            'wkt': wkt,
+            'wkt': get_wkt(value),
             'map_opts': map_opts,
         }
         return render_to_string(self.template, context)
@@ -107,11 +108,11 @@ class OLWidget(forms.Textarea):
             if layer.startswith("osm."):
                 js.add(OSM_API)
             elif layer.startswith("google."):
-                js.add(GOOGLE_API % self.GOOGLE_API_KEY)
+                js.add(GOOGLE_API)
             elif layer.startswith("yahoo"):
-                js.add(YAHOO_API % self.YAHOO_APP_ID)
+                js.add(YAHOO_API)
             elif layer.startswith("microsoft"):
                 js.add(MS_VE_API)
         js = [OL_API, OLWIDGET_JS] + list(js)
-        return forms.Media(css={'all': (join(OLWIDGET_MEDIA_URL, 'css/olwidget.css'),)}, js=js)
+        return forms.Media(css={'all': (OLWIDGET_CSS,)}, js=js)
     media = property(_media)

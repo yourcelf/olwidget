@@ -222,6 +222,7 @@ var olwidget = {
 
             var wkt = this.textarea.value;
             if (wkt) {
+                console.log(wkt);
                 // After reading into geometry, immediately write back to 
                 // WKT <textarea> as EWKT (so the SRID is included if it wasn't
                 // before).
