@@ -28,6 +28,12 @@ var olwidget = {
         }
         return this.wkt_format.read(wkt);
     },
+    multi_geometry_classes: {
+        'linestring': OpenLayers.Geometry.MultiLineString,
+        'point': OpenLayers.Geometry.MultiPoint,
+        'polygon': OpenLayers.Geometry.MultiPolygon,
+        'collection': OpenLayers.Geometry.Collection,
+    },
     /*
      * Projection transformation
      */
@@ -171,7 +177,7 @@ var olwidget = {
                 this.opts[opt] = user_options[opt];
             }
             if (this.opts.name == undefined) {
-                this.opts.name = textarea_id;
+                this.opts.name = "";
             }
             var me = this.opts.map_options.maxExtent;
             this.opts.map_options.maxExtent = new OpenLayers.Bounds(me[0], me[1], me[2], me[3]);
@@ -222,14 +228,11 @@ var olwidget = {
 
             var wkt = this.textarea.value;
             if (wkt) {
-                console.log(wkt);
                 // After reading into geometry, immediately write back to 
                 // WKT <textarea> as EWKT (so the SRID is included if it wasn't
                 // before).
                 var geom = olwidget.ewkt_to_feature(wkt);
                 geom = olwidget.transform_vector(geom, this.map.displayProjection, this.map.projection);
-                this.feature_to_textarea(geom);
-
                 if (this.opts.is_collection) {
                     this.vector_layer.addFeatures(geom);
                 } else {
@@ -293,7 +296,7 @@ var olwidget = {
 
             // Drawing control(s)
             var geometries;
-            if (this.opts.geometry instanceof Array) {
+            if (this.opts.geometry.constructor == Array) {
                 geometries = this.opts.geometry; 
             } else {
                 geometries = [this.opts.geometry];
@@ -372,6 +375,20 @@ var olwidget = {
             }
             feature = olwidget.transform_vector(feature, 
                     this.map.projection, this.map.displayProjection);
+            if (this.opts.is_collection) {
+                // Convert to multi-geom types if we are a collection.  If we
+                // pass an array to ``olwidget.feature_to_ewkt``, it will use
+                // "GEOMETRYCOLLECTION" type.  
+                if (this.opts.geometry.constructor != Array) {
+                    var geoms = [];
+                    for (var i = 0; i < feature.length; i++) {
+                        geoms.push(feature[i].geometry);
+                    }
+                    var GeoClass = olwidget.multi_geometry_classes[this.opts.geometry]; 
+                    feature = new OpenLayers.Feature.Vector(new GeoClass(geoms));
+                } 
+                // otherwise, use GEOMETRYCOLLECTION
+            }
             this.textarea.value = olwidget.feature_to_ewkt(feature, this.map.displayProjection);
         }
         // Call constructor

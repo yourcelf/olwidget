@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block head %}
+{{ map_media }}
+{% endblock %}
+{% block body %}
+
+{% for map in maps %}
+    {{map}}
+{% endfor %}
+
+{% endblock %}
