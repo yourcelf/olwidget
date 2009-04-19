@@ -23,14 +23,22 @@ Optional:
 Options
 ~~~~~~~
 
-Several ``olwidget`` features, including ``olwidget.widgets.OLWidget``,
-``olwidget.widgets.MapDisplay``, and ``olwidget.admin.custom_geo_admin``,
-take a ``map_options`` argument that customizes the look and feel of the 
-maps that are produced.  These options are passed directly to the
-``olwidget.js`` Map constructor.  
+Several ``olwidget`` features, including ``widgets.OLWidget``,
+``widgets.MapDisplay``, and ``admin.custom_geo_admin``, take a ``map_options``
+argument that customizes the look and feel of the maps that are produced.
+These options are passed directly to the ``olwidget.js`` Map constructor.  An
+example::
 
-For a complete list of options, see the `olwidget.js documentation
-<doc/doc.html>`_.
+    from olwidget.widgets import MapDisplay
+
+    map = MapDisplay(map_options={
+        'layers': ['osm.mapnik', 'google.hybrid', 'yahoo'],
+        'default_lat': 44,
+        'default_lon': -72,
+    })
+
+For a complete list of options available to olwidget.js, see the `olwidget.js
+documentation <doc/doc.html>`_.
 
 Examples
 ~~~~~~~~
