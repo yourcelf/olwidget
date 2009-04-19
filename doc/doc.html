@@ -340,7 +340,7 @@ simple example:</p>
 <li>Read only maps and <a class="reference" href="examples/read_only_and_multiple_maps.html">multiple maps per page</a></li>
 <li>Custom <a class="reference" href="examples/custom_start_point_and_colors.html">starting locations and colors</a></li>
 <li><a class="reference" href="examples/other_providers.html">Other map providers</a>, including Google,
-Yahoo, Microsoft, OpenStreetMaps, and MetaCarta.</li>
+Yahoo, Microsoft VE, OpenStreetMaps, and MetaCarta.</li>
 <li><a class="reference" href="examples/multiple_geometries.html">Multiple geometry types</a></li>
 <li><a class="reference" href="examples/other_projections.html">Other projections</a></li>
 </ul>
@@ -377,7 +377,10 @@ array such as <tt class="docutils literal"><span class="pre">['point',</span> <s
 <dt><tt class="docutils literal"><span class="pre">layers</span></tt> (Array; default <tt class="docutils literal"><span class="pre">['osm.mapnik']</span></tt>)</dt>
 <dd><p class="first">A list of map base layers to include.  Choices include <tt class="docutils literal"><span class="pre">'osm.mapnik'</span></tt>,
 <tt class="docutils literal"><span class="pre">'osm.osmarender'</span></tt>, <tt class="docutils literal"><span class="pre">'google.streets'</span></tt>, <tt class="docutils literal"><span class="pre">'google.physical'</span></tt>,
-<tt class="docutils literal"><span class="pre">'google.satellite'</span></tt>, <tt class="docutils literal"><span class="pre">'google.hybrid'</span></tt>, <tt class="docutils literal"><span class="pre">'microsoft.ve'</span></tt>, and <tt class="docutils literal"><span class="pre">'yahoo'</span></tt></p>
+<tt class="docutils literal"><span class="pre">'google.satellite'</span></tt>, <tt class="docutils literal"><span class="pre">'google.hybrid'</span></tt>, <tt class="docutils literal"><span class="pre">'ve.road'</span></tt>,
+<tt class="docutils literal"><span class="pre">'ve.shaded'</span></tt>, <tt class="docutils literal"><span class="pre">'ve.aerial'</span></tt>, <tt class="docutils literal"><span class="pre">'ve.hybrid'</span></tt>, and <tt class="docutils literal"><span class="pre">'yahoo'</span></tt>.  Additional
+providers or options can be manually added using the normal OpenLayers apis
+(see the <a class="reference" href="#examples">Examples</a> above).</p>
 <p class="last">You must include separately whatever javascript sources needed to use these
 (e.g.  maps.google.com or openstreetmap.org apis).</p>
 </dd>
@@ -394,7 +397,7 @@ geometry (e.g. the textarea is empty).</dd>
 <a class="reference" href="http://docs.openlayers.org/library/feature_styling.html">OpenLayers styling</a>.</dd>
 <dt><tt class="docutils literal"><span class="pre">map_class</span></tt> (string; default <tt class="docutils literal"><span class="pre">''</span></tt>)</dt>
 <dd>A CSS class name to add to the div which is created to contain the map.</dd>
-<dt><tt class="docutils literal"><span class="pre">map_style</span></tt> (object, default <tt class="docutils literal"><span class="pre">{width:</span> <span class="pre">'400px',</span> <span class="pre">height:</span> <span class="pre">'300px'}</span></tt>)</dt>
+<dt><tt class="docutils literal"><span class="pre">map_style</span></tt> (object, default <tt class="docutils literal"><span class="pre">{width:</span> <span class="pre">'600px',</span> <span class="pre">height:</span> <span class="pre">'400px'}</span></tt>)</dt>
 <dd>A set of CSS style definitions to apply to the div which is created to
 contain the map.</dd>
 <dt><tt class="docutils literal"><span class="pre">map_options</span></tt> (object)</dt>

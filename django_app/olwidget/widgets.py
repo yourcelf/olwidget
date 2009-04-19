@@ -82,7 +82,6 @@ class OLWidget(forms.Textarea):
             'layers': ['osm.mapnik'],
         }
         self.map_options.update(kwargs.get('map_options', {}))
-        print self.map_options
 
         self.template = kwargs.get('template', 'olwidget/olwidget.html')
         super(OLWidget, self).__init__()
@@ -124,7 +123,7 @@ class OLWidget(forms.Textarea):
                 js.add(GOOGLE_API)
             elif layer.startswith("yahoo"):
                 js.add(YAHOO_API)
-            elif layer.startswith("microsoft"):
+            elif layer.startswith("ve"):
                 js.add(MS_VE_API)
         js = [OL_API, OLWIDGET_JS] + list(js)
         return forms.Media(css={'all': (OLWIDGET_CSS,)}, js=js)
@@ -136,10 +135,7 @@ class MapDisplay(OLWidget):
     * ``fields`` - a list of geometric fields or WKT strings to display on the
       map.  If none are given, the map will have no overlay.
     * ``name`` - a name to use for display of the field data layer.
-    * ``map_options`` - a dict of 
-    
-    All additional arguments are passed to the OLWidget superclass, which
-    control map display.
+    * ``map_options`` - a dict of options for map display.
 
     To use in a template, first display the media (URLs for javascript and CSS
     needed for map display) and then print the MapDisplay object, as in the

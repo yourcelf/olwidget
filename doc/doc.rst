@@ -36,7 +36,7 @@ Examples
 * Read only maps and `multiple maps per page <examples/read_only_and_multiple_maps.html>`_
 * Custom `starting locations and colors <examples/custom_start_point_and_colors.html>`_
 * `Other map providers <examples/other_providers.html>`_, including Google,
-  Yahoo, Microsoft, OpenStreetMaps, and MetaCarta.
+  Yahoo, Microsoft VE, OpenStreetMaps, and MetaCarta.
 * `Multiple geometry types <examples/multiple_geometries.html>`_
 * `Other projections <examples/other_projections.html>`_
 
@@ -71,7 +71,10 @@ options
 ``layers`` (Array; default ``['osm.mapnik']``) 
     A list of map base layers to include.  Choices include ``'osm.mapnik'``,
     ``'osm.osmarender'``, ``'google.streets'``, ``'google.physical'``,
-    ``'google.satellite'``, ``'google.hybrid'``, ``'microsoft.ve'``, and ``'yahoo'``
+    ``'google.satellite'``, ``'google.hybrid'``, ``'ve.road'``,
+    ``'ve.shaded'``, ``'ve.aerial'``, ``'ve.hybrid'``, and ``'yahoo'``.  Additional
+    providers or options can be manually added using the normal OpenLayers apis
+    (see the `Examples`_ above).
 
     You must include separately whatever javascript sources needed to use these
     (e.g.  maps.google.com or openstreetmap.org apis).
@@ -88,7 +91,7 @@ options
     `OpenLayers styling <http://docs.openlayers.org/library/feature_styling.html>`_.
 ``map_class`` (string; default ``''``) 
     A CSS class name to add to the div which is created to contain the map.
-``map_style`` (object, default ``{width: '400px', height: '300px'}``)  
+``map_style`` (object, default ``{width: '600px', height: '400px'}``)  
     A set of CSS style definitions to apply to the div which is created to
     contain the map.
 ``map_options`` (object) 

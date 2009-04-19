@@ -88,11 +88,15 @@ var olwidget = {
             return new OpenLayers.Layer.Yahoo("Yahoo", 
                     {sphericalMercator: true, numZoomLevels: 20});
     },
-    microsoft: {
-        ve: function() {
-            return new OpenLayers.Layer.VirtualEarth("Microsoft VE", 
-                    {sphericalMercator: true, numZoomLevels: 20});
-        }
+    ve: {
+        map: function(type, type_name) {
+            return new OpenLayers.Layer.VirtualEarth("Microsoft VE (" + type_name + ")", 
+                {sphericalMercator: true, numZoomLevels: 20, type: type });
+        },
+        road: function() { return this.map(VEMapStyle.Road, "Road"); },
+        shaded: function() { return this.map(VEMapStyle.Shaded, "Shaded"); },
+        aerial: function() { return this.map(VEMapStyle.Aerial, "Aerial"); },
+        hybrid: function() { return this.map(VEMapStyle.Hybrid, "Hybrid"); }
     },
     /*
      * Default settings for olwidget.Map object.  Override with object passed
@@ -115,8 +119,8 @@ var olwidget = {
         this.default_zoom = 4;
         this.hide_textarea = true;
         this.map_style = {
-            width: '400px',
-            height: '300px',
+            width: '600px',
+            height: '400px',
         };
         this.map_class = '';
         // elements for OpenLayers.Style
@@ -238,6 +242,9 @@ var olwidget = {
                 } else {
                     this.vector_layer.addFeatures([geom]);
                 }
+                this.num_geom = this.vector_layer.features.length;
+                
+                // Set center
                 if (this.opts.geometry == 'point' && !this.opts.is_collection) {
                     this.map.setCenter(geom.geometry.getBounds().getCenterLonLat(), 
                             this.opts.default_zoom);
@@ -376,9 +383,10 @@ var olwidget = {
             feature = olwidget.transform_vector(feature, 
                     this.map.projection, this.map.displayProjection);
             if (this.opts.is_collection) {
-                // Convert to multi-geom types if we are a collection.  If we
-                // pass an array to ``olwidget.feature_to_ewkt``, it will use
-                // "GEOMETRYCOLLECTION" type.  
+                // Convert to multi-geometry types if we are a collection.
+                // Passing arrays to the WKT formatter results in a
+                // "GEOMETRYCOLLECTION" type, but if we have only one geometry,
+                // we should use a "MULTI<geometry>" type.
                 if (this.opts.geometry.constructor != Array) {
                     var geoms = [];
                     for (var i = 0; i < feature.length; i++) {
@@ -387,7 +395,6 @@ var olwidget = {
                     var GeoClass = olwidget.multi_geometry_classes[this.opts.geometry]; 
                     feature = new OpenLayers.Feature.Vector(new GeoClass(geoms));
                 } 
-                // otherwise, use GEOMETRYCOLLECTION
             }
             this.textarea.value = olwidget.feature_to_ewkt(feature, this.map.displayProjection);
         }
