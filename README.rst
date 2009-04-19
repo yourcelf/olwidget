@@ -20,26 +20,6 @@ Optional:
 4.  If you want to use google or yahoo map layers, you must include
     ``GOOGLE_API_KEY`` or ``YAHOO_APP_ID`` in your settings file.
 
-Options
-~~~~~~~
-
-Several ``olwidget`` features, including ``widgets.OLWidget``,
-``widgets.MapDisplay``, and ``admin.custom_geo_admin``, take a ``map_options``
-argument that customizes the look and feel of the maps that are produced.
-These options are passed directly to the ``olwidget.js`` Map constructor.  An
-example::
-
-    from olwidget.widgets import MapDisplay
-
-    map = MapDisplay(map_options={
-        'layers': ['osm.mapnik', 'google.hybrid', 'yahoo'],
-        'default_lat': 44,
-        'default_lon': -72,
-    })
-
-For a complete list of options available to olwidget.js, see the `olwidget.js
-documentation <doc/doc.html>`_.
-
 Examples
 ~~~~~~~~
 
@@ -91,4 +71,24 @@ Example to use ``OLWidget`` in the Django admin site::
         'default_lat': 44,
         'default_lon': -72,
     })
+
+Options
+~~~~~~~
+
+Several ``olwidget`` features, including ``widgets.OLWidget``,
+``widgets.MapDisplay``, and ``admin.custom_geo_admin``, take a ``map_options``
+argument that customizes the look and feel of the maps that are produced.
+These options are passed directly to the ``olwidget.js`` Map constructor.  An
+example::
+
+    from olwidget.widgets import MapDisplay
+
+    map = MapDisplay(map_options={
+        'layers': ['osm.mapnik', 'google.hybrid', 'yahoo'],
+        'default_lat': 44,
+        'default_lon': -72,
+    })
+
+For a complete list of options available to olwidget.js, see the `olwidget.js
+documentation <doc/doc.html>`_.
 
