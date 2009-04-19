@@ -34,49 +34,22 @@ OLWIDGET_CSS = join(OLWIDGET_MEDIA_URL, "css/olwidget.css")
 
 DEFAULT_PROJ = "4326"
 
-def get_wkt(value, srid=DEFAULT_PROJ):
-    """
-    `value` is either a WKT string or a geometry field.  Returns WKT in the
-    projection for the given SRID.
-    """
-    if isinstance(value, basestring):
-        try:
-            value = GEOSGeometry(value)
-        except (GEOSException, ValueError):
-            value = None
-
-    wkt = ''
-    if value:
-        try:
-            ogr = value.ogr
-            ogr.transform(srid)
-            wkt = ogr.wkt
-        except OGRException:
-            pass
-    return wkt
-
-def collection_wkt(fields):
-    """ Returns WKT for the given list of geometry fields. """
-
-    if not fields:
-        return ""
-
-    if len(fields) == 1:
-        return get_wkt(fields[0])
-
-    return "GEOMETRYCOLLECTION(%s)" % \
-            ",".join(get_wkt(field) for field in fields)
-
-def get_ewkt(wkt, srid=DEFAULT_PROJ):
-    """
-    Returns EWKT (WKT with a specified SRID) for the given wkt and SRID
-    (default 4326). 
-    """
-    if wkt:
-        return "SRID=%s;%s" % (srid, wkt)
-    return ""
-
 class OLWidget(forms.Textarea):
+    """
+    An OpenLayers mapping widget for geographic data.
+
+    Example::
+
+        from django import forms
+        from olwidget.widgets import OLWidget
+
+        class MyForm(forms.Form):
+            location = forms.CharField(widget=OLWidget(
+                map_options={'geometry': 'point'}))
+
+    A complete list of the options available in map_options is in the
+    olwidget.js documentation.
+    """
     def __init__(self, **kwargs):
         self.map_options = {
             'layers': ['osm.mapnik'],
@@ -131,11 +104,20 @@ class OLWidget(forms.Textarea):
 
 class MapDisplay(OLWidget):
     """
-    Object for display of geometries on an OpenLayers map.  Arguments:
+    Object for display of geometries on an OpenLayers map.  Arguments (all are
+    optional):
+
     * ``fields`` - a list of geometric fields or WKT strings to display on the
       map.  If none are given, the map will have no overlay.
     * ``name`` - a name to use for display of the field data layer.
-    * ``map_options`` - a dict of options for map display.
+    * ``map_options`` - a dict of options for map display.  A complete list of
+      options is in the documentation for olwidget.js.
+
+    Example::
+
+        from olwidget.widgets import MapDisplay 
+
+        map = MapDisplay(fields=[my_model.start_point, my_model.destination])
 
     To use in a template, first display the media (URLs for javascript and CSS
     needed for map display) and then print the MapDisplay object, as in the
@@ -162,8 +144,10 @@ class MapDisplay(OLWidget):
         self.name = name
         if not map_options:
             map_options = {}
+
         if not map_options.has_key('editable'):
             map_options['editable'] = False
+
         if (self.fields and len(self.fields) > 1) or \
                 (fields[0].geom_type.upper() == 'GEOMETRYCOLLECTION'):
             map_options['is_collection'] = True
@@ -173,3 +157,46 @@ class MapDisplay(OLWidget):
     def __unicode__(self):
         wkt = get_ewkt(collection_wkt(self.fields))
         return self.render(self.name, None, attrs={'wkt': wkt})
+
+def get_wkt(value, srid=DEFAULT_PROJ):
+    """
+    `value` is either a WKT string or a geometry field.  Returns WKT in the
+    projection for the given SRID.
+    """
+    if isinstance(value, basestring):
+        try:
+            value = GEOSGeometry(value)
+        except (GEOSException, ValueError):
+            value = None
+
+    wkt = ''
+    if value:
+        try:
+            ogr = value.ogr
+            ogr.transform(srid)
+            wkt = ogr.wkt
+        except OGRException:
+            pass
+    return wkt
+
+def collection_wkt(fields):
+    """ Returns WKT for the given list of geometry fields. """
+
+    if not fields:
+        return ""
+
+    if len(fields) == 1:
+        return get_wkt(fields[0])
+
+    return "GEOMETRYCOLLECTION(%s)" % \
+            ",".join(get_wkt(field) for field in fields)
+
+def get_ewkt(wkt, srid=DEFAULT_PROJ):
+    """
+    Returns EWKT (WKT with a specified SRID) for the given wkt and SRID
+    (default 4326). 
+    """
+    if wkt:
+        return "SRID=%s;%s" % (srid, wkt)
+    return ""
+
