@@ -5,6 +5,11 @@ olwidget
 editable OpenLayers maps.  While the javascript library functions on its own,
 it was written to use with django apps which display and edit geographic data.
 
+Documentation for ``olwidget.js`` is included in the ``doc`` directory.
+
+Django documentation
+~~~~~~~~~~~~~~~~~~~~
+
 To use the django app requires a couple of steps:
 
 1.  Copy or link the ``olwidget`` directory in ``django_app`` into the search
@@ -13,12 +18,10 @@ To use the django app requires a couple of steps:
     ``olwidget`` under your project's ``MEDIA_URL``.  If you wish to name the directory 
     something else, define ``OLWIDGET_MEDIA_URL`` with the URL for the media files in
     your settings file.
-3.  Include ``'olwidget'`` in your project settings' ``INSTALLED_APPS`` list.
-
-Optional:
-
-4.  If you want to use google or yahoo map layers, you must include
-    ``GOOGLE_API_KEY`` or ``YAHOO_APP_ID`` in your settings file.
+3.  Include ``'olwidget'`` in your project's settings ``INSTALLED_APPS`` list.
+4.  (Optional) If you want to use google or yahoo map layers, you must include
+    ``GOOGLE_API_KEY`` or ``YAHOO_APP_ID`` in your settings file.  ``olwidget``
+    uses OpenStreetMaps by default, which requires no key.
 
 Examples
 ~~~~~~~~
