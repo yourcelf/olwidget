@@ -15,7 +15,7 @@ simple example::
 
     <html>
         <head>
-            <script type='text/javascript' src='http://openlayers.org/api/2.7/OpenLayers.js'></script>
+            <script type='text/javascript' src='http://openlayers.org/api/2.8/OpenLayers.js'></script>
             <script type='text/javascript' src='http://openstreetmap.org/openlayers/OpenStreetMap.js'></script>
             <script type='text/javascript' src='js/olwidget.js'></script>
             <link rel='stylesheet' href='css/olwidget.css' />
