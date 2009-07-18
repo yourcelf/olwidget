@@ -32,7 +32,7 @@ var olwidget = {
         'linestring': OpenLayers.Geometry.MultiLineString,
         'point': OpenLayers.Geometry.MultiPoint,
         'polygon': OpenLayers.Geometry.MultiPolygon,
-        'collection': OpenLayers.Geometry.Collection,
+        'collection': OpenLayers.Geometry.Collection
     },
     /*
      * Projection transformation
@@ -120,7 +120,7 @@ var olwidget = {
         this.hide_textarea = true;
         this.map_style = {
             width: '600px',
-            height: '400px',
+            height: '400px'
         };
         this.map_class = '';
         // elements for OpenLayers.Style
@@ -415,5 +415,5 @@ var olwidget = {
             }
         }
         return obj;
-    },
+    }
 }

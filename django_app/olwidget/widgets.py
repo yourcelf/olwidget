@@ -28,7 +28,7 @@ GOOGLE_API = "http://maps.google.com/maps?file=api&v=2&key=%s" % GOOGLE_API_KEY
 YAHOO_API = "http://api.maps.yahoo.com/ajaxymap?v=3.0&appid=%s" % YAHOO_APP_ID
 MS_VE_API = "http://dev.virtualearth.net/mapcontrol/mapcontrol.ashx?v=6.1"
 OSM_API = "http://openstreetmap.org/openlayers/OpenStreetMap.js"
-OL_API = "http://openlayers.org/api/2.7/OpenLayers.js"
+OL_API = "http://openlayers.org/api/2.8/OpenLayers.js"
 OLWIDGET_JS = join(OLWIDGET_MEDIA_URL, "js/olwidget.js")
 OLWIDGET_CSS = join(OLWIDGET_MEDIA_URL, "css/olwidget.css")
 
