@@ -27,24 +27,21 @@
         <p>An example using all the available layers, including Google, Yahoo, Microsoft, and Open Street Maps.  Additional layers from other providers supported by OpenLayers can be added manually (see this page's source for an example).</p>
         <textarea id='my_textarea'></textarea>
         <script type='text/javascript'>//<![CDATA[
-            var map = new olwidget.EditableMap('my_textarea', {
+            var map = new olwidget.Map('my_textarea', {
                 geometry: 'polygon',
                 layers: [
                     'google.streets', 
                     'google.hybrid', 
                     'google.satellite', 
                     'google.physical', 
-                    've.road',
-                    've.shaded',
-                    've.aerial',
-                    've.hybrid',
-                    'yahoo.map',
+                    'microsoft.ve',
+                    'yahoo',
                     'osm.mapnik', 
                     'osm.osmarender'
                 ]
             }); 
             // How to add other layers from other providers
-            map.addLayer(new OpenLayers.Layer.WMS( "OpenLayers WMS",
+            map.map.addLayer(new OpenLayers.Layer.WMS( "OpenLayers WMS",
                 "http://labs.metacarta.com/wms/vmap0", {layers: 'basic'} ));
         //]]></script>
             <a href='#' onclick='document.getElementById("my_textarea").style.display="block";'>show textarea</a>
