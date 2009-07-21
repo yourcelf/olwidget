@@ -1,6 +1,11 @@
 olwidget
 ========
 
+WARNING: the API has changed.  The older version can be accessed here:
+http://github.com/yourcelf/olwidget/tree/1aaf78212aaeb83fcfb76e65c4989c7d66ec5397
+This documentation is out of date for the moment.  This should be fixed within
+the week.
+
 ``olwidget`` is a library which replaces textareas containing WKT data with
 editable OpenLayers maps.  While the javascript library functions on its own,
 it was written to use with django apps which display and edit geographic data.
