@@ -1,4 +1,4 @@
-olwidget
+olwidget v0.1
 ========
 
 ``olwidget`` is a library which replaces textareas containing WKT data with
