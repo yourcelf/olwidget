@@ -1,5 +1,5 @@
 olwidget v0.1
-========
+=============
 
 ``olwidget`` is a library which replaces textareas containing WKT data with
 editable OpenLayers maps.  While the javascript library functions on its own,
