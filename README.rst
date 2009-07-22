@@ -73,7 +73,7 @@ Example to use ``OLWidget`` in the Django admin site::
         'layers': ['google.streets'],
         'default_lat': 44,
         'default_lon': -72,
-    })
+    }))
 
 Options
 ~~~~~~~
