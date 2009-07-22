@@ -1,0 +1,45 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <script type='text/javascript' src='http://openlayers.org/api/2.8/OpenLayers.js'></script>
+        <script type='text/javascript' src='http://openstreetmap.org/openlayers/OpenStreetMap.js'></script>
+        <script type='text/javascript' src='../../js/olwidget.js'></script>
+        <link rel="stylesheet" type="text/css" media="all" href="../../css/olwidget.css" />
+        <title>Info boxes inside and outside map viewport</title>
+        <style type='text/css'>
+            textarea {
+                width: 300px;
+                height: 200px;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Info boxes inside and outside map viewport</h1>
+        <table>
+            <tr><th>Popup outside map</th><th>Popup inside map</th></tr>
+            <tr><td><div id='map1' style='z-index: 10000;'></div></td><td><div id='map2'></div></td></tr>
+        </table>
+        <script type='text/javascript'>//<![CDATA[
+            new olwidget.InfoMap('map1', [
+                    ["SRID=4326;POINT(-87.264404293314 47.827908167728)", '<div style="width: 500px;"><p><b>Lake Superior</b> is the largest of the five <a href="http://en.wikipedia.org/wiki/Great_Lakes" title="Great Lakes">Great Lakes</a> of <a href="http://en.wikipedia.org/wiki/North_America" title="North America">North America</a>. It is bounded to the north by <a href="http://en.wikipedia.org/wiki/Ontario" title="Ontario">Ontario</a>, <a href="http://en.wikipedia.org/wiki/Canada" title="Canada">Canada</a> and <a href="http://en.wikipedia.org/wiki/Minnesota" title="Minnesota">Minnesota</a>, <a href="http://en.wikipedia.org/wiki/United_States" title="United States">United States</a>, and to the south by the <a href="http://en.wikipedia.org/wiki/U.S._state" title="U.S. state">U.S. states</a> of <a href="http://en.wikipedia.org/wiki/Wisconsin" title="Wisconsin">Wisconsin</a> and <a href="http://en.wikipedia.org/wiki/Michigan" title="Michigan">Michigan</a>. It is the <a href="http://en.wikipedia.org/wiki/List_of_lakes_by_area" title="List of lakes by area">largest freshwater lake</a> in the world by surface area and is the world\'s <a href="http://en.wikipedia.org/wiki/List_of_lakes_by_volume" title="List of lakes by volume">third-largest freshwater lake by volume</a>.</p></div>'],
+                ], 
+                { 
+                    map_div_style: { width: '200px', height: '200px'}, 
+                    popups_outside: true,
+                    popup_direction: 'br', /* could be 'br', 'tr', 'tl', 'bl', or 'auto' (default) */
+                    layers: ['wms.map'],
+                    default_zoom: 4
+                }); 
+            new olwidget.InfoMap('map2', [
+                    ["SRID=4326;POINT(-78.299560543672 43.564471585813)", '<div style="width: 500px;"><p><b>Lake Ontario</b> is one of the five <a href="http://en.wikipedia.org/wiki/Great_Lakes" title="Great Lakes">Great Lakes</a> of <a href="http://en.wikipedia.org/wiki/North_America" title="North America">North America</a>. The lake is bounded on the north by the Canadian province of <a href="http://en.wikipedia.org/wiki/Ontario" title="Ontario">Ontario</a> and on the south by Ontario\'s <a href="http://en.wikipedia.org/wiki/Niagara_Peninsula" title="Niagara Peninsula">Niagara Peninsula</a> and by the U.S. state of <a href="http://en.wikipedia.org/wiki/New_York" title="New York">New York</a>. It is the smallest of the Great Lakes and the only one that does not border with <a href="http://en.wikipedia.org/wiki/Michigan" title="Michigan">Michigan</a>.</p></div>']
+                ], 
+                {
+                    map_div_style: { width: '200px', height: '200px' },
+                    popups_outside: false, /* default */
+                    layers: ['wms.map'],
+                    default_zoom: 4
+                });
+        //]]></script>
+    </body>
+</html>

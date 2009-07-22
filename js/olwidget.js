@@ -61,6 +61,22 @@ var olwidget = {
     /*
      * Constructors for layers
      */
+    wms: {
+        map: function() {
+            return new OpenLayers.Layer.WMS(
+                    "OpenLayers WMS",
+                    "http://labs.metacarta.com/wms/vmap0",
+                    {layers: 'basic'}
+            );
+        },
+        nasa: function() {
+            return new OpenLayers.Layer.WMS(
+                    "NASA Global Mosaic",
+                    "http://t1.hypercube.telascience.org/cgi-bin/landsat7",
+                    {layers: "landsat7"}
+            );
+        }
+    },
     osm: {
         mapnik: function() {
             return new OpenLayers.Layer.OSM.Mapnik("OpenStreetMap (Mapnik)", {numZoomLevels: 20});
@@ -171,6 +187,9 @@ olwidget.BaseMap = OpenLayers.Class(OpenLayers.Map, {
             }
         };
         var opts = olwidget.deep_join_options(defaults, options);
+
+        opts.override_zoom = options.default_zoom != undefined;
+        opts.override_center = options.default_lat != undefined && options.default_lon != undefined;
 
         // construct objects for serialized options
         var me = opts.map_options.maxExtent;
@@ -290,10 +309,6 @@ olwidget.EditableMap = OpenLayers.Class(olwidget.BaseMap, {
             this.addControl(select);
             select.activate();
         }
-        // Then add optional visual controls
-        this.addControl(new OpenLayers.Control.MousePosition());
-        this.addControl(new OpenLayers.Control.Scale());
-        this.addControl(new OpenLayers.Control.LayerSwitcher());
     },
     clear_features: function() {
         olwidget.BaseMap.prototype.clear_features.apply(this);
@@ -422,6 +437,7 @@ olwidget.InfoMap = OpenLayers.Class(olwidget.BaseMap, {
     initialize: function(map_div_id, info_array, options) {
         var infomap_defaults = {
             popups_outside: false,
+            popup_direction: 'auto',
             cluster: false,
             cluster_style: {
                 pointRadius: "${radius}",
@@ -435,6 +451,11 @@ olwidget.InfoMap = OpenLayers.Class(olwidget.BaseMap, {
 
         options = olwidget.deep_join_options(infomap_defaults, options);
         olwidget.BaseMap.prototype.initialize.apply(this, [map_div_id, options]);
+
+        // Must have explicitly specified position for otuside popups.
+        if (this.opts.popups_outside && !this.div.style.position) {
+            this.div.style.position = 'relative';
+        }
 
         if (this.opts.cluster == true) {
             this.addClusterStrategy();
@@ -453,15 +474,25 @@ olwidget.InfoMap = OpenLayers.Class(olwidget.BaseMap, {
 
         this.select = new OpenLayers.Control.SelectFeature(this.vector_layer);
         
-        var infomap = this; // closure "this" for callbacks
-        this.select.onSelect = function(feature) { infomap.createPopup(feature) };
-        this.select.onUnselect = function(feature) { infomap.deletePopup(); };
+        this.select.events.register("featurehighlighted", this, function(evt) { this.createPopup(evt); });
+        this.select.events.register("featureunhighlighted", this, function(evt) { this.deletePopup() });
         
         // Zooming changes clusters, so we must delete popup if we zoom.
         this.events.register("zoomend", this, function(event) { this.deletePopup(); });
 
         this.addControl(this.select);
         this.select.activate();
+
+        if (this.opts.override_center) {
+            this.setCenter(this.opts.default_center);
+        } else {
+            this.setCenter(this.vector_layer.getDataExtent().getCenterLonLat());
+        }
+        if (this.opts.override_zoom) {
+            this.zoomTo(this.opts.default_zoom);
+        } else {
+            this.zoomToExtent(this.vector_layer.getDataExtent());
+        }
     },
     addClusterStrategy: function() {
         var style_context = {
@@ -557,7 +588,15 @@ olwidget.InfoMap = OpenLayers.Class(olwidget.BaseMap, {
     /**
      * Build a paginated popup
      */
-    createPopup: function(feature) {
+    createPopup: function(evt) {
+        var feature = evt.feature;
+        var lonlat;
+        if (feature.geometry.CLASS_NAME == "OpenLayers.Geometry.Point") {
+            lonlat = feature.geometry.getBounds().getCenterLonLat();
+        } else {
+            lonlat = this.getLonLatFromViewPortPx(evt.object.handlers.feature.evt.xy);
+        }
+            
         var popup_html = [];
         if (feature.cluster) {
             for (var i = 0; i < feature.cluster.length; i++) {
@@ -567,10 +606,8 @@ olwidget.InfoMap = OpenLayers.Class(olwidget.BaseMap, {
             popup_html.push(feature.attributes.html);
         }
         var infomap = this;
-        this.popup = new olwidget.Popup(null,
-            feature.geometry.getBounds().getCenterLonLat(),
-            null, popup_html, null, true, 
-            function() { infomap.select.unselect(feature) });
+        this.popup = new olwidget.Popup(null, lonlat, null, popup_html, null, true, 
+            function() { infomap.select.unselect(feature) }, this.opts.popup_direction);
         if (this.opts.popups_outside) {
             this.popup.panMapIfOutOfView = false;
         }
@@ -647,7 +684,11 @@ olwidget.Popup = OpenLayers.Class(OpenLayers.Popup.Framed, {
     },
 
     initialize: function(id, lonlat, contentSize, contentHTML, anchor, closeBox,
-                    closeBoxCallback) {
+                    closeBoxCallback, relativePosition) {
+        if (relativePosition && relativePosition != 'auto') {
+            this.fixedRelativePosition = true;
+            this.relativePosition = relativePosition;
+        }
         //this.imageSrc = "../img/triangles.png";
         // we don't use the default close box because we want it to appear in
         // the content div for easier CSS control.
@@ -817,10 +858,27 @@ olwidget.Popup = OpenLayers.Class(OpenLayers.Popup.Framed, {
             this.contentDiv.style.top = this.padding.top + "px";
         }
     },
+    updateSize: function() {
+        if (this.map.opts.popups_outside == true) {
+            var preparedHTML = "<div class='" + this.contentDisplayClass+ "'>" +
+                this.contentDiv.innerHTML +
+                "</div>";
+
+            var containerElement = document.body;
+            var realSize = OpenLayers.Util.getRenderedDimensions(
+                preparedHTML, null, {
+                    displayClass: this.displayClass,
+                    containerElement: containerElement
+                }
+            );
+            return this.setSize(realSize);
+        } else {
+            return OpenLayers.Popup.prototype.updateSize.apply(this, arguments);
+        }
+    },
 
     CLASS_NAME: "olwidget.Popup"
 });
-
 
 // finish anonymous function.  Add olwidget to 'window'.
 this.olwidget = olwidget;

@@ -1,17 +1,23 @@
-olwidget
-========
+olwidget v0.2
+=============
 .. contents:: Contents
 
-``olwidget`` is a simple javascript library to turn a textarea containing `WKT
-<http://en.wikipedia.org/wiki/Well-known_text>`_ geometry into an editable map,
-using openlayers.  The map writes EWKT geometry (WKT with explicit SRID) to the
-textarea for later processing in forms.  This is useful for anywhere you need a
-form to enter or edit precise geographic geometries for storage in a GIS
-database such as `PostGIS <http://postgis.refractions.net/>`_.
+``olwidget`` is a javascript library to make editing and displaying geometries
+and information on OpenLayers maps easier.  It defines two primary types:
+
+* ``olwidget.EditableMap`` is a map class that turns a textarea containing `WKT
+  <http://en.wikipedia.org/wiki/Well-known_text>`_ geometry into an editable
+  map, using openlayers.  The map writes EWKT geometry (WKT with explicit SRID)
+  to the textarea for later processing in forms.  This is useful for anywhere
+  you need a form to enter or edit precise geographic geometries for storage in
+  a GIS database such as `PostGIS <http://postgis.refractions.net/>`_.
+
+* ``olwidget.InfoMap`` is a map class that displays popup info-windows over
+  geometries when clicked.
 
 ``olwidget`` supports multiple geometry types, any number of maps per page,
-multiple map providers, read-only maps, and much more (see options_ below).  A
-simple example::
+multiple map providers, different popup formats, and much more (see `Common options`_
+below).  A simple example::
 
     <html>
         <head>
@@ -21,9 +27,18 @@ simple example::
             <link rel='stylesheet' href='css/olwidget.css' />
         </head>
         <body>
-            <textarea id='my_point'>SRID=900913;POINT(0 0)</textarea>
-            <script type-'text/javascript'>
-                new olwidget.Map('my_point', {name: 'My Point'});
+            <!-- a map with editable overlays -->
+            <textarea id='my_point'>SRID=4326;POINT(0 0)</textarea>
+            <script type='text/javascript'>
+                new olwidget.EditableMap('my_point', {name: 'My Point'});
+            </script>
+
+            <!-- a map displaying an info popup over a geometry -->
+            <div id='map'></div>
+            <script type='text/javascript'>
+                new olwidget.InfoMap('map', [
+                    ['SRID=4326;POINT(0 0)', "<p>Here at the zero point!</p>"]
+                ]);
             </script>
         </body>
     </html>
@@ -31,6 +46,8 @@ simple example::
 Examples
 ~~~~~~~~
 
+Editable Maps
+-------------
 * `Simple example <examples/simple.html>`_
 * `Collections <examples/collection.html>`_ of multiple geometries.
 * Read only maps and `multiple maps per page <examples/read_only_and_multiple_maps.html>`_
@@ -40,58 +57,49 @@ Examples
 * `Multiple geometry types <examples/multiple_geometries.html>`_
 * `Other projections <examples/other_projections.html>`_
 
+Info Maps
+---------
+* `Info popups over geometries <examples/info_geometries.html>`_
+* `Clustered points <examples/info_cluster.html>`_
+* `Popups inside and outside map viewport <examples/info_inside_outside.html>`_
+
+
 Documentation
 ~~~~~~~~~~~~~
-To use, just create a new ``olwidget.Map`` object, with the DOM id of the
-textarea you are replacing::   
 
-    new olwidget.Map(<textarea_id>, [options]);
+Common options
+--------------
 
-olwidget.Map constructor
-------------------------
+The following options are shared by ``olwidget.EditableMap`` and ``olwidget.InfoMap``:
 
-* ``textarea_id``: the DOM id of the textarea to replace
-* ``options``: An object containing options for the resulting map.  All fields
-  are optional.
-
-options
-........
 ``name`` (string; defaults to the given ``textarea_id``) 
     The name of the overlay layer for the map.
-``geometry`` (Array or string; defaults to ``'point'``)
-    The geometry to use for this map.  Choices are ``'point'``,
-    ``'linestring'``, and ``'polygon'``.  To allow multiple geometries, use an
-    array such as ``['point', 'linestring', 'polygon']``.
-``is_collection`` (boolean, default ``false``) 
-    If true, allows multiple points/lines/polygons.
-``editable`` (boolean, default ``true``) 
-    If true, allows editing of geometries.
-``hide_textarea`` (boolean; default ``true``) 
-    Hides the textarea if true.
 ``layers`` (Array; default ``['osm.mapnik']``) 
     A list of map base layers to include.  Choices include ``'osm.mapnik'``,
     ``'osm.osmarender'``, ``'google.streets'``, ``'google.physical'``,
     ``'google.satellite'``, ``'google.hybrid'``, ``'ve.road'``,
-    ``'ve.shaded'``, ``'ve.aerial'``, ``'ve.hybrid'``, and ``'yahoo'``.  Additional
-    providers or options can be manually added using the normal OpenLayers apis
-    (see the `Examples`_ above).
+    ``'ve.shaded'``, ``'ve.aerial'``, ``'ve.hybrid'``, ``'wms.map'``,
+    ``'wms.nasa'``, and ``'yahoo.map'``.  Additional providers or options can
+    be manually added using the normal OpenLayers apis
+    (see `this provider example <examples/other_providers.html>`_).
 
     You must include separately whatever javascript sources needed to use these
     (e.g.  maps.google.com or openstreetmap.org apis).
 ``default_lat`` (float; default 0)
-    Latitude for the center point of the map.  Only used if there is no
-    geometry (e.g. the textarea is empty).
-``default_lon`` (float: default 0)
-    Longitude for the center pointof the map.  Only used if there is no
-    geometry (e.g. the textarea is empty).
-``default_zoom`` (int; default ``4``) The zoom level to use on the map.  Only
-    used if there are no geometries (e.g. the textarea is empty).
+    Latitude for the center point of the map.  For ``olwidget.EditableMap``,
+    this is only used if there is no geometry (e.g. the textarea is empty).
+``default_lon`` (float; default 0)
+    Longitude for the center point of the map.  For ``olwidget.EditableMap``,
+    this is only used if there is no geometry (e.g. the textarea is empty).
+``default_zoom`` (int; default ``4``) 
+    The zoom level to use on the map.  For ``olwidget.EditableMap``,
+    this is only used if there is no geometry (e.g. the textarea is empty).
 ``overlay_style`` (object) 
     A list of style definitions for the geometry overlays.  See 
     `OpenLayers styling <http://docs.openlayers.org/library/feature_styling.html>`_.
 ``map_class`` (string; default ``''``) 
     A CSS class name to add to the div which is created to contain the map.
-``map_style`` (object, default ``{width: '600px', height: '400px'}``)  
+``map_div_style`` (object, default ``{width: '600px', height: '400px'}``)  
     A set of CSS style definitions to apply to the div which is created to
     contain the map.
 ``map_options`` (object) 
@@ -113,7 +121,81 @@ options
     <http://dev.openlayers.org/docs/files/OpenLayers/Map-js.html#OpenLayers.Map.Constructor>`_
     may be included, and will be passed directly.
 
+olwidget.EditableMap constructor
+--------------------------------
 
+Format::
+
+    new olwidget.EditableMap(<textarea_id>, [options]);
+
+* ``textarea_id``: the DOM id of the textarea to replace
+* ``options``: An object containing options for the resulting map.  All fields
+  are optional.  
+  
+In addition to the common options listed above, ``EditableMap`` accepts the
+following options:
+
+``geometry`` (Array or string; defaults to ``'point'``)
+    The geometry to use for this map.  Choices are ``'point'``,
+    ``'linestring'``, and ``'polygon'``.  To allow multiple geometries, use an
+    array such as ``['point', 'linestring', 'polygon']``.
+``is_collection`` (boolean, default ``false``) 
+    If true, allows multiple points/lines/polygons.
+``hide_textarea`` (boolean; default ``true``) 
+    Hides the textarea if true.
+``editable`` (boolean, default ``true``) 
+    If true, allows editing of geometries.
+
+olwidget.InfoMap constructor
+----------------------------
+
+Format::
+
+    new olwidget.InfoMap(<map_div_id>, <info_array>, [options]);
+
+* ``map_div_id``: the DOM id of a div to replace with this map.
+* ``info_array``: an Array of geometries and content HTML for popups, such as::
+        [ ["SRID=4326;POINT(0 0)", "<p>This is the zero point.</p>"],
+          ["SRID=4326;POINT(10 10)", "<p>This is longitude 10 and latitude 10.</p>"],
+            ...  ]
+
+* ``options``: An object containing options for the resulting map.  All fields
+  are optional.
+
+In addition to the common options listed above, ``InfoMap`` accepts the
+following options:
+
+``popups_outside`` (boolean; default ``false``)
+    If false, popups are contained within the map's viewport.  If true, popups
+    may expand outside the map's viewport.
+``popup_direction`` (string; default ``auto``)
+    The direction from the clicked geometry that a popup will extend.  This may
+    be one of:
+    * ``tr`` -- top right
+    * ``tl`` -- top left
+    * ``br`` -- bottom right
+    * ``bl`` -- bottom left
+    * ``auto`` -- automatically choose direction.
+``cluster`` (boolean; default ``false``)
+    If true, points will be clustered using the `OpenLayers.Strategy.ClusterStrategy
+    <http://dev.openlayers.org/releases/OpenLayers-2.7/doc/apidocs/files/OpenLayers/Strategy/Cluster-js.html>`_.
+    In addition, popups triggered by clusters will be paginated, so that the
+    contents of each point can be displayed (see `this cluster example
+    <examples/info_cluster.html>`_).
+``cluster_style`` (object)
+    The default style is::
+        { pointRadius: "${radius}",
+          strokeWidth: "${width}",
+          label: "${label}",
+          fontSize: "11px",
+          fontFamily: "Helvetica, sans-serif",
+          fontColor: "#ffffff" }
+
+    The arguments expressed with ``${}`` are programmatically replaced with
+    values based on the cluster.  Setting them to specific values will prevent
+    this programatic replacement.
+
+    
 Projections
 -----------
 
@@ -129,7 +211,7 @@ To change the projection used for WKT, define the
 ``map_options.displayProjection``.  For example, the following will use
 ``EPSG:900913`` for all WKT data in addition to map display::
 
-    new olwidget.Map('textarea_id', {
+    new olwidget.EditableMap('textarea_id', {
         map_options: {
             projection: "EPSG:900913",
             displayProjection: "EPSG:900913"
