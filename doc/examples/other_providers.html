@@ -40,11 +40,13 @@
                     've.hybrid',
                     'yahoo.map',
                     'osm.mapnik', 
-                    'osm.osmarender'
+                    'osm.osmarender',
+                    'wms.map',
+                    'wms.nasa'
                 ]
             }); 
             // How to add other layers from other providers
-            map.addLayer(new OpenLayers.Layer.WMS( "OpenLayers WMS",
+            map.addLayer(new OpenLayers.Layer.WMS( "OpenLayers WMS again",
                 "http://labs.metacarta.com/wms/vmap0", {layers: 'basic'} ));
         //]]></script>
             <a href='#' onclick='document.getElementById("my_textarea").style.display="block";'>show textarea</a>

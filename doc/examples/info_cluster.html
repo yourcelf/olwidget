@@ -10,7 +10,9 @@
     </head>
     <body>
         <h1>Displays info for clusters, in paginated info boxes.</h1>
-        <p>Click a point to view its info box.</p>
+        <p>Click a point to view its info box.  The box is paginated, with one
+        page for the info HTML from each point in the cluster.  Zooming changes
+        the clusters.</p>
         <div id='map' style='width: 500px; height: 400px; position: relative;'></div>
         <script type='text/javascript'>//<![CDATA[
             var data = [];
@@ -25,7 +27,7 @@
                 }
 
             }
-            new olwidget.InfoMap('map', data, { cluster: true, popups_outside: true }); 
+            new olwidget.InfoMap('map', data, { cluster: true }); 
         //]]></script>
     </body>
 </html>

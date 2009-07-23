@@ -16,14 +16,17 @@
     </head>
     <body>
         <h1>Custom start point and colors</h1>
-        <textarea id='my_textarea'></textarea>
+        <p>This map starts at the point 42.3 latitude, -71.5 longitude.
+        Polygons drawn on the map are semi-transparent red with a thick green
+        border.</p>
+        <textarea id='myTextarea'></textarea>
         <script type='text/javascript'>//<![CDATA[
-            new olwidget.EditableMap('my_textarea', {
+            new olwidget.EditableMap('myTextarea', {
                 geometry: 'polygon',
-                default_lon: -71.5, 
-                default_lat: 42.3,
-                default_zoom: 10,
-                overlay_style: {
+                defaultLon: -71.5, 
+                defaultLat: 42.3,
+                defaultZoom: 10,
+                overlayStyle: {
                     fillColor: "#ff0000",
                     strokeColor: "#00ff00",
                     fillOpacity: 0.7,
@@ -31,7 +34,7 @@
                 }
             }); 
         //]]></script>
-            <a href='#' onclick='document.getElementById("my_textarea").style.display="block";'>show textarea</a>
+            <a href='#' onclick='document.getElementById("myTextarea").style.display="block";'>show textarea</a>
 
     </body>
 </html>
