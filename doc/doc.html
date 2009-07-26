@@ -312,16 +312,18 @@ changes</a> if you are upgrading.</p>
 and information on OpenLayers maps easier.  It defines two primary types:</p>
 <ul class="simple">
 <li><tt class="docutils literal"><span class="pre">olwidget.EditableMap</span></tt> is a map class that turns a textarea containing <a class="reference external" href="http://en.wikipedia.org/wiki/Well-known_text">WKT</a> geometry into an editable
-map, using openlayers.  The map writes EWKT geometry (WKT with explicit SRID)
-to the textarea for later processing in forms.  This is useful for anywhere
-you need a form to enter or edit precise geographic geometries for storage in
-a GIS database such as <a class="reference external" href="http://postgis.refractions.net/">PostGIS</a>.</li>
+map.  The map writes EWKT geometry (WKT with explicit SRID) to the textarea
+for later processing in forms.  This is useful for anywhere you need a form
+to enter or edit precise geographic geometries for storage in a GIS database
+such as <a class="reference external" href="http://postgis.refractions.net/">PostGIS</a>.</li>
 <li><tt class="docutils literal"><span class="pre">olwidget.InfoMap</span></tt> is a map class that displays popup info-windows over
-geometries when clicked.</li>
+geometries when clicked.  The popups are stylable using CSS, work with
+clustered as well as non-clustered points, and can be shown both inside
+and outside the Map's &quot;viewport&quot;.</li>
 </ul>
 <p><tt class="docutils literal"><span class="pre">olwidget</span></tt> supports multiple geometry types, any number of maps per page,
-multiple map providers, different popup formats, and much more (see <a class="reference internal" href="#common-options">Common options</a>
-below).  A simple example:</p>
+multiple map providers, and much more (see <a class="reference internal" href="#common-options">Common options</a> below).  A simple
+example:</p>
 <pre class="literal-block">
 &lt;html&gt;
     &lt;head&gt;
@@ -413,7 +415,7 @@ Properties may include:</p>
 <ul class="simple">
 <li><tt class="docutils literal"><span class="pre">units</span></tt>: (string) default <tt class="docutils literal"><span class="pre">'m'</span></tt> (meters)</li>
 <li><tt class="docutils literal"><span class="pre">projection</span></tt>: (string) default <tt class="docutils literal"><span class="pre">&quot;EPSG:900913&quot;</span></tt> (the projection used
-by google, OSM, yahoo, and VirtualEarth -- See <a class="reference internal" href="#projections">Projections</a> below).</li>
+by Google, OSM, Yahoo, and VirtualEarth -- See <a class="reference internal" href="#projections">Projections</a> below).</li>
 <li><tt class="docutils literal"><span class="pre">displayProjection</span></tt>: (string) default <tt class="docutils literal"><span class="pre">&quot;EPSG:4326&quot;</span></tt> (the latitude
 and longitude we're all familiar with -- See <a class="reference internal" href="#projections">Projections</a> below).</li>
 <li><tt class="docutils literal"><span class="pre">maxResolution</span></tt>: (float) default <tt class="docutils literal"><span class="pre">156543.0339</span></tt>.  Value should be

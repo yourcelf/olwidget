@@ -11,17 +11,19 @@ and information on OpenLayers maps easier.  It defines two primary types:
 
 * ``olwidget.EditableMap`` is a map class that turns a textarea containing `WKT
   <http://en.wikipedia.org/wiki/Well-known_text>`_ geometry into an editable
-  map, using openlayers.  The map writes EWKT geometry (WKT with explicit SRID)
-  to the textarea for later processing in forms.  This is useful for anywhere
-  you need a form to enter or edit precise geographic geometries for storage in
-  a GIS database such as `PostGIS <http://postgis.refractions.net/>`_.
+  map.  The map writes EWKT geometry (WKT with explicit SRID) to the textarea
+  for later processing in forms.  This is useful for anywhere you need a form
+  to enter or edit precise geographic geometries for storage in a GIS database
+  such as `PostGIS <http://postgis.refractions.net/>`_.
 
 * ``olwidget.InfoMap`` is a map class that displays popup info-windows over
-  geometries when clicked.
+  geometries when clicked.  The popups are stylable using CSS, work with
+  clustered as well as non-clustered points, and can be shown both inside
+  and outside the Map's "viewport".
 
 ``olwidget`` supports multiple geometry types, any number of maps per page,
-multiple map providers, different popup formats, and much more (see `Common options`_
-below).  A simple example::
+multiple map providers, and much more (see `Common options`_ below).  A simple
+example::
 
     <html>
         <head>
@@ -112,7 +114,7 @@ The following options are shared by ``olwidget.EditableMap`` and ``olwidget.Info
 
     * ``units``: (string) default ``'m'`` (meters)
     * ``projection``: (string) default ``"EPSG:900913"`` (the projection used
-      by google, OSM, yahoo, and VirtualEarth -- See `Projections`_ below).
+      by Google, OSM, Yahoo, and VirtualEarth -- See `Projections`_ below).
     * ``displayProjection``: (string) default ``"EPSG:4326"`` (the latitude
       and longitude we're all familiar with -- See `Projections`_ below).
     * ``maxResolution``: (float) default ``156543.0339``.  Value should be
