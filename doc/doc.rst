@@ -1,5 +1,5 @@
-olwidget v0.2
-=============
+olwidget.js v0.2
+================
 
 Note: the API has changed in v0.2.  See a list of `backwards incompatible
 changes <backwards_incompatible_changes.html>`_ if you are upgrading.
@@ -185,17 +185,23 @@ following options:
 ``popupDirection`` (string; default ``auto``)
     The direction from the clicked geometry that a popup will extend.  This may
     be one of:
+
     * ``tr`` -- top right
     * ``tl`` -- top left
     * ``br`` -- bottom right
     * ``bl`` -- bottom left
     * ``auto`` -- automatically choose direction.
+
 ``cluster`` (boolean; default ``false``)
     If true, points will be clustered using the `OpenLayers.Strategy.ClusterStrategy
-    <http://dev.openlayers.org/releases/OpenLayers-2.7/doc/apidocs/files/OpenLayers/Strategy/Cluster-js.html>`_.
-    In addition, popups triggered by clusters will be paginated, so that the
-    contents of each point can be displayed (see `this cluster example
-    <examples/info_cluster.html>`_).
+    <http://dev.openlayers.org/releases/OpenLayers-2.7/doc/apidocs/files/OpenLayers/Strategy/Cluster-js.html>`_.  (see `this cluster example <examples/info_cluster.html>`_).
+``clusterDisplay`` (string; default ``'paginate'``)
+    The way HTML from clustered points is handled:
+
+    * ``'list'`` -- constructs an unordered list of contents
+    * ``'paginate'`` -- adds a pagination control to the popup to click through
+      the different points' HTML.
+
 ``clusterStyle`` (object)
     The default style is::
 
@@ -243,6 +249,9 @@ by Justin Bronn, Travis Pinney & Dave Springmeyer.
 
 Copying
 ~~~~~~~
+
+Note: This software is not a part of Django, but the author relinquishes
+copyright to the Django Software Foundation.
 
 Copyright (c) Django Software Foundation and individual contributors
 

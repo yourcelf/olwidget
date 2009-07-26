@@ -1,5 +1,5 @@
-The files "icons.png" and "icons_light.png" contain images taken from the
-jquery-ui library, under the following license:
+The file "popup_icons.png" contain images taken from the jquery-ui library,
+under the following license:
 
 Copyright (c) 2009 Paul Bakaus, http://jqueryui.com/
 

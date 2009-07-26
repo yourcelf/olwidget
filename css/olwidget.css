@@ -1,38 +1,34 @@
 /*
- * OpenLayers definitions
+ * Extra editing icons
  */
 .olControlEditingToolbar .olControlModifyFeatureItemInactive {
-    background-image: url(../img/move_vertex_off.png);
-    background-repeat: no-repeat;
+    background: url("../img/extra_edit_icons.png") no-repeat scroll -48px 0px;
 }
 .olControlEditingToolbar .olControlModifyFeatureItemActive {
-    background-image: url(../img/move_vertex_on.png);
-    background-repeat: no-repeat;
+    background: url("../img/extra_edit_icons.png") no-repeat scroll -24px 0px;
 }
 .olControlEditingToolbar .olControlClearFeaturesItemInactive,
 .olControlEditingToolbar .olControlClearFeaturesItemActive {
-    background-image: url(../img/clear_all.png);
-    background-repeat: no-repeat;
+    background: url("../img/extra_edit_icons.png") no-repeat scroll -0px 0px;
 }
 div.olControlEditingToolbar {
     width: 210px;
 }
-
-/*
- * olwidget specific definitions
- */
-
 
 /* Override padding to avoid position computation errors */
 .olPopupContent {
     padding: 0px !important;
     overflow: visible !important;
 }
+/* Show popups over other controls */
+.olPopup {
+    z-index: 1005 !important;
+}
 
 /* Div containing all popup elements */
 .olwidgetPopupContent {
     overflow: visible;
-    padding: 5px;
+    padding: 2px;
     border: 2px solid #777;
     background-color: #777;
 }
@@ -42,20 +38,21 @@ div.olControlEditingToolbar {
     position: absolute;
     right: 10px;
     top: 10px;
-    background: #fff url("../img/icons_light.png") no-repeat scroll -32px -192px;
+    background: #fff url("../img/popup_icons.png") no-repeat scroll -80px 0px;
     padding-top: 16px;
     width: 16px;
     height: 0px;
     overflow: hidden;
 }
 .olwidgetPopupCloseBox:hover {
-    background-image: url("../img/icons.png");
+    background-position: -64px 0px;
 }
-/* Div containing content passed in to the popup */
+/* Div containing content user HTML */
 .olwidgetPopupPage {
     overflow: auto;
     background: #fff;
     padding: 8px;
+    padding-top: 23px;
 }
 
 .olwidgetPopupPagination {
@@ -67,14 +64,15 @@ div.olControlEditingToolbar {
 .olwidgetPaginationPrevious {
     float: left;
     cursor: pointer;
-    background: url("../img/icons_light.png") no-repeat scroll -80px -192px;
+    /* Replace text with background image trick */
+    background: url("../img/popup_icons.png") no-repeat scroll -48px 0px;
     padding-top: 16px;
     width: 16px;
     height: 0px;
     overflow: hidden;
 }
 .olwidgetPaginationPrevious:hover {
-    background-image: url("../img/icons.png");
+    background-position: -32px 0px;
 }
 
 /* Div containing page count, e.g. "1 of 5". */
@@ -86,30 +84,25 @@ div.olControlEditingToolbar {
 .olwidgetPaginationNext {
     float: left;
     cursor: pointer;
-    background: url("../img/icons_light.png") no-repeat scroll -48px -192px;
+    /* Replace text with background image trick */
+    background: url("../img/popup_icons.png") no-repeat scroll -16px 0px;
     padding-top: 16px;
     width: 16px;
     height: 0px;
     overflow: hidden;
 }
 .olwidgetPaginationNext:hover {
-    background-image: url("../img/icons.png");
+    background-position: 0px 0px;
+}
+.olwidgetClusterList {
+    margin: 0;
+    padding-left: 1em;
 }
 
 /* position blocks */
-.olwidgetPopupStemTL {
-    background-image: URL("../img/triangles.png");
-    background-position: 0px -28px;
+.olwidgetPopupStemTL, .olwidgetPopupStemTR {
+    background: url("../img/popup_icons.png") no-repeat scroll -124px 0px;
 }
-.olwidgetPopupStemTR {
-    background-image: URL("../img/triangles.png");
-    background-position: 0px -28px;
-}
-.olwidgetPopupStemBL {
-    background-image: URL("../img/triangles.png");
-    background-position: 0px 0px;
-}
-.olwidgetPopupStemBR {
-    background-image: URL("../img/triangles.png");
-    background-position: 0px 0px;
+.olwidgetPopupStemBL, .olwidgetPopupStemBR {
+    background: url("../img/popup_icons.png") no-repeat scroll -96px 0px;
 }

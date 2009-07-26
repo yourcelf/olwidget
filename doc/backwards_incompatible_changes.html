@@ -287,6 +287,8 @@ ul.auto-toc {
 <div class="document" id="backwards-incompatible-changes-in-v0-2">
 <h1 class="title">Backwards incompatible changes in v0.2</h1>
 
+<div class="section" id="olwidget-js-changes">
+<h1>olwidget.js changes</h1>
 <ul>
 <li><p class="first"><tt class="docutils literal"><span class="pre">olwidget.Map</span></tt> has been renamed <tt class="docutils literal"><span class="pre">olwidget.EditableMap</span></tt></p>
 </li>
@@ -302,6 +304,7 @@ OpenLayers' mixedCase standard:</p>
 <li><tt class="docutils literal"><span class="pre">map_options</span></tt> is now <tt class="docutils literal"><span class="pre">mapOptions</span></tt></li>
 <li><tt class="docutils literal"><span class="pre">is_collection</span></tt> is now <tt class="docutils literal"><span class="pre">isCollection</span></tt></li>
 <li><tt class="docutils literal"><span class="pre">hide_textarea</span></tt> is now <tt class="docutils literal"><span class="pre">hideTextarea</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">'yahoo'</span></tt> map layer is now called <tt class="docutils literal"><span class="pre">'yahoo.map'</span></tt></li>
 </ul>
 <p>All internal methods and variables have also changed to use mixedCase.</p>
 </li>
@@ -319,6 +322,37 @@ mymap.toZoom(4);
 </pre>
 </li>
 </ul>
+</div>
+<div class="section" id="django-app-changes">
+<h1>Django app changes</h1>
+<ul>
+<li><p class="first"><tt class="docutils literal"><span class="pre">olwidget.widgets.OLWidget</span></tt> has been renamed <tt class="docutils literal"><span class="pre">olwidget.widgets.EditableMap</span></tt></p>
+</li>
+<li><p class="first">The <tt class="docutils literal"><span class="pre">&quot;olwidget/olwidget.html&quot;</span></tt> template has been renamed
+<tt class="docutils literal"><span class="pre">&quot;olwidget/editable_map.html&quot;</span></tt></p>
+</li>
+<li><p class="first">The <tt class="docutils literal"><span class="pre">admin.custom_geo_admin</span></tt> method has been removed.  Instead, just
+subclass <tt class="docutils literal"><span class="pre">olwidget.admin.GeoModelAdmin</span></tt>.</p>
+</li>
+<li><p class="first"><tt class="docutils literal"><span class="pre">olwidget.admin</span></tt> No longer inherits from <tt class="docutils literal"><span class="pre">django.contrib.admin</span></tt>.  The old
+way:</p>
+<pre class="literal-block">
+from olwidget import admin
+
+# no longer works
+admin.site.register(MyModel, admin.GeoModelAdmin)
+</pre>
+<p>Instead, import admin from <tt class="docutils literal"><span class="pre">django.contrib</span></tt> as normal, and import
+<tt class="docutils literal"><span class="pre">GeoModelAdmin</span></tt> from <tt class="docutils literal"><span class="pre">olwidget</span></tt>, like this:</p>
+<pre class="literal-block">
+from django.contrib import admin
+from olwidget.admin import GeoModelAdmin
+
+admin.site.register(MyModel, GeoModelAdmin)
+</pre>
+</li>
+</ul>
+</div>
 </div>
 </body>
 </html>

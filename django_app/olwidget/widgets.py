@@ -34,57 +34,14 @@ OLWIDGET_CSS = join(OLWIDGET_MEDIA_URL, "css/olwidget.css")
 
 DEFAULT_PROJ = "4326"
 
-class OLWidget(forms.Textarea):
-    """
-    An OpenLayers mapping widget for geographic data.
-
-    Example::
-
-        from django import forms
-        from olwidget.widgets import OLWidget
-
-        class MyForm(forms.Form):
-            location = forms.CharField(widget=OLWidget(
-                map_options={'geometry': 'point'}))
-
-    A complete list of the options available in map_options is in the
-    olwidget.js documentation.
-    """
-    def __init__(self, **kwargs):
-        self.map_options = {
-            'layers': ['osm.mapnik'],
-        }
-        self.map_options.update(kwargs.get('map_options', {}))
-
-        self.template = kwargs.get('template', 'olwidget/olwidget.html')
-        super(OLWidget, self).__init__()
-
-    def render(self, name, value, attrs=None):
-        if not attrs:
-            attrs = {}
-        # without an id, javascript fails
-        if attrs.has_key('id'):
-            element_id = attrs['id']
-        else:
-            element_id = "id_%s" % id(self)
-
-        # Allow passing of wkt for MapDisplay subclass
-        if attrs.has_key('wkt'):
-            wkt = attrs['wkt']
-        else:
-            # Use the default SRID's
-            wkt = get_ewkt(get_wkt(value))
-
-        if name and not self.map_options.has_key('name'):
-            self.map_options['name'] = name
-
-        context = {
-            'id': element_id,
-            'name': name,
-            'wkt': wkt,
-            'map_opts': simplejson.dumps(self.map_options),
-        }
-        return render_to_string(self.template, context)
+class MapMixin(object):
+    def set_options(self, map_options, template):
+        self.map_options = map_options or {}
+        # Though this is the olwidget.js default, it must be explicitly set so
+        # form.media knows to include osm.
+        self.map_options['layers'] = self.map_options.get('layers',
+                ['osm.mapnik'])
+        self.template = template or self.default_template
 
     def _media(self):
         js = set()
@@ -102,7 +59,56 @@ class OLWidget(forms.Textarea):
         return forms.Media(css={'all': (OLWIDGET_CSS,)}, js=js)
     media = property(_media)
 
-class MapDisplay(OLWidget):
+class EditableMap(forms.Textarea, MapMixin):
+    """
+    An OpenLayers mapping widget for geographic data.
+
+    Example::
+
+        from django import forms
+        from olwidget.widgets import OLWidget
+
+        class MyForm(forms.Form):
+            location = forms.CharField(widget=EditableMap(
+                map_options={'geometry': 'point'}))
+
+    A complete list of the options available in map_options is in the
+    olwidget.js documentation.
+    """
+    default_template = 'olwidget/editable_map.html'
+
+    def __init__(self, map_options=None, template=None):
+        self.set_options(map_options, template)
+        super(EditableMap, self).__init__()
+
+    def render(self, name, value, attrs=None):
+        if not attrs:
+            attrs = {}
+        # without an id, javascript fails
+        if attrs.has_key('id'):
+            element_id = attrs['id']
+        else:
+            element_id = "id_%s" % id(self)
+
+        # Allow passing of wkt for MapDisplay subclass
+        if attrs.has_key('wkt'):
+            wkt = attrs['wkt']
+        else:
+            # Use the default SRID's
+            wkt = add_srid(get_wkt(value))
+
+        if name and not self.map_options.has_key('name'):
+            self.map_options['name'] = name
+
+        context = {
+            'id': element_id,
+            'name': name,
+            'wkt': wkt,
+            'map_opts': simplejson.dumps(self.map_options),
+        }
+        return render_to_string(self.template, context)
+
+class MapDisplay(EditableMap):
     """
     Object for display of geometries on an OpenLayers map.  Arguments (all are
     optional):
@@ -132,31 +138,78 @@ class MapDisplay(OLWidget):
             </body>
         </html>
 
-    By default, maps rendered by MapDisplay objects are not editable, in
-    contrast with the OLWidget default (the assumption is that OLWidgets are
-    intended to be used in forms for editing data, and MapDisplay objects for
-    showing the data), but this can be overrided by providing the argument
-    ``editable=True``.  
+    By default, maps rendered by MapDisplay objects are not editable, but this
+    can be overriden by setting "map_options['editable'] = True".
     """
 
-    def __init__(self, fields=None, name=None, map_options=None):
+    def __init__(self, fields=None, map_options=None, template=None):
         self.fields = fields
-        self.name = name
-        if not map_options:
-            map_options = {}
 
+        map_options = map_options or {}
         if not map_options.has_key('editable'):
             map_options['editable'] = False
 
         if (self.fields and len(self.fields) > 1) or \
                 (fields[0].geom_type.upper() == 'GEOMETRYCOLLECTION'):
-            map_options['is_collection'] = True
+            map_options['isCollection'] = True
 
-        super(MapDisplay, self).__init__(map_options=map_options)
+        super(MapDisplay, self).__init__(map_options, template)
 
     def __unicode__(self):
-        wkt = get_ewkt(collection_wkt(self.fields))
-        return self.render(self.name, None, attrs={'wkt': wkt})
+        wkt = add_srid(collection_wkt(self.fields))
+        name = self.map_options.get('name', 'data')
+        return self.render(name, None, attrs={'wkt': wkt})
+
+class InfoMap(forms.Widget, MapMixin):
+    """
+    Widget for displaying maps with pop-up info boxes over geometries.
+    Arguments:
+
+    * ``info``: an array of [geometry, HTML] pairs that specify geometries, and
+      the popup contents associated with them. Geometries can be expressed as
+      geometry fields, or as WKT strings.  Example::
+
+          [
+            [geomodel1.geofield, "<p>Model One</p>"],
+            [geomodel2.geofield, "<p>Model Two</p>"],
+            ...
+          ]
+
+    * ``map_options``: an optional dict of options for map display.  A complete
+      list of options is in the documentation for olwidget.js
+
+    In templates, InfoMap.media must be displayed in addition to InfoMap for
+    the map to function properly.
+      
+    """
+    default_template = 'olwidget/info_map.html'
+
+    def __init__(self, info=None, map_options=None, template=None):
+        self.info = info
+        self.set_options(map_options, template)
+        super(InfoMap, self).__init__()
+
+    def render(self, name, value, attrs=None):
+        if self.info is None:
+            info_json = '[]'
+        else:
+            # convert fields to wkt
+            for geom, html in self.info:
+                wkt_array = [[add_srid(collection_wkt(geom)), html] for geom, html in self.info]
+            info_json = simplejson.dumps(wkt_array)
+
+        # arbitrary unique id
+        div_id = "id_%s" % id(self)
+
+        context = {
+            'id': div_id,
+            'info_array': info_json,
+            'map_opts': simplejson.dumps(self.map_options),
+        }
+        return render_to_string(self.template, context)
+
+    def __unicode__(self):
+        return self.render(None, None)
 
 def get_wkt(value, srid=DEFAULT_PROJ):
     """
@@ -191,7 +244,7 @@ def collection_wkt(fields):
     return "GEOMETRYCOLLECTION(%s)" % \
             ",".join(get_wkt(field) for field in fields)
 
-def get_ewkt(wkt, srid=DEFAULT_PROJ):
+def add_srid(wkt, srid=DEFAULT_PROJ):
     """
     Returns EWKT (WKT with a specified SRID) for the given wkt and SRID
     (default 4326). 

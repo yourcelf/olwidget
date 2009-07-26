@@ -424,7 +424,9 @@ olwidget.EditableMap = OpenLayers.Class(olwidget.BaseMap, {
 });
 
 /*
- *  olwidget.InfoMap -- map type supporting clickable vectors that raise popups.
+ *  olwidget.InfoMap -- map type supporting clickable vectors that raise
+ *  popups.  The popups are displayed optionally inside or outside the map's
+ *  viewport.
  *  
  *  Usage: olwidget.Infomap(mapDivID, infoArray, options)
  *
@@ -441,7 +443,9 @@ olwidget.InfoMap = OpenLayers.Class(olwidget.BaseMap, {
         var infomapDefaults = {
             popupsOutside: false,
             popupDirection: 'auto',
+            popupPaginationSeparator: ' of ',
             cluster: false,
+            clusterDisplay: "paginate",
             clusterStyle: {
                 pointRadius: "${radius}",
                 strokeWidth: "${width}",
@@ -455,8 +459,8 @@ olwidget.InfoMap = OpenLayers.Class(olwidget.BaseMap, {
         options = olwidget.deepJoinOptions(infomapDefaults, options);
         olwidget.BaseMap.prototype.initialize.apply(this, [mapDivID, options]);
 
-        // Must have explicitly specified position for otuside popups.
-        if (this.opts.popupsOutside && !this.div.style.position) {
+        // Must have explicitly specified position for popups to work properly.
+        if (!this.div.style.position) {
             this.div.style.position = 'relative';
         }
 
@@ -487,7 +491,7 @@ olwidget.InfoMap = OpenLayers.Class(olwidget.BaseMap, {
                 function(evt) { this.deletePopup() });
         
         // Zooming changes clusters, so we must delete popup if we zoom.
-        this.events.register("zoomend", this, function(event) { this.deletePopup(); });
+        this.events.register("zoomend", this, function(event) { this.select.unselectAll(); });
 
         this.addControl(this.select);
         this.select.activate();
@@ -563,7 +567,7 @@ olwidget.InfoMap = OpenLayers.Class(olwidget.BaseMap, {
         if (popupDiv) {
             popupDiv.style.zIndex = this.Z_INDEX_BASE['Popup'] +
                                     this.popups.length;
-            if (this.opts.popupsOutside) {
+            //if (this.opts.popupsOutside) {
                 this.div.appendChild(popupDiv);
                 // store a reference to this function so we can unregister on removal
                 this.popupMoveFunc = function(event) {
@@ -572,9 +576,9 @@ olwidget.InfoMap = OpenLayers.Class(olwidget.BaseMap, {
                 }
                 this.events.register("move", this, this.popupMoveFunc);
                 this.popupMoveFunc();
-            } else {
-                this.layerContainerDiv.appendChild(popupDiv);
-            }
+            //} else {
+            //    this.layerContainerDiv.appendChild(popupDiv);
+            //}
         }
     },
     /**
@@ -584,12 +588,12 @@ olwidget.InfoMap = OpenLayers.Class(olwidget.BaseMap, {
         OpenLayers.Util.removeItem(this.popups, popup);
         if (popup.div) {
             try {
-                if (this.opts.popupsOutside) {
+                //if (this.opts.popupsOutside) {
                     this.div.removeChild(popup.div);
                     this.events.unregister("move", this, this.popupMoveFunc);
-                } else {
-                    this.layerContainerDiv.removeChild(popup.div);
-                }
+                //} else {
+                //    this.layerContainerDiv.removeChild(popup.div);
+                //}
             } catch (e) { }
         }
         popup.map = null;
@@ -609,15 +613,31 @@ olwidget.InfoMap = OpenLayers.Class(olwidget.BaseMap, {
             
         var popupHTML = [];
         if (feature.cluster) {
-            for (var i = 0; i < feature.cluster.length; i++) {
-                popupHTML.push(feature.cluster[i].attributes.html);
+            if (this.opts.clusterDisplay == 'list') {
+                if (feature.cluster.length > 1) {
+                    var html = "<ul class='olwidgetClusterList'>";
+                    for (var i = 0; i < feature.cluster.length; i++) {
+                        html += "<li>" + feature.cluster[i].attributes.html + "</li>";
+                    }
+                    html += "</ul>";
+                    popupHTML.push(html);
+                } else {
+                    popupHTML.push(feature.cluster[0].attributes.html);
+                }
+            } else {
+                for (var i = 0; i < feature.cluster.length; i++) {
+                    popupHTML.push(feature.cluster[i].attributes.html);
+                }
             }
         } else {
             popupHTML.push(feature.attributes.html);
         }
         var infomap = this;
-        this.popup = new olwidget.Popup(null, lonlat, null, popupHTML, null, true, 
-            function() { infomap.select.unselect(feature) }, this.opts.popupDirection);
+        this.popup = new olwidget.Popup(null, 
+                lonlat, null, popupHTML, null, true, 
+                function() { infomap.select.unselect(feature) }, 
+                this.opts.popupDirection,
+                this.opts.popupPaginationSeparator);
         if (this.opts.popupsOutside) {
             this.popup.panMapIfOutOfView = false;
         }
@@ -694,12 +714,16 @@ olwidget.Popup = OpenLayers.Class(OpenLayers.Popup.Framed, {
     },
 
     initialize: function(id, lonlat, contentSize, contentHTML, anchor, closeBox,
-                    closeBoxCallback, relativePosition) {
+                    closeBoxCallback, relativePosition, separator) {
         if (relativePosition && relativePosition != 'auto') {
             this.fixedRelativePosition = true;
             this.relativePosition = relativePosition;
         }
-        //this.imageSrc = "../img/triangles.png";
+        if (separator == undefined) {
+            this.separator = ' of ';
+        } else {
+            this.separator = separator;
+        }
         // we don't use the default close box because we want it to appear in
         // the content div for easier CSS control.
         this.olwidgetCloseBox = closeBox;
@@ -709,6 +733,10 @@ olwidget.Popup = OpenLayers.Class(OpenLayers.Popup.Framed, {
             contentSize, contentHTML, anchor, false, null]);
     },
 
+    /*
+     * Construct the interior of a popup.  If contentHTML is an Array, display
+     * the array element specified by this.page.
+     */
     setContentHTML: function(contentHTML) {
         if (contentHTML != null) {
             this.contentHTML = contentHTML;
@@ -725,12 +753,17 @@ olwidget.Popup = OpenLayers.Class(OpenLayers.Popup.Framed, {
         }
 
         if ((this.contentDiv != null) && (pageHTML != null)) {
+            var popup = this; // for closures
 
+            // Clear old contents
             this.contentDiv.innerHTML = "";
+            
+            // Build container div
             var containerDiv = document.createElement("div");
             containerDiv.className = 'olwidgetPopupContent';
             this.contentDiv.appendChild(containerDiv);
 
+            // Build close box
             if (this.olwidgetCloseBox) {
                 closeDiv = document.createElement("div");
                 closeDiv.className = "olwidgetPopupCloseBox";
@@ -746,9 +779,8 @@ olwidget.Popup = OpenLayers.Class(OpenLayers.Popup.Framed, {
             pageDiv.className = "olwidgetPopupPage";
             containerDiv.appendChild(pageDiv);
 
-            var popup = this; // for closures
-
             if (showPagination) {
+                // Build pagination control
 
                 paginationDiv = document.createElement("div");
                 paginationDiv.className = "olwidgetPopupPagination";

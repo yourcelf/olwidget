@@ -1,0 +1,119 @@
+[
+    {
+        "pk": 1, 
+        "model": "testolwidget.geomodel", 
+        "fields": {
+            "linestring": "LINESTRING (23.9501953115440003 8.5810212153017993, 16.0400390618599999 -0.2636709443261300, 4.8779296873054996 0.3515602939782400)", 
+            "poly": "POLYGON ((0.7031249999719300 2.9869273932157001, -3.7792968748490998 -7.1881008708934999, 23.5546874990600017 -10.2284372657519995, 3.2519531248701998 -12.4687601443339986, 0.7031249999719300 2.9869273932157001))", 
+            "point": "POINT (-0.9667968749614000 -2.5479878713697000)"
+        }
+    }, 
+    {
+        "pk": 1, 
+        "model": "testolwidget.multigeomodel", 
+        "fields": {
+            "linestring": "MULTILINESTRING ((-80.5078125000000000 40.6473035625229997, -80.7714843750000000 49.8946343957340019, -71.8066406250000000 39.8422860207430034, -71.9824218750000000 48.6909603909249995))", 
+            "collection": "GEOMETRYCOLLECTION (POLYGON ((-68.4667968750000000 46.9802523552190010, -76.2890625000000000 41.2447723430819977, -65.2148437500000000 36.3859127728769991, -60.2050781250000000 42.6824353983859979, -68.4667968750000000 46.9802523552190010)), POINT (-68.6425781250000000 48.1660854190130010), POINT (-59.2382812500000000 42.9403392336320024), POINT (-65.3027343750000000 35.1738083179999990), POINT (-77.4316406250000000 41.5085772974389968))", 
+            "poly": "MULTIPOLYGON (((-74.3554687500000000 48.6329085858950023, -80.9472656250000000 43.1330611624060012, -64.8632812500000000 40.7139558262860035, -69.2578125000000000 46.1950421086599974, -74.3554687500000000 48.6329085858950023)))", 
+            "point": "MULTIPOINT (-68.3789062500000000 48.2246726495650009, -76.6406250000000000 41.6400783846790006, -64.9511718750000000 39.8422860207430034)"
+        }
+    }, 
+    {
+        "pk": 2, 
+        "model": "testolwidget.multigeomodel", 
+        "fields": {
+            "linestring": "MULTILINESTRING ((-108.9843750000000000 38.8910328264880008, -102.0410156250000000 38.8910328264880008))", 
+            "collection": "GEOMETRYCOLLECTION (POINT (-105.0292968750000000 39.7747694852959981), POINT (-106.7871093750000000 39.0959629363060017), POINT (-105.5566406250000000 37.7185903255880035), POINT (-104.0625000000000000 38.5481654230460009), POINT (-105.5566406250000000 38.7540832757919986))", 
+            "poly": "MULTIPOLYGON (((-108.9843750000000000 36.9498917868129979, -108.9843750000000000 40.8470603560709975, -101.9531250000000000 40.9135125761279994, -101.8652343750000000 37.0200982013680004, -108.9843750000000000 36.9498917868129979)))", 
+            "point": "MULTIPOINT (-105.0292968750000000 39.7747694852959981)"
+        }
+    }, 
+    {
+        "pk": 1, 
+        "model": "testolwidget.infomodel", 
+        "fields": {
+            "geometry": "GEOMETRYCOLLECTION (POLYGON ((5.0097656248000000 13.5819209000139995, 3.7792968748490998 12.6403383063499994, 4.0429687498386002 10.0554027361660001, 2.6367187498946989 8.5810212153017993, 2.9003906248842002 6.7518964645750996, 4.7460937498104991 6.4899833324126996, 5.8886718747649001 4.2149431412227001, 8.7890624996491002 4.3902289262884997, 9.3164062496280007 6.3152985380789000, 10.6347656245759996 7.1008926683415998, 11.5136718745410001 6.1405547822060997, 13.0078124994809983 10.2284372657509994, 14.0624999994389981 11.0921658930639992, 14.7656249994099991 11.8673509109919983, 13.4472656244640003 13.4964727652299992, 12.4804687495020001 12.7260842964480005, 11.1621093745549995 13.4109940337959994, 9.8437499996070006 13.2399454987669980, 9.4921874996209983 12.5545635280999992, 8.3496093746665991 13.1543760549020003, 7.8222656246876996 13.4109940337959994, 6.8554687497262998 12.8118013160790003, 6.4160156247437996 13.8380799358799997, 5.1855468747929994 13.7527246638579985, 5.0097656248000000 13.5819209000139995)))", 
+            "story": "<p><b>Nigeria</b> (pronounced <span title=\"Pronunciation in the International Phonetic Alphabet (IPA)\" class=\"IPA\"><a href=\"http://en.wikipedia.org/wiki/Wikipedia:IPA_for_English\" title=\"Wikipedia:IPA for English\">/na\u026a\u02c8d\u0292\u026ar\u026a\u0259/</a></span>), officially the <b>Federal Republic of Nigeria</b>, is a <a href=\"http://en.wikipedia.org/wiki/Federation\" title=\"Federation\">federal</a> <a href=\"http://en.wikipedia.org/wiki/Constitutional_republic\" title=\"Constitutional republic\">constitutional republic</a> comprising <a href=\"http://en.wikipedia.org/wiki/States_of_Nigeria\" title=\"States of Nigeria\">thirty-six states</a> and one <a href=\"http://en.wikipedia.org/wiki/Federal_Capital_Territory,_Nigeria\" title=\"Federal Capital Territory, Nigeria\">Federal Capital Territory</a>. The country is located in <a href=\"http://en.wikipedia.org/wiki/West_Africa\" title=\"West Africa\">West Africa</a> and shares land <a href=\"http://en.wikipedia.org/wiki/Border\" title=\"Border\">borders</a> with the Republic of <a href=\"http://en.wikipedia.org/wiki/Benin\" title=\"Benin\">Benin</a> in the west, <a href=\"http://en.wikipedia.org/wiki/Chad\" title=\"Chad\">Chad</a> and <a href=\"http://en.wikipedia.org/wiki/Cameroon\" title=\"Cameroon\">Cameroon</a> in the east, and <a href=\"http://en.wikipedia.org/wiki/Niger\" title=\"Niger\">Niger</a> in the north. Its coast lies on the <a href=\"http://en.wikipedia.org/wiki/Gulf_of_Guinea\" title=\"Gulf of Guinea\">Gulf of Guinea</a>, a part of the Atlantic Ocean, in the south. The capital city is <a href=\"http://en.wikipedia.org/wiki/Abuja\" title=\"Abuja\">Abuja</a>. The three largest and most influential ethnic groups in Nigeria are the <a href=\"http://en.wikipedia.org/wiki/Hausa_people\" title=\"Hausa people\">Hausa</a>, <a href=\"http://en.wikipedia.org/wiki/Igbo_people\" title=\"Igbo people\">Igbo</a> and <a href=\"http://en.wikipedia.org/wiki/Yoruba_people\" title=\"Yoruba people\">Yoruba</a>.</p>\r\n"
+        }
+    }, 
+    {
+        "pk": 2, 
+        "model": "testolwidget.pointmodel", 
+        "fields": {
+            "name": "Two", 
+            "point": "POINT (8.4374999996630997 8.4941045372152004)"
+        }
+    }, 
+    {
+        "pk": 3, 
+        "model": "testolwidget.pointmodel", 
+        "fields": {
+            "name": "Three", 
+            "point": "POINT (2.3730468749053002 10.4878118816429993)"
+        }
+    }, 
+    {
+        "pk": 4, 
+        "model": "testolwidget.pointmodel", 
+        "fields": {
+            "name": "Four", 
+            "point": "POINT (4.2187499998315996 9.3623528216847003)"
+        }
+    }, 
+    {
+        "pk": 1, 
+        "model": "testolwidget.pointmodel", 
+        "fields": {
+            "name": "One", 
+            "point": "POINT (-1.4941406249178999 18.3962301373210018)"
+        }
+    }, 
+    {
+        "pk": 5, 
+        "model": "testolwidget.pointmodel", 
+        "fields": {
+            "name": "Five", 
+            "point": "POINT (23.1152343740779997 6.7518964645750996)"
+        }
+    }, 
+    {
+        "pk": 6, 
+        "model": "testolwidget.pointmodel", 
+        "fields": {
+            "name": "Six", 
+            "point": "POINT (13.4472656244640003 -3.3379539612834002)"
+        }
+    }, 
+    {
+        "pk": 7, 
+        "model": "testolwidget.pointmodel", 
+        "fields": {
+            "name": "Seven", 
+            "point": "POINT (11.6894531245339994 -6.4899833324126002)"
+        }
+    }, 
+    {
+        "pk": 8, 
+        "model": "testolwidget.pointmodel", 
+        "fields": {
+            "name": "Eight", 
+            "point": "POINT (2.9003906248842002 9.3623528216847003)"
+        }
+    }, 
+    {
+        "pk": 9, 
+        "model": "testolwidget.pointmodel", 
+        "fields": {
+            "name": "Nine", 
+            "point": "POINT (13.1835937494739994 -4.7406753845895002)"
+        }
+    }, 
+    {
+        "pk": 1, 
+        "model": "sites.site", 
+        "fields": {
+            "domain": "localhost:8000", 
+            "name": "localhost:8000"
+        }
+    }
+]
