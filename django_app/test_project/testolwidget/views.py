@@ -119,3 +119,7 @@ def edit_infomodel(request, model_id=None):
     return render_to_response("testolwidget/edit_map.html",
             {'form': form},
             RequestContext(request))
+
+def index(request):
+    return render_to_response("testolwidget/index.html", {},
+            RequestContext(request))

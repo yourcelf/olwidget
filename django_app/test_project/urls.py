@@ -31,6 +31,8 @@ urlpatterns = patterns('',
      url(r'^test/info/(?P<model_id>\d+)?/?edit$',
          'testolwidget.views.edit_infomodel',
          name='testolwidget-edit-infomodel'),
+
+     ('^$', 'testolwidget.views.index'),
 )
 
 if settings.DEBUG:
