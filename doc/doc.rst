@@ -1,5 +1,5 @@
-olwidget
-========
+olwidget.js v0.1
+================
 .. contents:: Contents
 
 ``olwidget`` is a simple javascript library to turn a textarea containing `WKT
