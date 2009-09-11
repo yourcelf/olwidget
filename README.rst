@@ -94,10 +94,10 @@ Example using ``olwidget`` in admin::
 
     # Customize the map
     class MyGeoAdmin(GeoModelAdmin):
-        map_options = {
+        options = {
             'layers': ['google.streets'],
-            'defaultLat': 44,
-            'defaultLon': -72,
+            'default_lat': 44,
+            'default_lon': -72,
         }
 
     admin.site.register(Owner, MyGeoAdmin)
@@ -128,27 +128,26 @@ property::
         list_map_options = {
             # group nearby points into clusters
             'cluster': True,
-            'clusterDisplay': 'list',
+            'cluster_display': 'list',
         }
     
 
 Options
 ~~~~~~~
 
-All of the ``olwidget`` map types can be passed a ``map_options`` dictionary
-that controls the look and feel of the map.  These options are passed directly
-to the ``olwidget.js`` map constructor.  An example::
+All of the ``olwidget`` map types can be passed an ``options`` dictionary
+that controls the look and feel of the map.  An example::
 
     from olwidget.widgets import MapDisplay
 
-    map = MapDisplay(map_options={
+    map = MapDisplay(options={
         'layers': ['osm.mapnik', 'google.hybrid', 'yahoo'],
-        'defaultLat': 44,
-        'defaultLon': -72,
+        'default_lat': 44,
+        'default_lon': -72,
     })
 
-For a complete list of options available to olwidget.js, see the `olwidget.js
-documentation <doc/doc.html>`_.
+
+
 
 Authors
 ~~~~~~~

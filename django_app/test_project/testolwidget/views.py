@@ -9,35 +9,35 @@ from olwidget.widgets import MapDisplay, EditableMap, InfoMap
 
 class GeoModelForm(forms.ModelForm):
     point = forms.CharField(widget=EditableMap())
-    linestring = forms.CharField(widget=EditableMap(map_options={'geometry': 'linestring'}))
-    poly = forms.CharField(widget=EditableMap(map_options={'geometry': 'polygon', 'hide_textarea': False}))
+    linestring = forms.CharField(widget=EditableMap(options={'geometry': 'linestring'}))
+    poly = forms.CharField(widget=EditableMap(options={'geometry': 'polygon', 'hide_textarea': False}))
     class Meta:
         model = GeoModel
 
 class MultiGeoModelForm(forms.ModelForm):
-    point = forms.CharField(widget=EditableMap(map_options={
+    point = forms.CharField(widget=EditableMap(options={
         'geometry': 'point',
-        'isCollection': True,
+        'is_collection': True,
     }))
-    linestring = forms.CharField(widget=EditableMap(map_options={
+    linestring = forms.CharField(widget=EditableMap(options={
         'geometry': 'linestring',
-        'isCollection': True,
+        'is_collection': True,
     }))
-    poly = forms.CharField(widget=EditableMap(map_options={
+    poly = forms.CharField(widget=EditableMap(options={
         'geometry': 'polygon',
-        'isCollection': True,
+        'is_collection': True,
     }))
-    collection = forms.CharField(widget=EditableMap(map_options={
+    collection = forms.CharField(widget=EditableMap(options={
         'geometry': ['point', 'linestring', 'polygon'],
-        'isCollection': True,
+        'is_collection': True,
     }))
     class Meta:
         model = MultiGeoModel
 
 class InfoModelForm(forms.ModelForm):
-    geometry = forms.CharField(widget=EditableMap(map_options={
+    geometry = forms.CharField(widget=EditableMap(options={
         'geometry': ['point', 'linestring', 'polygon'],
-        'isCollection': True,
+        'is_collection': True,
     }))
     class Meta:
         model = InfoModel
@@ -50,11 +50,13 @@ def show_geomodel(request, model_id):
 
 def show_model(request, model_id, klass=GeoModel):
     geomodel = klass.objects.get(pk=model_id)
-    maps = [("Points", MapDisplay(fields=[geomodel.point], 
-                            map_options={'layers': ['google.streets']})),
-            ("3 fields: Point, linestring, and poly", MapDisplay(
-                fields=[geomodel.point, geomodel.linestring, geomodel.poly], 
-                map_options={'hideTextarea': False})), 
+    maps = [("Points", 
+                MapDisplay(fields=[geomodel.point], 
+                    options={'layers': ['google.streets']})),
+            ("3 fields: Point, linestring, and poly", 
+                MapDisplay(
+                    fields=[geomodel.point, geomodel.linestring, geomodel.poly], 
+                    options={'hide_textarea': False})), 
     ]
     try:
         maps.append(("Single field Collection", 

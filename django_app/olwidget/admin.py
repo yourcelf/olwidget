@@ -10,10 +10,10 @@ Example to use olwidget for mapping in the django admin site::
     admin.site.register(SomeGeoModel, admin.GeoModelAdmin)
 
 If you want to use custom OLWidget options to change the look and feel of the
-map, just subclass GeoModelAdmin, and define "map_options", for example::
+map, just subclass GeoModelAdmin, and define "options", for example::
 
     class CustomGeoAdmin(admin.GeoModelAdmin):
-        map_options = {
+        options = {
             'layers': ['google.hybrid'],
             'overlayStyle': {
                 'fillColor': '#ffff00',
@@ -44,7 +44,9 @@ from django.utils.translation import ungettext
 from olwidget.widgets import EditableMap, InfoMap
 
 class GeoModelAdmin(ModelAdmin):
-    map_options = {}
+    options = {}
+    list_map = None
+    list_map_options = {}
     change_list_template = "admin/olwidget_change_list.html"
 
     def formfield_for_dbfield(self, db_field, **kwargs):
@@ -79,15 +81,15 @@ class GeoModelAdmin(ModelAdmin):
                 # fallback: allow all types.
                 geometry = ['polygon', 'point', 'linestring']
 
-        map_options = copy.deepcopy(self.map_options) 
-        map_options.update({
+        options = copy.deepcopy(self.options) 
+        options.update({
             'geometry': geometry, 
             'isCollection': is_collection,
             'name': db_field.name,
         })
         class Widget(EditableMap):
             def __init__(self, *args, **kwargs):
-                kwargs['map_options'] = map_options
+                kwargs['options'] = options
                 # OL rendering bug with floats requires this.
                 kwargs['template'] = "olwidget/admin_olwidget.html"
                 super(Widget, self).__init__(*args, **kwargs)
@@ -98,28 +100,18 @@ class GeoModelAdmin(ModelAdmin):
         """ 
         Display a map in the admin changelist, with info popups
         """
-        try:
-            map_fields = self.list_map
-        except AttributeError:
-            pass
-        else:
-            try:
-                map_options = self.list_map_options
-            except AttributeError:
-                map_options = None
-
-            
+        if self.list_map:
             info = []
             for obj in cl.get_query_set():
                 info.append((
-                    [getattr(obj, field) for field in map_fields], 
+                    [getattr(obj, field) for field in self.list_map], 
                     "<a href='%s'>%s</a>" % (
                         cl.url_for_result(obj),
                         force_unicode(obj)
                     )
                 ))
 
-            return InfoMap(info, map_options=map_options)
+            return InfoMap(info, options=self.list_map_options)
         return None
 
     def changelist_view(self, request, extra_context=None):

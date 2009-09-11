@@ -34,26 +34,77 @@ OLWIDGET_CSS = join(OLWIDGET_MEDIA_URL, "css/olwidget.css")
 
 DEFAULT_PROJ = "4326"
 
+PEP8_OPTIONS_TRANSLATION = {
+    # map constructor options
+    'map_options': 'mapOptions',
+    'max_resolution': 'maxResolution',
+    'min_resolution': 'minResolution',
+    'max_extent': 'maxExtent',
+    'min_extent': 'minExtent',
+    'min_scale': 'minScale',
+    'max_scale': 'maxScale',
+    'display_projection': 'displayProjection',
+    'num_zoom_levels': 'numZoomLevels',
+    # olwidget options
+    'map_div_class': 'mapDivClass',
+    'map_div_style': 'mapDivStyle',
+    'default_lon': 'defaultLon',
+    'default_lat': 'defaultLat',
+    'default_zoom': 'defaultZoom',
+    'hide_textarea': 'hideTextarea',
+    'is_collection': 'isCollection',
+    'popups_outside': 'popupsOutside',
+    'popup_direction': 'popupDirection',
+    'popup_pagination_separator': 'popupPaginationSeparator',
+    'cluster_display': 'clusterDisplay',
+    'cluster_style': 'clusterStyle',
+    'font_size': 'fontSize',
+    'font_family': 'fontFamily',
+    'font_color': 'fontColor',
+    # overlay style options
+    'overlay_style': 'overlayStyle',
+    'fill_color': 'fillColor',
+    'stroke_color': 'strokeColor',
+    'point_radius': 'pointRadius',
+    'fill_opacity': 'fillOpacity',
+    'stroke_width': 'strokeWidth',
+    'external_graphic': 'externalGraphic',
+    'graphic_height': 'graphicHeight',
+    'graphic_x_offset': 'graphicXOffset',
+    'graphic_y_offset': 'graphicYOffset',
+}
+
+def translate_options(options):
+    translated = {}
+    for key, value in options.iteritems():
+        new_key = PEP8_OPTIONS_TRANSLATION.get(key, key)
+        # recurse
+        if isinstance(value, dict):
+            translated[new_key] = translate_options(value)
+        else:
+            translated[new_key] = value
+    return translated
+
 class MapMixin(object):
-    def set_options(self, map_options, template):
-        self.map_options = map_options or {}
+    def set_options(self, options, template):
+        self.options = options or {}
         # Though this is the olwidget.js default, it must be explicitly set so
         # form.media knows to include osm.
-        self.map_options['layers'] = self.map_options.get('layers',
+        self.options['layers'] = self.options.get('layers',
                 ['osm.mapnik'])
         self.template = template or self.default_template
 
     def _media(self):
         js = set()
         # collect scripts necessary for various layers
-        for layer in self.map_options['layers']:
+        for layer in self.options['layers']:
             if layer.startswith("osm."):
                 js.add(OSM_API)
             elif layer.startswith("google."):
                 js.add(GOOGLE_API)
-            elif layer.startswith("yahoo"):
+            elif layer.startswith("yahoo."):
                 js.add(YAHOO_API)
-            elif layer.startswith("ve"):
+            elif layer.startswith("ve."):
                 js.add(MS_VE_API)
         js = [OL_API, OLWIDGET_JS] + list(js)
         return forms.Media(css={'all': (OLWIDGET_CSS,)}, js=js)
@@ -70,15 +121,12 @@ class EditableMap(forms.Textarea, MapMixin):
 
         class MyForm(forms.Form):
             location = forms.CharField(widget=EditableMap(
-                map_options={'geometry': 'point'}))
-
-    A complete list of the options available in map_options is in the
-    olwidget.js documentation.
+                options={'geometry': 'point'}))
     """
     default_template = 'olwidget/editable_map.html'
 
-    def __init__(self, map_options=None, template=None):
-        self.set_options(map_options, template)
+    def __init__(self, options=None, template=None):
+        self.set_options(options, template)
         super(EditableMap, self).__init__()
 
     def render(self, name, value, attrs=None):
@@ -97,14 +145,16 @@ class EditableMap(forms.Textarea, MapMixin):
             # Use the default SRID's
             wkt = add_srid(get_wkt(value))
 
-        if name and not self.map_options.has_key('name'):
-            self.map_options['name'] = name
+        if name and not self.options.has_key('name'):
+            self.options['name'] = name
 
         context = {
             'id': element_id,
             'name': name,
             'wkt': wkt,
-            'map_opts': simplejson.dumps(self.map_options),
+            'map_opts': simplejson.dumps(
+                translate_options(self.options)
+            ),
         }
         return render_to_string(self.template, context)
 
@@ -116,7 +166,7 @@ class MapDisplay(EditableMap):
     * ``fields`` - a list of geometric fields or WKT strings to display on the
       map.  If none are given, the map will have no overlay.
     * ``name`` - a name to use for display of the field data layer.
-    * ``map_options`` - a dict of options for map display.  A complete list of
+    * ``options`` - a dict of options for map display.  A complete list of
       options is in the documentation for olwidget.js.
 
     Example::
@@ -139,25 +189,25 @@ class MapDisplay(EditableMap):
         </html>
 
     By default, maps rendered by MapDisplay objects are not editable, but this
-    can be overriden by setting "map_options['editable'] = True".
+    can be overriden by setting "options['editable'] = True".
     """
 
-    def __init__(self, fields=None, map_options=None, template=None):
+    def __init__(self, fields=None, options=None, template=None):
         self.fields = fields
 
-        map_options = map_options or {}
-        if not map_options.has_key('editable'):
-            map_options['editable'] = False
+        options = options or {}
+        if not options.has_key('editable'):
+            options['editable'] = False
 
         if (self.fields and len(self.fields) > 1) or \
                 (fields[0].geom_type.upper() == 'GEOMETRYCOLLECTION'):
-            map_options['isCollection'] = True
+            options['isCollection'] = True
 
-        super(MapDisplay, self).__init__(map_options, template)
+        super(MapDisplay, self).__init__(options, template)
 
     def __unicode__(self):
         wkt = add_srid(collection_wkt(self.fields))
-        name = self.map_options.get('name', 'data')
+        name = self.options.get('name', 'data')
         return self.render(name, None, attrs={'wkt': wkt})
 
 class InfoMap(forms.Widget, MapMixin):
@@ -175,8 +225,7 @@ class InfoMap(forms.Widget, MapMixin):
             ...
           ]
 
-    * ``map_options``: an optional dict of options for map display.  A complete
-      list of options is in the documentation for olwidget.js
+    * ``options``: an optional dict of options for map display.
 
     In templates, InfoMap.media must be displayed in addition to InfoMap for
     the map to function properly.
@@ -184,9 +233,9 @@ class InfoMap(forms.Widget, MapMixin):
     """
     default_template = 'olwidget/info_map.html'
 
-    def __init__(self, info=None, map_options=None, template=None):
+    def __init__(self, info=None, options=None, template=None):
         self.info = info
-        self.set_options(map_options, template)
+        self.set_options(options, template)
         super(InfoMap, self).__init__()
 
     def render(self, name, value, attrs=None):
@@ -204,7 +253,9 @@ class InfoMap(forms.Widget, MapMixin):
         context = {
             'id': div_id,
             'info_array': info_json,
-            'map_opts': simplejson.dumps(self.map_options),
+            'map_opts': simplejson.dumps(
+                translate_options(self.options)
+            ),
         }
         return render_to_string(self.template, context)
 

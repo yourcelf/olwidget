@@ -6,15 +6,15 @@ from testolwidget.models import GeoModel, MultiGeoModel, InfoModel, PointModel
 admin.site.register(GeoModel, GeoModelAdmin)
 
 class MyGeoAdmin(GeoModelAdmin):
-    map_options = {
+    options = {
         'layers': ['google.streets', 'osm.osmarender', 'yahoo.map'],
-        'overlayStyle': {
-            'fillColor': '#ffff00',
-            'fillOpacity': 0.7,
-            'strokeWidth': 5,
+        'overlay_style': {
+            'fill_color': '#ffff00',
+            'fill_opacity': 0.7,
+            'stroke_width': 5,
          },
-         'defaultLon': -72,
-         'defaultLat': 44,
+         'default_lon': -72,
+         'default_lat': 44,
     }
     map_fields = ['point']
 
@@ -25,8 +25,8 @@ admin.site.register(InfoModel, GeoModelAdmin)
 class PointGeoAdmin(GeoModelAdmin):
     list_map_options = {
         'cluster': True,
-        'clusterDisplay': 'list',
-        'mapDivStyle': {
+        'cluster_display': 'list',
+        'map_div_style': {
             'width': '300px',
             'height': '200px',
         },
