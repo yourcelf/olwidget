@@ -4,7 +4,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="Docutils 0.5: http://docutils.sourceforge.net/" />
-<title>olwidget v0.2</title>
+<title>olwidget v0.3</title>
 <style type="text/css">
 
 /*
@@ -284,150 +284,33 @@ ul.auto-toc {
 </style>
 </head>
 <body>
-<div class="document" id="olwidget-v0-2">
-<h1 class="title">olwidget v0.2</h1>
+<div class="document" id="olwidget-v0-3">
+<h1 class="title">olwidget v0.3</h1>
 
-<p>WARNING: the API has changed.  The older version can be accessed here:
-<a class="reference external" href="http://github.com/yourcelf/olwidget/tree/v0.1">http://github.com/yourcelf/olwidget/tree/v0.1</a>.  Users upgrading olwidget should
-take note of the <a class="reference external" href="doc/backwards_incompatible_changes.html">backwards incompatible changes</a>.</p>
 <p><tt class="docutils literal"><span class="pre">olwidget</span></tt> is a javascript library and Django application for easily
 incorporating editable and informational maps into web pages.  The javascript
 library, <tt class="docutils literal"><span class="pre">olwidget.js</span></tt>, can be used standalone or in Django via the
 <tt class="docutils literal"><span class="pre">olwidget</span></tt> Django app.</p>
-<p>The doc directory contains <a class="reference external" href="doc/doc.html">documentation for olwidget.js</a>.</p>
-<div class="section" id="django-documentation">
-<h1>Django documentation</h1>
-<p>To use the Django app requires a couple of steps:</p>
-<ol class="arabic simple">
-<li>Copy or link the <tt class="docutils literal"><span class="pre">olwidget</span></tt> directory in <tt class="docutils literal"><span class="pre">django_app</span></tt> into the search
-path for your django project.</li>
-<li>Copy or link the media (<tt class="docutils literal"><span class="pre">css</span></tt>, <tt class="docutils literal"><span class="pre">img</span></tt>, and <tt class="docutils literal"><span class="pre">js</span></tt>) into a directory
-named <tt class="docutils literal"><span class="pre">olwidget</span></tt> under your project's <tt class="docutils literal"><span class="pre">MEDIA_URL</span></tt>.  If you wish to name
-the directory something else, define <tt class="docutils literal"><span class="pre">OLWIDGET_MEDIA_URL</span></tt> with the URL
-for the media files in your settings file.</li>
-<li>Include <tt class="docutils literal"><span class="pre">'olwidget'</span></tt> in your project's settings <tt class="docutils literal"><span class="pre">INSTALLED_APPS</span></tt> list.</li>
-<li>(Optional) If you want to use Google or Yahoo map layers, you must include
-<tt class="docutils literal"><span class="pre">GOOGLE_API_KEY</span></tt> or <tt class="docutils literal"><span class="pre">YAHOO_APP_ID</span></tt> in your settings file.  <tt class="docutils literal"><span class="pre">olwidget</span></tt>
-uses OpenStreetMaps by default, which requires no key.</li>
-</ol>
-</div>
-<div class="section" id="examples">
-<h1>Examples</h1>
-<div class="section" id="outside-of-admin">
-<h2>Outside of admin</h2>
-<p>A form definition that uses an editable map:</p>
-<pre class="literal-block">
-from django import forms
-from olwidget.widgets import EditableMap
-
-class MyForm(forms.Form):
-    location = forms.CharField(widget=EditableMap())
-
-# In a template:
-
-&lt;head&gt; {{ form.media }} &lt;/head&gt;
-&lt;body&gt;... {{ form }} ...&lt;/body&gt;
-</pre>
-<p>A simple read-only display map:</p>
-<pre class="literal-block">
-from olwidget.widgets import MapDisplay
-
-map = MapDisplay(fields=[mymodel.start_point, mymodel.destination])
-
-# In a template:
-
-&lt;head&gt; {{ map.media }} &lt;/head&gt;
-&lt;body&gt;... {{ map }} ...&lt;/body&gt;
-</pre>
-<p>A read-only map displaying informational popups over particular geometries:</p>
-<pre class="literal-block">
-from olwidget.widgets import InfoMap
-
-map = InfoMap([
-    [mymodel.point, &quot;&lt;p&gt;This is where I had my first kiss.&lt;/p&gt;&quot;],
-    [othermodel.polygon, &quot;&lt;p&gt;This is my home town.&lt;/p&gt;&quot;],
-    ...
-])
-
-# In a template:
-
-&lt;head&gt; {{ map.media }} &lt;/head&gt;
-&lt;body&gt;... {{ map }} ...&lt;/body&gt;
-</pre>
-</div>
-<div class="section" id="inside-admin">
-<h2>Inside Admin</h2>
-<p><tt class="docutils literal"><span class="pre">olwidget</span></tt> has several advantages over the built-in geodjango admin map
-implementation, including greater map customization, support for more geometry
-types, and (new in v0.2) the option to include a map in admin changelist pages.</p>
-<p>Example using <tt class="docutils literal"><span class="pre">olwidget</span></tt> in admin:</p>
-<pre class="literal-block">
-# admin.py
-
-from django.contrib import admin
-from olwidget.admin import GeoModelAdmin
-from myapp import Restaurant, Owner
-
-# Use the default map
-admin.site.register(Restaurant, GeoModelAdmin)
-
-# Customize the map
-class MyGeoAdmin(GeoModelAdmin):
-    map_options = {
-        'layers': ['google.streets'],
-        'defaultLat': 44,
-        'defaultLon': -72,
-    }
-
-admin.site.register(Owner, MyGeoAdmin)
-</pre>
-<p>To show a clickable map on the admin changelist page, use the <tt class="docutils literal"><span class="pre">list_map</span></tt>
-property to specify which fields to display:</p>
-<pre class="literal-block">
-# an example model:
-
-class City(models.Model):
-    location = models.PointField()
-
-# admin.py
-
-from django.contrib import admin
-from olwidget.admin import GeoModelAdmin
-from myapp import City
-
-class CityGeoAdmin(GeoModelAdmin):
-    list_map = ['location']
-
-admin.site.register(City, CityGeoAdmin)
-</pre>
-<p>Options can be set for the changelist map using the <tt class="docutils literal"><span class="pre">list_map_options</span></tt>
-property:</p>
-<pre class="literal-block">
-class CityGeoAdmin(GeoModelAdmin):
-    list_map_options = {
-        # group nearby points into clusters
-        'cluster': True,
-        'clusterDisplay': 'list',
-    }
-</pre>
-</div>
-</div>
-<div class="section" id="options">
-<h1>Options</h1>
-<p>All of the <tt class="docutils literal"><span class="pre">olwidget</span></tt> map types can be passed a <tt class="docutils literal"><span class="pre">map_options</span></tt> dictionary
-that controls the look and feel of the map.  These options are passed directly
-to the <tt class="docutils literal"><span class="pre">olwidget.js</span></tt> map constructor.  An example:</p>
-<pre class="literal-block">
-from olwidget.widgets import MapDisplay
-
-map = MapDisplay(map_options={
-    'layers': ['osm.mapnik', 'google.hybrid', 'yahoo'],
-    'defaultLat': 44,
-    'defaultLon': -72,
-})
-</pre>
-<p>For a complete list of options available to olwidget.js, see the <a class="reference external" href="doc/doc.html">olwidget.js
-documentation</a>.</p>
+<p>Features include:</p>
+<ul class="simple">
+<li>Easy creation of maps with editable overlays</li>
+<li>Support for points, linestrings, polygons, and multiple geometry types per map</li>
+<li>Multiple map providers (including OpenStreetMaps, Google, Yahoo, Microsoft,
+etc)</li>
+<li>Maps with informational windows, clustered points, and paginated data displays</li>
+<li>Extended features for maps in Django admin, including overview maps on
+changelist pages, support for multiple geometries and collection types, and
+customizable map colors, start points, and zoom levels.</li>
+</ul>
+<div class="section" id="documentation">
+<h1>Documentation</h1>
+<ul class="simple">
+<li>For Django developers intending to use <tt class="docutils literal"><span class="pre">olwidget</span></tt> for editable and
+informational maps inside and outside of Django admin, please see the
+<a class="reference external" href="doc/django-olwidget.html">documentation for the django app</a>.</li>
+<li>For javascript developers intending to use <tt class="docutils literal"><span class="pre">olwidget.js</span></tt> without Django,
+please see <a class="reference external" href="doc/olwidget.js.html">documentation for olwidget.js</a>.</li>
+</ul>
 </div>
 <div class="section" id="authors">
 <h1>Authors</h1>

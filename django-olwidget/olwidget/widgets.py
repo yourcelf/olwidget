@@ -64,14 +64,18 @@ PEP8_OPTIONS_TRANSLATION = {
     # overlay style options
     'overlay_style': 'overlayStyle',
     'fill_color': 'fillColor',
-    'stroke_color': 'strokeColor',
-    'point_radius': 'pointRadius',
     'fill_opacity': 'fillOpacity',
+    'stroke_color': 'strokeColor',
     'stroke_width': 'strokeWidth',
+    'stroke_linecap': 'strokeLinecap',
+    'stroke_dash_style': 'strokeDashstyle',
+    'point_radius': 'pointRadius',
     'external_graphic': 'externalGraphic',
     'graphic_height': 'graphicHeight',
     'graphic_x_offset': 'graphicXOffset',
     'graphic_y_offset': 'graphicYOffset',
+    'graphic_opacity': 'graphicOpacity',
+    'graphic_name': 'graphicName',
 }
 
 def translate_options(options):

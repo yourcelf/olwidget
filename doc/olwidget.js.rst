@@ -1,10 +1,13 @@
-olwidget.js v0.2
+olwidget.js v0.3
 ================
 
-Note: the API has changed in v0.2.  See a list of `backwards incompatible
-changes <backwards_incompatible_changes.html>`_ if you are upgrading.
+Note: the API has changed.  See a list of `backwards incompatible changes
+<backwards_incompatible_changes.html>`_ if you are upgrading.
 
 .. contents:: Contents
+
+Introduction
+~~~~~~~~~~~~
 
 ``olwidget`` is a javascript library to make editing and displaying geometries
 and information on OpenLayers maps easier.  It defines two primary types:
@@ -49,6 +52,13 @@ example::
         </body>
     </html>
 
+
+Installation
+~~~~~~~~~~~~
+
+Copy or link the olwidget/js/, olwidget/css/, and olwidget/img/ directories
+into your website's path.  The three directories should share a parent.
+
 Examples
 ~~~~~~~~
 
@@ -73,20 +83,111 @@ Info Maps
 Documentation
 ~~~~~~~~~~~~~
 
+olwidget.EditableMap constructor
+--------------------------------
+
+Format::
+
+    new olwidget.EditableMap(<textareaId>, [options]);
+
+* ``textareaId``: the DOM id of the textarea to replace
+* ``options``: An object containing options for the resulting map.  All fields
+  are optional.  
+  
+In addition to the common options_ listed below, ``EditableMap``
+accepts the following options:
+
+``geometry`` (Array or string; defaults to ``'point'``)
+    The geometry to use for this map.  Choices are ``'point'``,
+    ``'linestring'``, and ``'polygon'``.  To allow multiple geometries, use an
+    array such as ``['point', 'linestring', 'polygon']``.
+``isCollection`` (boolean, default ``false``) 
+    If true, allows multiple points/lines/polygons.
+``hideTextarea`` (boolean; default ``true``) 
+    Hides the textarea if true.
+``editable`` (boolean, default ``true``) 
+    If true, allows editing of geometries.
+
+olwidget.InfoMap constructor
+----------------------------
+
+Format::
+
+    new olwidget.InfoMap(<mapDivId>, <infoArray>, [options]);
+
+* ``mapDivId``: the DOM id of a div to replace with this map.
+* ``infoArray``: an Array of (E)WKT geometries and content HTML for popups, such as::
+  
+        [ 
+            ["SRID=4326;POINT(0 0)", "<p>This is the zero point.</p>"],
+            ["SRID=4326;POINT(10 10)", "<p>This is longitude 10 and latitude 10.</p>"],
+            ...  
+        ]
+
+* ``options``: An object containing options for the resulting map.  All fields
+  are optional.
+
+In addition to the common options_ listed below, ``InfoMap`` accepts the
+following options:
+
+``popupsOutside`` (boolean; default ``false``)
+    If false, popups are contained within the map's viewport.  If true, popups
+    may expand outside the map's viewport.
+``popupDirection`` (string; default ``auto``)
+    The direction from the clicked geometry that a popup will extend.  This may
+    be one of:
+
+    * ``tr`` -- top right
+    * ``tl`` -- top left
+    * ``br`` -- bottom right
+    * ``bl`` -- bottom left
+    * ``auto`` -- automatically choose direction.
+
+``cluster`` (boolean; default ``false``)
+    If true, points will be clustered using the `OpenLayers.Strategy.ClusterStrategy
+    <http://dev.openlayers.org/releases/OpenLayers-2.7/doc/apidocs/files/OpenLayers/Strategy/Cluster-js.html>`_.
+    (see `this cluster example <examples/info_cluster.html>`_).
+``clusterDisplay`` (string; default ``'paginate'``)
+    The way HTML from clustered points is handled:
+
+    * ``'list'`` -- constructs an unordered list of contents
+    * ``'paginate'`` -- adds a pagination control to the popup to click through
+      the different points' HTML.
+
+``clusterStyle`` (object)
+    The default style is::
+
+        { 
+            pointRadius: "${radius}",
+            strokeWidth: "${width}",
+            label: "${label}",
+            fontSize: "11px",
+            fontFamily: "Helvetica, sans-serif",
+            fontColor: "#ffffff" 
+        }
+
+    The arguments expressed with ``${}`` are programmatically replaced with
+    values based on the cluster.  Setting them to specific values will prevent
+    this programatic replacement.
+
+.. _options:
+
 Common options
 --------------
 
-The following options are shared by ``olwidget.EditableMap`` and ``olwidget.InfoMap``:
+The following options are shared by ``olwidget.EditableMap`` and
+``olwidget.InfoMap``:
 
 ``name`` (string; defaults to ``"data"``) 
-    The name of the overlay layer for the map.
+    The name of the overlay layer for the map (shown in the layer switcher).
 ``layers`` (Array; default ``['osm.mapnik']``) 
     A list of map base layers to include.  Choices include ``'osm.mapnik'``,
     ``'osm.osmarender'``, ``'google.streets'``, ``'google.physical'``,
     ``'google.satellite'``, ``'google.hybrid'``, ``'ve.road'``,
     ``'ve.shaded'``, ``'ve.aerial'``, ``'ve.hybrid'``, ``'wms.map'``,
-    ``'wms.nasa'``, and ``'yahoo.map'``.  Additional providers or options can
-    be manually added using the normal OpenLayers apis
+    ``'wms.nasa'``, and ``'yahoo.map'``.  A blank map can be obtained using
+    ``'wms.blank'``.  Additional providers or options can be manually added
+    using the normal OpenLayers apis
     (see `this provider example <examples/other_providers.html>`_).
 
     You must include separately whatever javascript sources needed to use these
@@ -132,95 +233,6 @@ The following options are shared by ``olwidget.EditableMap`` and ``olwidget.Info
     <http://dev.openlayers.org/docs/files/OpenLayers/Map-js.html#OpenLayers.Map.Constructor>`_
     may be included, and will be passed directly.
 
-
-
-olwidget.EditableMap constructor
---------------------------------
-
-Format::
-
-    new olwidget.EditableMap(<textareaId>, [options]);
-
-* ``textareaId``: the DOM id of the textarea to replace
-* ``options``: An object containing options for the resulting map.  All fields
-  are optional.  
-  
-In addition to the common options listed above, ``EditableMap`` accepts the
-following options:
-
-``geometry`` (Array or string; defaults to ``'point'``)
-    The geometry to use for this map.  Choices are ``'point'``,
-    ``'linestring'``, and ``'polygon'``.  To allow multiple geometries, use an
-    array such as ``['point', 'linestring', 'polygon']``.
-``isCollection`` (boolean, default ``false``) 
-    If true, allows multiple points/lines/polygons.
-``hideTextarea`` (boolean; default ``true``) 
-    Hides the textarea if true.
-``editable`` (boolean, default ``true``) 
-    If true, allows editing of geometries.
-
-olwidget.InfoMap constructor
-----------------------------
-
-Format::
-
-    new olwidget.InfoMap(<mapDivId>, <infoArray>, [options]);
-
-* ``mapDivId``: the DOM id of a div to replace with this map.
-* ``infoArray``: an Array of (E)WKT geometries and content HTML for popups, such as::
-  
-        [ 
-            ["SRID=4326;POINT(0 0)", "<p>This is the zero point.</p>"],
-            ["SRID=4326;POINT(10 10)", "<p>This is longitude 10 and latitude 10.</p>"],
-            ...  
-        ]
-
-* ``options``: An object containing options for the resulting map.  All fields
-  are optional.
-
-In addition to the common options listed above, ``InfoMap`` accepts the
-following options:
-
-``popupsOutside`` (boolean; default ``false``)
-    If false, popups are contained within the map's viewport.  If true, popups
-    may expand outside the map's viewport.
-``popupDirection`` (string; default ``auto``)
-    The direction from the clicked geometry that a popup will extend.  This may
-    be one of:
-
-    * ``tr`` -- top right
-    * ``tl`` -- top left
-    * ``br`` -- bottom right
-    * ``bl`` -- bottom left
-    * ``auto`` -- automatically choose direction.
-
-``cluster`` (boolean; default ``false``)
-    If true, points will be clustered using the `OpenLayers.Strategy.ClusterStrategy
-    <http://dev.openlayers.org/releases/OpenLayers-2.7/doc/apidocs/files/OpenLayers/Strategy/Cluster-js.html>`_.  (see `this cluster example <examples/info_cluster.html>`_).
-``clusterDisplay`` (string; default ``'paginate'``)
-    The way HTML from clustered points is handled:
-
-    * ``'list'`` -- constructs an unordered list of contents
-    * ``'paginate'`` -- adds a pagination control to the popup to click through
-      the different points' HTML.
-
-``clusterStyle`` (object)
-    The default style is::
-
-        { 
-            pointRadius: "${radius}",
-            strokeWidth: "${width}",
-            label: "${label}",
-            fontSize: "11px",
-            fontFamily: "Helvetica, sans-serif",
-            fontColor: "#ffffff" 
-        }
-
-    The arguments expressed with ``${}`` are programmatically replaced with
-    values based on the cluster.  Setting them to specific values will prevent
-    this programatic replacement.
-
-    
 Projections
 -----------
 
@@ -243,41 +255,3 @@ To change the projection used for WKT, define the
         }
     });
 
-Authors
-~~~~~~~
-
-By Charlie DeTar <cfd@media.mit.edu>.  Based on Django OSMAdmin implementation
-by Justin Bronn, Travis Pinney & Dave Springmeyer.
-
-Copying
-~~~~~~~
-
-Note: This software is not a part of Django, but the author relinquishes
-copyright to the Django Software Foundation.
-
-Copyright (c) Django Software Foundation and individual contributors
-
-Redistribution and use in source and binary forms, with or without modification,
-are permitted provided that the following conditions are met:
-
-    1. Redistributions of source code must retain the above copyright notice, 
-       this list of conditions and the following disclaimer.
-    
-    2. Redistributions in binary form must reproduce the above copyright 
-       notice, this list of conditions and the following disclaimer in the
-       documentation and/or other materials provided with the distribution.
-
-    3. Neither the name of Django nor the names of its contributors may be used
-       to endorse or promote products derived from this software without
-       specific prior written permission.
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
-ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
-ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.

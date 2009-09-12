@@ -75,6 +75,9 @@ var olwidget = {
                     "http://t1.hypercube.telascience.org/cgi-bin/landsat7",
                     {layers: "landsat7"}
             );
+        },
+        blank: function() {
+            return new OpenLayers.Layer("", {isBaseLayer: true});
         }
     },
     osm: {

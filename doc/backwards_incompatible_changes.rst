@@ -1,5 +1,5 @@
-Backwards incompatible changes in v0.2
-======================================
+Backwards incompatible changes introduced in v0.2
+=================================================
 
 olwidget.js changes
 -------------------
