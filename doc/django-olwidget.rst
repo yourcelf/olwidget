@@ -170,6 +170,7 @@ Options can be set for the changelist map using the ``list_map_options``
 property::
 
     class CityGeoAdmin(GeoModelAdmin):
+        list_map = ['location']
         list_map_options = {
             # group nearby points into clusters
             'cluster': True,
