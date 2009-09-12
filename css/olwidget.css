@@ -53,9 +53,14 @@ div.olControlEditingToolbar {
     background: #fff;
     padding: 8px;
     padding-top: 23px;
+
+    /* IE6 fixes */
+    float: right;
+    clear: both;
 }
 
 .olwidgetPopupPagination {
+    clear: both;
     float: right;
     background: #fff;
     padding-left: 5px;

@@ -79,10 +79,19 @@ var olwidget = {
     },
     osm: {
         mapnik: function() {
-            return new OpenLayers.Layer.OSM.Mapnik("OpenStreetMap (Mapnik)", {numZoomLevels: 20});
+            // Not using OpenLayers.Layer.OSM.Mapnik constructor because of
+            // an IE6 bug.  This duplicates that constructor.
+            return new OpenLayers.Layer.OSM("OpenStreetMap (Mapnik)",
+                    [
+                        "http://a.tile.openstreetmap.org/${z}/${x}/${y}.png",
+                        "http://b.tile.openstreetmap.org/${z}/${x}/${y}.png",
+                        "http://c.tile.openstreetmap.org/${z}/${x}/${y}.png"
+                    ],
+                    { numZoomLevels: 19 });
         },
         osmarender: function() {
-            return new OpenLayers.Layer.OSM.Osmarender('OpenStreetMap (Osmarender)');
+            return new OpenLayers.Layer.OSM.Osmarender(
+                    'OpenStreetMap (Osmarender)');
         }
     },
     google: {
@@ -450,6 +459,7 @@ olwidget.InfoMap = OpenLayers.Class(olwidget.BaseMap, {
                 pointRadius: "${radius}",
                 strokeWidth: "${width}",
                 label: "${label}",
+                labelSelect: true,
                 fontSize: "11px",
                 fontFamily: "Helvetica, sans-serif",
                 fontColor: "#ffffff"
@@ -484,7 +494,7 @@ olwidget.InfoMap = OpenLayers.Class(olwidget.BaseMap, {
         }
         this.vectorLayer.addFeatures(features);
 
-        this.select = new OpenLayers.Control.SelectFeature(this.vectorLayer);
+        this.select = new OpenLayers.Control.SelectFeature(this.vectorLayer, { clickout: true, hover: false });
         this.select.events.register("featurehighlighted", this, 
                 function(evt) { this.createPopup(evt); });
         this.select.events.register("featureunhighlighted", this, 
@@ -811,10 +821,10 @@ olwidget.Popup = OpenLayers.Class(OpenLayers.Popup.Framed, {
                 paginationDiv.appendChild(next);
                 containerDiv.appendChild(paginationDiv);
 
-                var clearFloat = document.createElement("div");
-                clearFloat.style.clear = "both";
-                containerDiv.appendChild(clearFloat);
             }
+            var clearFloat = document.createElement("div");
+            clearFloat.style.clear = "both";
+            containerDiv.appendChild(clearFloat);
 
             if (this.autoSize) {
                 this.registerImageListeners();
