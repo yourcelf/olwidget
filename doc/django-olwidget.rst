@@ -247,11 +247,11 @@ The following options are shared by all ``olwidget`` map types:
 
 ``map_div_class`` (string; default ``''``) 
     A CSS class name to add to the div which is created to contain the map.
-``map_div_style`` (object, default ``{width: '600px', height: '400px'}``)  
+``map_div_style`` (dict, default ``{width: '600px', height: '400px'}``)  
     A set of CSS style definitions to apply to the div which is created to
     contain the map.
-``map_options`` (object) 
-    An object containing options for the OpenLayers Map constructor.
+``map_options`` (dict) 
+    A dict containing options for the OpenLayers Map constructor.
     Properties may include:
 
     * ``units``: (string) default ``'m'`` (meters)
@@ -315,7 +315,7 @@ following options:
     * ``'paginate'`` -- adds a pagination control to the popup to click through
       the different points' HTML.
 
-``cluster_style`` (object)
+``cluster_style`` (dict)
     The default style is::
 
         { 
