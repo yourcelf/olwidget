@@ -123,8 +123,17 @@ var olwidget = {
     },
     ve: {
         map: function(type, typeName) {
+            /* 
+               VE does not play nice with vector layers at zoom level 1.
+               Also, map may need "panMethod: OpenLayers.Easing.Linear.easeOut"
+               to avoid drift.  See:
+
+               http://openlayers.com/dev/examples/ve-novibrate.html
+
+            */
+                
             return new OpenLayers.Layer.VirtualEarth("Microsoft VE (" + typeName + ")", 
-                {sphericalMercator: true, numZoomLevels: 20, type: type });
+                {sphericalMercator: true, minZoomLevel: 2, type: type });
         },
         road: function() { return this.map(VEMapStyle.Road, "Road"); },
         shaded: function() { return this.map(VEMapStyle.Shaded, "Shaded"); },
@@ -227,6 +236,14 @@ olwidget.BaseMap = OpenLayers.Class(OpenLayers.Map, {
         for (var i = 0; i < opts.layers.length; i++) {
             var parts = opts.layers[i].split(".");
             layers.push(olwidget[parts[0]][parts[1]]());
+            
+            // workaround for problems with Micorsoft layers and vector layer drift
+            // (see http://openlayers.com/dev/examples/ve-novibrate.html)
+            if (parts[0] == "ve") {
+                if (opts.mapOptions.panMethod == undefined) {
+                    opts.mapOptions.panMethod = OpenLayers.Easing.Linear.easeOut;
+                }
+            }
         }
         var styleMap = new OpenLayers.StyleMap({'default': new OpenLayers.Style(opts.overlayStyle)});
 
