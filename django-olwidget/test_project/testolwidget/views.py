@@ -2,7 +2,7 @@ from django import forms
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.core.urlresolvers import reverse
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 
 from testolwidget.models import GeoModel, MultiGeoModel, InfoModel
 from olwidget.widgets import MapDisplay, EditableMap, InfoMap
@@ -125,3 +125,20 @@ def edit_infomodel(request, model_id=None):
 def index(request):
     return render_to_response("testolwidget/index.html", {},
             RequestContext(request))
+
+def test(request):
+    object = GeoModel.objects.all()[0]
+    temp_map = MapDisplay(
+        fields = [object.point],
+        options = {
+            'mapDivStyle': {
+                'width': '100%',
+                'height': '100px',
+            },
+            'editable': False,
+            'defaultZoom': '4',
+        },
+    )
+    return HttpResponse("ok!")
+
+

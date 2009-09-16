@@ -243,7 +243,7 @@ class InfoMap(forms.Widget, MapMixin):
         super(InfoMap, self).__init__()
 
     def render(self, name, value, attrs=None):
-        if self.info is None:
+        if not self.info:
             info_json = '[]'
         else:
             # convert fields to wkt

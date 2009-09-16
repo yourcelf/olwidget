@@ -31,6 +31,7 @@ urlpatterns = patterns('',
      url(r'^test/info/(?P<model_id>\d+)?/?edit$',
          'testolwidget.views.edit_infomodel',
          name='testolwidget-edit-infomodel'),
+     (r'^test/test$', 'testolwidget.views.test'),
 
      ('^$', 'testolwidget.views.index'),
 )
