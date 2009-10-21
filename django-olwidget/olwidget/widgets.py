@@ -8,29 +8,26 @@ from django.utils import simplejson
 from django.conf import settings
 from django import forms
 
-try:
-    OLWIDGET_MEDIA_URL = settings.OLWIDGET_MEDIA_URL
-except AttributeError:
-    OLWIDGET_MEDIA_URL = join(settings.MEDIA_URL, "olwidget")
 
-try:
-    GOOGLE_API_KEY = settings.GOOGLE_API_KEY
-except AttributeError:
-    GOOGLE_API_KEY = ""
+# Default settings for paths and API URLs.  These can all be overridden by
+# specifying a value in settings.py
 
-try:
-    YAHOO_APP_ID = settings.YAHOO_APP_ID
-except AttributeError:
-    YAHOO_APP_ID = ""
+api_defaults = {
+    'GOOGLE_API_KEY': "",
+    'YAHOO_APP_ID': "",
+    'OLWIDGET_MEDIA_URL': join(settings.MEDIA_URL, "olwidget"),
+    'GOOGLE_API': "http://maps.google.com/maps?file=api&v=2",
+    'YAHOO_API': "http://api.maps.yahoo.com/ajaxymap?v=3.0",
+    'OSM_API': "http://openstreetmap.org/openlayers/OpenStreetMap.js",
+    'OL_API': "http://openlayers.org/api/2.8/OpenLayers.js",
+}
 
+for key, default in api_defaults.iteritems():
+    if not hasattr(settings, key):
+        setattr(settings, key, default)
 
-GOOGLE_API = "http://maps.google.com/maps?file=api&v=2&key=%s" % GOOGLE_API_KEY
-YAHOO_API = "http://api.maps.yahoo.com/ajaxymap?v=3.0&appid=%s" % YAHOO_APP_ID
-MS_VE_API = "http://dev.virtualearth.net/mapcontrol/mapcontrol.ashx?v=6.1"
-OSM_API = "http://openstreetmap.org/openlayers/OpenStreetMap.js"
-OL_API = "http://openlayers.org/api/2.8/OpenLayers.js"
-OLWIDGET_JS = join(OLWIDGET_MEDIA_URL, "js/olwidget.js")
-OLWIDGET_CSS = join(OLWIDGET_MEDIA_URL, "css/olwidget.css")
+OLWIDGET_JS = join(settings.OLWIDGET_MEDIA_URL, "js/olwidget.js")
+OLWIDGET_CSS = join(settings.OLWIDGET_MEDIA_URL, "css/olwidget.css")
 
 DEFAULT_PROJ = "4326"
 
@@ -103,14 +100,14 @@ class MapMixin(object):
         # collect scripts necessary for various layers
         for layer in self.options['layers']:
             if layer.startswith("osm."):
-                js.add(OSM_API)
+                js.add(settings.OSM_API)
             elif layer.startswith("google."):
-                js.add(GOOGLE_API)
+                js.add(settings.GOOGLE_API + "&key=%s" % settings.GOOGLE_API_KEY)
             elif layer.startswith("yahoo."):
-                js.add(YAHOO_API)
+                js.add(settings.YAHOO_API + "&appid=%s" % settings.YAHOO_APP_ID)
             elif layer.startswith("ve."):
-                js.add(MS_VE_API)
-        js = [OL_API, OLWIDGET_JS] + list(js)
+                js.add(settings.MS_VE_API)
+        js = [settings.OL_API, OLWIDGET_JS] + list(js)
         return forms.Media(css={'all': (OLWIDGET_CSS,)}, js=js)
     media = property(_media)
 
@@ -248,7 +245,7 @@ class InfoMap(forms.Widget, MapMixin):
         else:
             # convert fields to wkt
             for geom, html in self.info:
-                wkt_array = [[add_srid(collection_wkt(geom)), html] for geom, html in self.info]
+                wkt_array = [[add_srid(get_wkt(geom)), html] for geom, html in self.info]
             info_json = simplejson.dumps(wkt_array)
 
         # arbitrary unique id
