@@ -33,6 +33,7 @@ import copy
 # Get the parts necessary for the methods we override
 from django.contrib.admin import ModelAdmin
 from django.contrib.gis.db import models
+from django.contrib.gis.geos import GeometryCollection
 from django.shortcuts import render_to_response
 from django import template
 from django.contrib.admin.options import IncorrectLookupParameters
@@ -41,7 +42,7 @@ from django.core.exceptions import PermissionDenied
 from django.utils.encoding import force_unicode
 from django.utils.translation import ungettext
 
-from olwidget.widgets import EditableMap, InfoMap
+from olwidget.widgets import EditableMap, InfoMap, DEFAULT_PROJ
 
 class GeoModelAdmin(ModelAdmin):
     options = {}
@@ -103,8 +104,13 @@ class GeoModelAdmin(ModelAdmin):
         if self.list_map:
             info = []
             for obj in cl.get_query_set():
+                # Transform the fields into one projection.
+                geoms = [getattr(obj, field) for field in self.list_map]
+                for geom in geoms:
+                    geom.transform(int(DEFAULT_PROJ))
+
                 info.append((
-                    [getattr(obj, field) for field in self.list_map], 
+                    GeometryCollection(geoms, srid=int(DEFAULT_PROJ)),
                     "<a href='%s'>%s</a>" % (
                         cl.url_for_result(obj),
                         force_unicode(obj)

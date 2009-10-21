@@ -1,6 +1,6 @@
 from os.path import join
 
-from django.contrib.gis.gdal import OGRException
+from django.contrib.gis.gdal import OGRException, OGRGeometry
 from django.contrib.gis.geos import GEOSGeometry, GEOSException
 from django.forms.widgets import Textarea
 from django.template.loader import render_to_string
@@ -277,9 +277,9 @@ def get_wkt(value, srid=DEFAULT_PROJ):
     wkt = ''
     if value:
         try:
-            ogr = value.ogr
-            ogr.transform(srid)
-            wkt = ogr.wkt
+            geom = OGRGeometry(value.wkt, value.get_srid())
+            geom.transform(srid)
+            wkt = geom.wkt 
         except OGRException:
             pass
     return wkt
