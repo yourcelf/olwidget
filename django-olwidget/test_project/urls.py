@@ -20,6 +20,9 @@ urlpatterns = patterns('',
      url(r'^test/info/(?P<model_id>\d+)?$',
          'testolwidget.views.show_infomodel',
          name='testolwidget-show-infomodel'),
+     url(r'^test/pointinfo',
+         'testolwidget.views.point_infomodel',
+         name='testolwidget-show-point-infomodel'),
 
      # editing
      url(r'^test/model/(?P<model_id>\d+)?/?edit$', 
