@@ -78,6 +78,7 @@ Info Maps
 * `Info popups over geometries <examples/info_geometries.html>`_
 * `Clustered points <examples/info_cluster.html>`_
 * `Popups inside and outside map viewport <examples/info_inside_outside.html>`_
+* `Info map with image markers <examples/info_markers.html>`_
 
 
 Documentation

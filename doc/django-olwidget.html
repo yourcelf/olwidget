@@ -473,6 +473,7 @@ admin.site.register(City, CityGeoAdmin)
 property:</p>
 <pre class="literal-block">
 class CityGeoAdmin(GeoModelAdmin):
+    list_map = ['location']
     list_map_options = {
         # group nearby points into clusters
         'cluster': True,
@@ -547,11 +548,11 @@ rendering.</li>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">map_div_class</span></tt> (string; default <tt class="docutils literal"><span class="pre">''</span></tt>)</dt>
 <dd>A CSS class name to add to the div which is created to contain the map.</dd>
-<dt><tt class="docutils literal"><span class="pre">map_div_style</span></tt> (object, default <tt class="docutils literal"><span class="pre">{width:</span> <span class="pre">'600px',</span> <span class="pre">height:</span> <span class="pre">'400px'}</span></tt>)</dt>
+<dt><tt class="docutils literal"><span class="pre">map_div_style</span></tt> (dict, default <tt class="docutils literal"><span class="pre">{width:</span> <span class="pre">'600px',</span> <span class="pre">height:</span> <span class="pre">'400px'}</span></tt>)</dt>
 <dd>A set of CSS style definitions to apply to the div which is created to
 contain the map.</dd>
-<dt><tt class="docutils literal"><span class="pre">map_options</span></tt> (object)</dt>
-<dd><p class="first">An object containing options for the OpenLayers Map constructor.
+<dt><tt class="docutils literal"><span class="pre">map_options</span></tt> (dict)</dt>
+<dd><p class="first">A dict containing options for the OpenLayers Map constructor.
 Properties may include:</p>
 <ul class="simple">
 <li><tt class="docutils literal"><span class="pre">units</span></tt>: (string) default <tt class="docutils literal"><span class="pre">'m'</span></tt> (meters)</li>
@@ -615,7 +616,7 @@ be one of:</p>
 the different points' HTML.</li>
 </ul>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">cluster_style</span></tt> (object)</dt>
+<dt><tt class="docutils literal"><span class="pre">cluster_style</span></tt> (dict)</dt>
 <dd><p class="first">The default style is:</p>
 <pre class="literal-block">
 {
