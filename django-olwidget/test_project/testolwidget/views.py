@@ -4,7 +4,7 @@ from django.template import RequestContext
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect, HttpResponse
 
-from testolwidget.models import GeoModel, MultiGeoModel, InfoModel
+from testolwidget.models import GeoModel, MultiGeoModel, InfoModel, PointModel
 from olwidget.widgets import MapDisplay, EditableMap, InfoMap
 
 class GeoModelForm(forms.ModelForm):
@@ -75,6 +75,16 @@ def show_infomodel(request, model_id):
     map = InfoMap([(object.geometry, object.story)])
     return render_to_response("testolwidget/info_maps.html",
             {'map': map, 'object': object})
+
+def point_infomodel(request):
+    geoms = []
+    for point in PointModel.objects.all():
+        geoms.append([point.point, '%s' % point.point])
+
+    map = InfoMap(geoms)
+    return render_to_response("testolwidget/info_maps.html",
+            {'map': map})
+
 
 def edit_geomodel(request, model_id=None):
     return edit_model(request, model_id, GeoModelForm)

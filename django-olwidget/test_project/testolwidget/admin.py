@@ -19,7 +19,6 @@ class MyGeoAdmin(GeoModelAdmin):
     map_fields = ['point']
 
 admin.site.register(MultiGeoModel, MyGeoAdmin)
-
 admin.site.register(InfoModel, GeoModelAdmin)
 
 class PointGeoAdmin(GeoModelAdmin):
