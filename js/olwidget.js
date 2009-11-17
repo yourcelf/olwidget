@@ -283,13 +283,13 @@ olwidget.EditableMap = OpenLayers.Class(olwidget.BaseMap, {
         this.textarea.parentNode.insertBefore(mapDiv, this.textarea);
 
         // initialize map
-        olwidget.BaseMap.prototype.initialize.apply(this, [mapDiv.id, options])
+        olwidget.BaseMap.prototype.initialize.apply(this, [mapDiv.id, options]);
 
         if (this.opts.hideTextarea) {
             this.textarea.style.display = 'none';
         }
 
-        this.initWKTAndCenter()
+        this.initWKTAndCenter();
         this.initControls();
     },
     initWKTAndCenter: function() {
@@ -404,7 +404,7 @@ olwidget.EditableMap = OpenLayers.Class(olwidget.BaseMap, {
         } else {
             // Make sure to remove any previously added features.
             if (this.vectorLayer.features.length > 1) {
-                old_feats = [this.vectorLayer.features[0]];
+                var old_feats = [this.vectorLayer.features[0]];
                 this.vectorLayer.removeFeatures(old_feats);
                 this.vectorLayer.destroyFeatures(old_feats);
             }
@@ -421,7 +421,7 @@ olwidget.EditableMap = OpenLayers.Class(olwidget.BaseMap, {
             for (var i = 0; i < this.numGeom; i++) {
                 feat.push(this.vectorLayer.features[i].clone());
             }
-            this.featureToTextarea(feat)
+            this.featureToTextarea(feat);
         } else {
             this.featureToTextarea(event.feature);
         }
@@ -518,7 +518,7 @@ olwidget.InfoMap = OpenLayers.Class(olwidget.BaseMap, {
         this.select.events.register("featurehighlighted", this, 
                 function(evt) { this.createPopup(evt); });
         this.select.events.register("featureunhighlighted", this, 
-                function(evt) { this.deletePopup() });
+                function(evt) { this.deletePopup(); });
         
         // Zooming changes clusters, so we must delete popup if we zoom.
         this.events.register("zoomend", this, function(event) { this.select.unselectAll(); });
@@ -603,7 +603,7 @@ olwidget.InfoMap = OpenLayers.Class(olwidget.BaseMap, {
                 this.popupMoveFunc = function(event) {
                     var px = this.getPixelFromLonLat(this.popup.lonlat);
                     popup.moveTo(px);
-                }
+                };
                 this.events.register("move", this, this.popupMoveFunc);
                 this.popupMoveFunc();
             //} else {
@@ -665,7 +665,7 @@ olwidget.InfoMap = OpenLayers.Class(olwidget.BaseMap, {
         var infomap = this;
         this.popup = new olwidget.Popup(null, 
                 lonlat, null, popupHTML, null, true, 
-                function() { infomap.select.unselect(feature) }, 
+                function() { infomap.select.unselect(feature); }, 
                 this.opts.popupDirection,
                 this.opts.popupPaginationSeparator);
         if (this.opts.popupsOutside) {
@@ -795,12 +795,12 @@ olwidget.Popup = OpenLayers.Class(OpenLayers.Popup.Framed, {
 
             // Build close box
             if (this.olwidgetCloseBox) {
-                closeDiv = document.createElement("div");
+                var closeDiv = document.createElement("div");
                 closeDiv.className = "olwidgetPopupCloseBox";
                 closeDiv.innerHTML = "close";
                 closeDiv.onclick = function(event) { 
                     popup.olwidgetCloseBoxCallback.apply(popup, arguments); 
-                }
+                };
                 containerDiv.appendChild(closeDiv);
             }
             
@@ -812,7 +812,7 @@ olwidget.Popup = OpenLayers.Class(OpenLayers.Popup.Framed, {
             if (showPagination) {
                 // Build pagination control
 
-                paginationDiv = document.createElement("div");
+                var paginationDiv = document.createElement("div");
                 paginationDiv.className = "olwidgetPopupPagination";
                 var prev = document.createElement("div");
                 prev.className = "olwidgetPaginationPrevious";
@@ -822,7 +822,7 @@ olwidget.Popup = OpenLayers.Class(OpenLayers.Popup.Framed, {
                         popup.contentHTML.length;
                     popup.setContentHTML();
                     popup.map.events.triggerEvent("move");
-                }
+                };
 
                 var count = document.createElement("div");
                 count.className = "olwidgetPaginationCount";
@@ -834,7 +834,7 @@ olwidget.Popup = OpenLayers.Class(OpenLayers.Popup.Framed, {
                     popup.page = (popup.page + 1) % popup.contentHTML.length;
                     popup.setContentHTML();
                     popup.map.events.triggerEvent("move");
-                }
+                };
 
                 paginationDiv.appendChild(prev);
                 paginationDiv.appendChild(count);

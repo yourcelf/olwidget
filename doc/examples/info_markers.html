@@ -1,0 +1,42 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <script type='text/javascript' src='http://openlayers.org/api/2.8/OpenLayers.js'></script>
+        <script type='text/javascript' src='../../js/olwidget.js'></script>
+        <link rel="stylesheet" type="text/css" media="all" href="../../css/olwidget.css" />
+        <title>Raster images as Markers</title>
+        <style type='text/css'>
+            textarea {
+                width: 300px;
+                height: 200px;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Simple Example</h1>
+        <p>A simple example using the default point geometry.  Select the
+        "draw" tool, and you can draw and move a point.</p>
+        <div id='map'></div>
+        <script type='text/javascript'>//<![CDATA[
+            new olwidget.InfoMap('map', [
+                    ["POINT(-72 44)", "<p>Point Zero!!</p>"],
+                    ["POINT(-73 45)", "<p>Point One!</p>"]
+                ],
+                { 
+                    overlayStyle: {
+                        externalGraphic: "marker.png",
+                        backgroundGraphic: "marker_shadow.png",
+                        graphicXOffset: -10,
+                        graphicYOffset: -12,
+                        graphicWidth: 21,
+                        graphicHeight: 25,
+                        backgroundXOffset: 2,
+                        graphicOpacity: 1
+                    }
+                }); 
+        //]]></script>
+        <a href='#' onclick='document.getElementById("myTextarea").style.display="block";'>show textarea</a>
+
+    </body>
+</html>

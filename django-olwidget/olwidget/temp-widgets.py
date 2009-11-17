@@ -248,7 +248,7 @@ class InfoMap(forms.Widget, MapMixin):
         else:
             # convert fields to wkt
             for geom, html in self.info:
-                wkt_array = [[add_srid(collection_wkt(geom)), html] for geom, html in self.info]
+                wkt_array = [[add_srid(collection_wkt([geom])), html] for geom, html in self.info]
             info_json = simplejson.dumps(wkt_array)
 
         # arbitrary unique id
