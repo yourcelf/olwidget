@@ -527,15 +527,16 @@ olwidget.InfoMap = OpenLayers.Class(olwidget.BaseMap, {
         this.select.activate();
 
         // Set zoom level
+        var dataExtent = this.vectorLayer.getDataExtent();
         if (this.opts.overrideCenter) {
             this.setCenter(this.opts.default_center);
-        } else {
-            this.setCenter(this.vectorLayer.getDataExtent().getCenterLonLat());
+        } else if (dataExtent !== null) {
+            this.setCenter(dataExtent.getCenterLonLat());
         }
         if (this.opts.overrideZoom) {
             this.zoomTo(this.opts.defaultZoom);
-        } else {
-            this.zoomToExtent(this.vectorLayer.getDataExtent());
+        } else if (dataExtent !== null) {
+            this.zoomToExtent(dataExtent);
         }
     },
     addClusterStrategy: function() {
@@ -597,18 +598,14 @@ olwidget.InfoMap = OpenLayers.Class(olwidget.BaseMap, {
         if (popupDiv) {
             popupDiv.style.zIndex = this.Z_INDEX_BASE['Popup'] +
                                     this.popups.length;
-            //if (this.opts.popupsOutside) {
-                this.div.appendChild(popupDiv);
-                // store a reference to this function so we can unregister on removal
-                this.popupMoveFunc = function(event) {
-                    var px = this.getPixelFromLonLat(this.popup.lonlat);
-                    popup.moveTo(px);
-                };
-                this.events.register("move", this, this.popupMoveFunc);
-                this.popupMoveFunc();
-            //} else {
-            //    this.layerContainerDiv.appendChild(popupDiv);
-            //}
+            this.div.appendChild(popupDiv);
+            // store a reference to this function so we can unregister on removal
+            this.popupMoveFunc = function(event) {
+                var px = this.getPixelFromLonLat(popup.lonlat);
+                popup.moveTo(px);
+            };
+            this.events.register("move", this, this.popupMoveFunc);
+            this.popupMoveFunc();
         }
     },
     /**
