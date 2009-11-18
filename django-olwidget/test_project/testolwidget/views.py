@@ -4,7 +4,7 @@ from django.template import RequestContext
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect, HttpResponse
 
-from testolwidget.models import GeoModel, MultiGeoModel, InfoModel, PointModel
+from testolwidget.models import GeoModel, MultiGeoModel, InfoModel, PointModel, MultiLinestringModel
 from olwidget.widgets import MapDisplay, EditableMap, InfoMap
 
 class GeoModelForm(forms.ModelForm):
@@ -34,6 +34,14 @@ class MultiGeoModelForm(forms.ModelForm):
     class Meta:
         model = MultiGeoModel
 
+class MultiLinestringModelForm(forms.ModelForm):
+    linestring = forms.CharField(widget=EditableMap(options={
+        'geometry': 'linestring',
+        'is_collection': True
+    }))
+    class Meta:
+        model = MultiLinestringModel
+
 class InfoModelForm(forms.ModelForm):
     geometry = forms.CharField(widget=EditableMap(options={
         'geometry': ['point', 'linestring', 'polygon'],
@@ -44,6 +52,13 @@ class InfoModelForm(forms.ModelForm):
 
 def show_multigeomodel(request, model_id):
     return show_model(request, model_id, klass=MultiGeoModel)
+
+def show_multilinestringmodel(request, model_id):
+    model = MultiLinestringModel.objects.get(id=model_id)
+    map = MapDisplay(fields=[model.linestring])
+    return render_to_response("testolwidget/show_maps.html",
+            {'maps': [["map", map]], 'map_media': map.media, 'object': model},
+            RequestContext(request))
 
 def show_geomodel(request, model_id):
     return show_model(request, model_id, klass=GeoModel)
@@ -72,7 +87,7 @@ def show_model(request, model_id, klass=GeoModel):
 
 def show_infomodel(request, model_id):
     object = InfoModel.objects.get(pk=model_id)
-    map = InfoMap([(object.geometry, object.story)])
+    map = InfoMap([(object.geometry, object.story)], options={'name': 'Project area'})
     return render_to_response("testolwidget/info_maps.html",
             {'map': map, 'object': object})
 
@@ -91,6 +106,9 @@ def edit_geomodel(request, model_id=None):
 
 def edit_multigeomodel(request, model_id=None):
     return edit_model(request, model_id, MultiGeoModelForm)
+
+def edit_multilinestringmodel(request, model_id=None):
+    return edit_model(request, model_id, MultiLinestringModelForm)
 
 def edit_model(request, model_id=None, Form=GeoModelForm):
     if model_id:
