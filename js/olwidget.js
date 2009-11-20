@@ -237,7 +237,7 @@ olwidget.BaseMap = OpenLayers.Class(OpenLayers.Map, {
             var parts = opts.layers[i].split(".");
             layers.push(olwidget[parts[0]][parts[1]]());
             
-            // workaround for problems with Micorsoft layers and vector layer drift
+            // workaround for problems with Microsoft layers and vector layer drift
             // (see http://openlayers.com/dev/examples/ve-novibrate.html)
             if (parts[0] == "ve") {
                 if (opts.mapOptions.panMethod == undefined) {
