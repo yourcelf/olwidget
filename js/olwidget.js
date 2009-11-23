@@ -312,7 +312,11 @@ olwidget.EditableMap = OpenLayers.Class(olwidget.BaseMap, {
             // before).
             var geom = olwidget.ewktToFeature(wkt);
             geom = olwidget.transformVector(geom, this.displayProjection, this.projection);
-            if (geom.constructor == Array || typeof(geom.geometry.components) !== "undefined" ) {
+            console.log(geom);
+            if (geom.constructor == Array || 
+                    geom.geometry.CLASS_NAME === "OpenLayers.Geometry.MultiLineString" ||
+                    geom.geometry.CLASS_NAME === "OpenLayers.Geometry.MultiPoint" ||
+                    geom.geometry.CLASS_NAME === "OpenLayers.Geometry.MultiPoly") {
                 // extract geometries from MULTI<geom> types into individual components
                 // (keeps the vector layer flat)
                 if (typeof(geom.geometry) !== "undefined") {

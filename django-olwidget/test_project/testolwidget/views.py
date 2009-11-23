@@ -8,9 +8,18 @@ from testolwidget.models import GeoModel, MultiGeoModel, InfoModel, PointModel, 
 from olwidget.widgets import MapDisplay, EditableMap, InfoMap
 
 class GeoModelForm(forms.ModelForm):
-    point = forms.CharField(widget=EditableMap())
-    linestring = forms.CharField(widget=EditableMap(options={'geometry': 'linestring'}))
-    poly = forms.CharField(widget=EditableMap(options={'geometry': 'polygon', 'hide_textarea': False}))
+    point = forms.CharField(widget=EditableMap(options={
+        'hide_textarea': False,
+    }))
+    linestring = forms.CharField(widget=EditableMap(options={
+        'geometry': 'linestring',
+        'hide_textarea': False,
+    }))
+    poly = forms.CharField(widget=EditableMap(options={
+        'geometry': 'polygon', 
+        'hide_textarea': False,
+        'hide_textarea': False,
+    }))
     class Meta:
         model = GeoModel
 
@@ -41,7 +50,8 @@ class MultiGeoModelForm(forms.ModelForm):
 class MultiLinestringModelForm(forms.ModelForm):
     linestring = forms.CharField(widget=EditableMap(options={
         'geometry': 'linestring',
-        'is_collection': True
+        'is_collection': True,
+        'hide_textarea': False,
     }))
     class Meta:
         model = MultiLinestringModel
