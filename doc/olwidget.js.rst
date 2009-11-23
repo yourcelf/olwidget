@@ -204,7 +204,7 @@ The following options are shared by ``olwidget.EditableMap`` and
     this is only used if there is no geometry (e.g. the textarea is empty).
 ``zoomToDataExtent`` (boolean; default ``true``) 
     If ``true``, the map will zoom to the extent of its vector data instead of
-    ``defaultZoom`` and ``defaultLat, defaultLon``.  If no vector data is
+    ``defaultZoom``, ``defaultLat``, and ``defaultLon``.  If no vector data is
     present, the map will use the defaults.
 ``overlayStyle`` (object) 
     A list of style definitions for the geometry overlays.  See 

@@ -217,10 +217,10 @@ The following options are shared by all ``olwidget`` map types:
     Longitude for the center point of the map.
 ``default_zoom`` (int; default ``4``) 
     The zoom level to use on the map.  
-``zoom_to_data_extent`` (``True``/``False``)
+``zoom_to_data_extent`` (``True``/``False``; default ``True``)
     If ``True``, the map will zoom to the extent of its vector data instead of
-    ``default_zoom`` and ``default_lat, default_lon``.  If no vector data is
-    present, the map will use the defaults.
+    ``default_zoom``, ``default_lat``, and ``default_lon``.  If no vector data
+    is present, the map will use the defaults.
 ``overlay_style`` (dict) 
     A dict of style definitions for the geometry overlays.  For more on overlay
     styling, consult the OpenLayers `styling documentation
