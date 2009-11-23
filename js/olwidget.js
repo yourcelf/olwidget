@@ -195,6 +195,7 @@ olwidget.BaseMap = OpenLayers.Class(OpenLayers.Map, {
             defaultLon: 0,
             defaultLat: 0,
             defaultZoom: 4,
+            zoomToDataExtent: true,
             overlayStyle: {
                 fillColor: '#ff00ff',
                 strokeColor: '#ff00ff',
@@ -204,9 +205,6 @@ olwidget.BaseMap = OpenLayers.Class(OpenLayers.Map, {
             }
         };
         var opts = olwidget.deepJoinOptions(defaults, options);
-
-        opts.overrideZoom = options.defaultZoom != undefined;
-        opts.overrideCenter = options.defaultLat != undefined && options.defaultLon != undefined;
 
         // construct objects for serialized options
         var me = opts.mapOptions.maxExtent;
@@ -252,10 +250,19 @@ olwidget.BaseMap = OpenLayers.Class(OpenLayers.Map, {
         this.vectorLayer = new OpenLayers.Layer.Vector(this.opts.name, { styleMap: styleMap });
         layers.push(this.vectorLayer);
         this.addLayers(layers);
-        this.setDefaultCenter();
     },
-    setDefaultCenter: function() {
-        this.setCenter(this.opts.default_center.clone(), this.opts.defaultZoom);
+    initCenter: function() {
+        if (this.opts.zoomToDataExtent && this.vectorLayer.features.length > 0) {
+            if (this.vectorLayer.features.length == 1 &&
+                    this.vectorLayer.features[0].geometry.CLASS_NAME == "OpenLayers.Geometry.Point") {
+                this.setCenter(this.vectorLayer.features[0].geometry.getBounds().getCenterLonLat(), 
+                               this.opts.defaultZoom);
+            } else {
+                this.zoomToExtent(this.vectorLayer.getDataExtent());
+            }
+        } else {
+            this.setCenter(this.opts.default_center, this.opts.defaultZoom);
+        }
     },
     clearFeatures: function() {
         this.vectorLayer.removeFeatures(this.vectorLayer.features);
@@ -289,10 +296,11 @@ olwidget.EditableMap = OpenLayers.Class(olwidget.BaseMap, {
             this.textarea.style.display = 'none';
         }
 
-        this.initWKTAndCenter();
+        this.initWKT();
+        this.initCenter();
         this.initControls();
     },
-    initWKTAndCenter: function() {
+    initWKT: function() {
         // Read any initial WKT from the text field.  We assume that the
         // WKT uses the projection given in "displayProjection", and ignore
         // any initial SRID.
@@ -304,20 +312,22 @@ olwidget.EditableMap = OpenLayers.Class(olwidget.BaseMap, {
             // before).
             var geom = olwidget.ewktToFeature(wkt);
             geom = olwidget.transformVector(geom, this.displayProjection, this.projection);
-            if (this.opts.isCollection) {
-                this.vectorLayer.addFeatures(geom);
+            if (geom.constructor == Array || typeof(geom.geometry.components) !== "undefined" ) {
+                // extract geometries from MULTI<geom> types into individual components
+                // (keeps the vector layer flat)
+                if (typeof(geom.geometry) !== "undefined") {
+                    var geoms = [];
+                    for (var i = 0; i < geom.geometry.components.length; i++) {
+                        geoms.push(new OpenLayers.Feature.Vector(geom.geometry.components[i]));
+                    }
+                    this.vectorLayer.addFeatures(geoms);
+                } else {
+                    this.vectorLayer.addFeatures(geom);
+                }
             } else {
                 this.vectorLayer.addFeatures([geom]);
             }
             this.numGeom = this.vectorLayer.features.length;
-            
-            // Set center
-            if (this.opts.geometry == 'point' && !this.opts.isCollection) {
-                this.setCenter(geom.geometry.getBounds().getCenterLonLat(), 
-                        this.opts.defaultZoom);
-            } else {
-                this.zoomToExtent(this.vectorLayer.getDataExtent());
-            }
         }
     },
     initControls: function() {
@@ -513,31 +523,17 @@ olwidget.InfoMap = OpenLayers.Class(olwidget.BaseMap, {
             }
         }
         this.vectorLayer.addFeatures(features);
+        this.initCenter();
 
         this.select = new OpenLayers.Control.SelectFeature(this.vectorLayer, { clickout: true, hover: false });
         this.select.events.register("featurehighlighted", this, 
                 function(evt) { this.createPopup(evt); });
         this.select.events.register("featureunhighlighted", this, 
                 function(evt) { this.deletePopup(); });
-        
         // Zooming changes clusters, so we must delete popup if we zoom.
         this.events.register("zoomend", this, function(event) { this.select.unselectAll(); });
-
         this.addControl(this.select);
         this.select.activate();
-
-        // Set zoom level
-        var dataExtent = this.vectorLayer.getDataExtent();
-        if (this.opts.overrideCenter) {
-            this.setCenter(this.opts.default_center);
-        } else if (dataExtent !== null) {
-            this.setCenter(dataExtent.getCenterLonLat());
-        }
-        if (this.opts.overrideZoom) {
-            this.zoomTo(this.opts.defaultZoom);
-        } else if (dataExtent !== null) {
-            this.zoomToExtent(dataExtent);
-        }
     },
     addClusterStrategy: function() {
         var style_context = {

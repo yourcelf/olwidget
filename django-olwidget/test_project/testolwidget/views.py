@@ -18,18 +18,22 @@ class MultiGeoModelForm(forms.ModelForm):
     point = forms.CharField(widget=EditableMap(options={
         'geometry': 'point',
         'is_collection': True,
+        'hide_textarea': False,
     }))
     linestring = forms.CharField(widget=EditableMap(options={
         'geometry': 'linestring',
         'is_collection': True,
+        'hide_textarea': False,
     }))
     poly = forms.CharField(widget=EditableMap(options={
         'geometry': 'polygon',
         'is_collection': True,
+        'hide_textarea': False,
     }))
     collection = forms.CharField(widget=EditableMap(options={
         'geometry': ['point', 'linestring', 'polygon'],
         'is_collection': True,
+        'hide_textarea': False,
     }))
     class Meta:
         model = MultiGeoModel

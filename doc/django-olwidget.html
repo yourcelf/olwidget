@@ -517,6 +517,10 @@ map = MapDisplay(options={
 <dd>Longitude for the center point of the map.</dd>
 <dt><tt class="docutils literal"><span class="pre">default_zoom</span></tt> (int; default <tt class="docutils literal"><span class="pre">4</span></tt>)</dt>
 <dd>The zoom level to use on the map.</dd>
+<dt><tt class="docutils literal"><span class="pre">zoom_to_data_extent</span></tt> (<tt class="docutils literal"><span class="pre">True</span></tt>/<tt class="docutils literal"><span class="pre">False</span></tt>)</dt>
+<dd>If <tt class="docutils literal"><span class="pre">True</span></tt>, the map will zoom to the extent of its vector data instead of
+<tt class="docutils literal"><span class="pre">default_zoom</span></tt> and <tt class="docutils literal"><span class="pre">default_lat,</span> <span class="pre">default_lon</span></tt>.  If no vector data is
+present, the map will use the defaults.</dd>
 <dt><tt class="docutils literal"><span class="pre">overlay_style</span></tt> (dict)</dt>
 <dd><p class="first">A dict of style definitions for the geometry overlays.  For more on overlay
 styling, consult the OpenLayers <a class="reference external" href="http://docs.openlayers.org/library/feature_styling.html">styling documentation</a>.  Options

@@ -505,6 +505,10 @@ this is only used if there is no geometry (e.g. the textarea is empty).</dd>
 <dt><tt class="docutils literal"><span class="pre">defaultZoom</span></tt> (int; default <tt class="docutils literal"><span class="pre">4</span></tt>)</dt>
 <dd>The zoom level to use on the map.  For <tt class="docutils literal"><span class="pre">olwidget.EditableMap</span></tt>,
 this is only used if there is no geometry (e.g. the textarea is empty).</dd>
+<dt><tt class="docutils literal"><span class="pre">zoomToDataExtent</span></tt> (boolean; default <tt class="docutils literal"><span class="pre">true</span></tt>)</dt>
+<dd>If <tt class="docutils literal"><span class="pre">true</span></tt>, the map will zoom to the extent of its vector data instead of
+<tt class="docutils literal"><span class="pre">defaultZoom</span></tt> and <tt class="docutils literal"><span class="pre">defaultLat,</span> <span class="pre">defaultLon</span></tt>.  If no vector data is
+present, the map will use the defaults.</dd>
 <dt><tt class="docutils literal"><span class="pre">overlayStyle</span></tt> (object)</dt>
 <dd>A list of style definitions for the geometry overlays.  See
 <a class="reference external" href="http://docs.openlayers.org/library/feature_styling.html">OpenLayers styling</a>.</dd>
