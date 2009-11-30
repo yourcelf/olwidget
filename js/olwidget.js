@@ -312,7 +312,6 @@ olwidget.EditableMap = OpenLayers.Class(olwidget.BaseMap, {
             // before).
             var geom = olwidget.ewktToFeature(wkt);
             geom = olwidget.transformVector(geom, this.displayProjection, this.projection);
-            console.log(geom);
             if (geom.constructor == Array || 
                     geom.geometry.CLASS_NAME === "OpenLayers.Geometry.MultiLineString" ||
                     geom.geometry.CLASS_NAME === "OpenLayers.Geometry.MultiPoint" ||
