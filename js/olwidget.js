@@ -315,7 +315,7 @@ olwidget.EditableMap = OpenLayers.Class(olwidget.BaseMap, {
             if (geom.constructor == Array || 
                     geom.geometry.CLASS_NAME === "OpenLayers.Geometry.MultiLineString" ||
                     geom.geometry.CLASS_NAME === "OpenLayers.Geometry.MultiPoint" ||
-                    geom.geometry.CLASS_NAME === "OpenLayers.Geometry.MultiPoly") {
+                    geom.geometry.CLASS_NAME === "OpenLayers.Geometry.MultiPolygon") {
                 // extract geometries from MULTI<geom> types into individual components
                 // (keeps the vector layer flat)
                 if (typeof(geom.geometry) !== "undefined") {
@@ -534,7 +534,8 @@ olwidget.InfoMap = OpenLayers.Class(olwidget.BaseMap, {
         this.select.events.register("featureunhighlighted", this, 
                 function(evt) { this.deletePopup(); });
         // Zooming changes clusters, so we must delete popup if we zoom.
-        this.events.register("zoomend", this, function(event) { this.select.unselectAll(); });
+        var map = this;
+        this.events.register("zoomend", this, function(event) { map.deletePopup(); });
         this.addControl(this.select);
         this.select.activate();
     },

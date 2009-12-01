@@ -15,6 +15,7 @@ class MyGeoAdmin(GeoModelAdmin):
          },
          'default_lon': -72,
          'default_lat': 44,
+         'hide_textarea': False,
     }
     map_fields = ['point']
 
