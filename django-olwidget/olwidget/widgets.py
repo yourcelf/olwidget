@@ -1,7 +1,7 @@
 from os.path import join
 
 from django.contrib.gis.gdal import OGRException, OGRGeometry
-from django.contrib.gis.geos import GEOSGeometry, GEOSException
+from django.contrib.gis.geos import GEOSGeometry
 from django.forms.widgets import Textarea
 from django.template.loader import render_to_string
 from django.utils import simplejson
@@ -268,20 +268,27 @@ def get_wkt(value, srid=DEFAULT_PROJ):
     `value` is either a WKT string or a geometry field.  Returns WKT in the
     projection for the given SRID.
     """
-    if isinstance(value, basestring):
-        try:
-            value = GEOSGeometry(value)
-        except (GEOSException, ValueError):
-            value = None
+    ogr = None
+    if value:
+        if isinstance(value, OGRGeometry):
+            ogr = value
+        elif isinstance(value, GEOSGeometry):
+            ogr = value.ogr
+        elif isinstance(value, basestring):
+            ogr = OGRGeometry(value)
 
     wkt = ''
-    if value:
-        try:
-            geom = OGRGeometry(value.wkt, value.get_srid())
-            geom.transform(srid)
-            wkt = geom.wkt 
-        except OGRException:
-            pass
+    if ogr:
+        # Workaround for Django bug #12312.  GEOSGeometry types don't support 3D wkt;
+        # OGRGeometry types output 3D for linestrings even if they should do 2D, causing
+        # IntegrityError's.
+        if ogr.dimension == 2:
+            geos = ogr.geos
+            geos.transform(srid)
+            wkt = geos.wkt
+        else:
+            ogr.transform(srid)
+            wkt = ogr.wkt 
     return wkt
 
 def collection_wkt(fields):
