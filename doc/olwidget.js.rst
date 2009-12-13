@@ -118,16 +118,18 @@ Format::
     new olwidget.InfoMap(<mapDivId>, <infoArray>, [options]);
 
 * ``mapDivId``: the DOM id of a div to replace with this map.
-* ``infoArray``: an Array of (E)WKT geometries and content HTML for popups, such as::
-  
+* ``infoArray``: an Array of (E)WKT geometries and content HTML for popups, such as
+  ::
+
         [ 
             ["SRID=4326;POINT(0 0)", "<p>This is the zero point.</p>"],
             ["SRID=4326;POINT(10 10)", "<p>This is longitude 10 and latitude 10.</p>"],
             ...  
         ]
 
-    Geometries can be displayed with individual styles by passing an object
-    containing ``html`` and ``style`` keys instead of an HTML string::
+  Geometries can be displayed with individual styles by passing an object
+  containing ``html`` and ``style`` keys instead of an HTML string::
+
         [
             ["SRID=4326;POINT(10 10)", {
                 html: "<p>A good looking point</p>",
