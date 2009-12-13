@@ -520,8 +520,16 @@ olwidget.InfoMap = OpenLayers.Class(olwidget.BaseMap, {
             if (feature.constructor != Array) {
                 feature = [feature];
             }
+            var htmlInfo = infoArray[i][1];
             for (var k = 0; k < feature.length; k++) {
-                feature[k].attributes = { html: infoArray[i][1] };
+                if (typeof htmlInfo === "object") {
+                    feature[k].attributes = { html: htmlInfo.html };
+                    if (typeof htmlInfo.style !== "undefined") {
+                        feature[k].style = OpenLayers.Util.applyDefaults(htmlInfo.style, this.opts.overlayStyle);
+                    }
+                } else {
+                    feature[k].attributes = { html: htmlInfo };
+                }
                 features.push(feature[k]);
             }
         }
@@ -615,12 +623,8 @@ olwidget.InfoMap = OpenLayers.Class(olwidget.BaseMap, {
         OpenLayers.Util.removeItem(this.popups, popup);
         if (popup.div) {
             try {
-                //if (this.opts.popupsOutside) {
-                    this.div.removeChild(popup.div);
-                    this.events.unregister("move", this, this.popupMoveFunc);
-                //} else {
-                //    this.layerContainerDiv.removeChild(popup.div);
-                //}
+                this.div.removeChild(popup.div);
+                this.events.unregister("move", this, this.popupMoveFunc);
             } catch (e) { }
         }
         popup.map = null;

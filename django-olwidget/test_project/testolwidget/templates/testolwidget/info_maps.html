@@ -6,6 +6,8 @@
 
     {{ map }}
 
-<a href='{{ object.get_edit_url }}'>Edit this model</a>
+{% if object %}
+    <a href='{{ object.get_edit_url }}'>Edit this model</a>
+{% endif %}
 
 {% endblock %}

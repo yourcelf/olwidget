@@ -393,8 +393,9 @@ olwidget.widgets.InfoMap(info, options=None, template=None)
 </pre>
 <dl class="docutils">
 <dt><tt class="docutils literal"><span class="pre">info</span></tt></dt>
-<dd>A list of [geometry, html] pairs.  The html will be rendered in a popup
-when the geometry is clicked.</dd>
+<dd>A list of <tt class="docutils literal"><span class="pre">[geometry,</span> <span class="pre">attr]</span></tt> pairs.  <tt class="docutils literal"><span class="pre">attr</span></tt> can be either a string
+containing html, or a dict containing <tt class="docutils literal"><span class="pre">html</span></tt> and <tt class="docutils literal"><span class="pre">style</span></tt> keys.  The
+html is displayed when the geometry is clicked.</dd>
 <dt><tt class="docutils literal"><span class="pre">options</span></tt></dt>
 <dd>A dict of options for map display.  See <a class="reference internal" href="#options">Options</a> below.</dd>
 <dt><tt class="docutils literal"><span class="pre">template</span></tt></dt>
@@ -407,6 +408,10 @@ from olwidget.widgets import InfoMap
 map = InfoMap([
     [mymodel.point, &quot;&lt;p&gt;This is where I had my first kiss.&lt;/p&gt;&quot;],
     [othermodel.polygon, &quot;&lt;p&gt;This is my home town.&lt;/p&gt;&quot;],
+    [othermodel.point, {
+        'html': &quot;&lt;p&gt;Special style for this point.&lt;/p&gt;&quot;,
+        'style': {'fill_color': '#00FF00'},
+    }],
     ...
 ])
 
