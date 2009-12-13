@@ -14,9 +14,7 @@
         </style>
     </head>
     <body>
-        <h1>Simple Example</h1>
-        <p>A simple example using the default point geometry.  Select the
-        "draw" tool, and you can draw and move a point.</p>
+        <h2>Per-point styles</h2>
         <div id='map'></div>
         <script type='text/javascript'>//<![CDATA[
             new olwidget.InfoMap('map', [
@@ -50,5 +48,27 @@
         //]]></script>
         <a href='#' onclick='document.getElementById("myTextarea").style.display="block";'>show textarea</a>
 
+        <h2>Per-point styles with a different default style</h2>
+        <div id='map2'></div>
+        <script type='text/javascript'>//<![CDATA[
+            new olwidget.InfoMap('map2', [
+                ["Point(-72, 44)",
+                    {
+                        html: "<p>custom</p>",
+                        style: {
+                            fillColor: "#00FF00",
+                            strokeColor: "#0000FF"
+                        }
+                    }
+                ],
+                ["Point(-73, 43)", "<p>Default 0</p>"],
+                ["Point(-72, 43)", "<p>Default 1</p>"],
+                ["Point(-73, 44)", "<p>Default 2</p>"]
+            ], {
+                overlayStyle: {
+                    fillColor: "#00FFFF",
+                }
+            });
+        //]]></script>
     </body>
 </html>
