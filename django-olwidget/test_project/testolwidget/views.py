@@ -111,8 +111,24 @@ def point_infomodel(request):
         geoms.append([point.point, '%s' % point.point])
 
     map = InfoMap(geoms)
-    return render_to_response("testolwidget/info_maps.html",
-            {'map': map})
+    return render_to_response("testolwidget/info_maps.html", {'map': map})
+
+def style_infomodel(request):
+    geoms = []
+    for i, point in enumerate(PointModel.objects.all()):
+        color = (float(0xFFFFFF) / len(PointModel.objects.all())) * i
+        geoms.append([point.point, { 
+            'html': '%s' % point.point, 
+            'style': {
+                'fill_color': "#%06x" % (color),
+                'stroke_color': "#%06x" % (0xFFFFFF - color),
+                'fill_opacity': 1,
+                'point_radius': 10,
+                },
+        }])
+    map = InfoMap(geoms)
+    return render_to_response("testolwidget/info_maps.html", {'map': map})
+
 
 
 def edit_geomodel(request, model_id=None):

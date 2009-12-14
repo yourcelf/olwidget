@@ -77,8 +77,9 @@ Info Maps
 ---------
 * `Info popups over geometries <examples/info_geometries.html>`_
 * `Clustered points <examples/info_cluster.html>`_
-* `Popups inside and outside map viewport <examples/info_inside_outside.html>`_
-* `Info map with image markers <examples/info_markers.html>`_
+* Popups `inside and outside map viewport <examples/info_inside_outside.html>`_
+* Info map with `image markers <examples/info_markers.html>`_
+* Info map with `different styles per geometry <examples/info_per_point_style.html>`_
 
 
 Documentation
@@ -117,12 +118,26 @@ Format::
     new olwidget.InfoMap(<mapDivId>, <infoArray>, [options]);
 
 * ``mapDivId``: the DOM id of a div to replace with this map.
-* ``infoArray``: an Array of (E)WKT geometries and content HTML for popups, such as::
-  
+* ``infoArray``: an Array of (E)WKT geometries and content HTML for popups, such as
+  ::
+
         [ 
             ["SRID=4326;POINT(0 0)", "<p>This is the zero point.</p>"],
             ["SRID=4326;POINT(10 10)", "<p>This is longitude 10 and latitude 10.</p>"],
             ...  
+        ]
+
+  Geometries can be displayed with individual styles by passing an object
+  containing ``html`` and ``style`` keys instead of an HTML string::
+
+        [
+            ["SRID=4326;POINT(10 10)", {
+                html: "<p>A good looking point</p>",
+                style: {
+                    fillColor: '#00FF00'
+                }
+            }],
+            ...
         ]
 
 * ``options``: An object containing options for the resulting map.  All fields

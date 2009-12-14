@@ -376,8 +376,9 @@ Yahoo, Microsoft VE, OpenStreetMaps, and MetaCarta.</li>
 <ul class="simple">
 <li><a class="reference external" href="examples/info_geometries.html">Info popups over geometries</a></li>
 <li><a class="reference external" href="examples/info_cluster.html">Clustered points</a></li>
-<li><a class="reference external" href="examples/info_inside_outside.html">Popups inside and outside map viewport</a></li>
-<li><a class="reference external" href="examples/info_markers.html">Info map with image markers</a></li>
+<li>Popups <a class="reference external" href="examples/info_inside_outside.html">inside and outside map viewport</a></li>
+<li>Info map with <a class="reference external" href="examples/info_markers.html">image markers</a></li>
+<li>Info map with <a class="reference external" href="examples/info_per_point_style.html">different styles per geometry</a></li>
 </ul>
 </div>
 </div>
@@ -418,11 +419,24 @@ new olwidget.InfoMap(&lt;mapDivId&gt;, &lt;infoArray&gt;, [options]);
 <ul>
 <li><p class="first"><tt class="docutils literal"><span class="pre">mapDivId</span></tt>: the DOM id of a div to replace with this map.</p>
 </li>
-<li><p class="first"><tt class="docutils literal"><span class="pre">infoArray</span></tt>: an Array of (E)WKT geometries and content HTML for popups, such as:</p>
+<li><p class="first"><tt class="docutils literal"><span class="pre">infoArray</span></tt>: an Array of (E)WKT geometries and content HTML for popups, such as</p>
 <pre class="literal-block">
 [
     [&quot;SRID=4326;POINT(0 0)&quot;, &quot;&lt;p&gt;This is the zero point.&lt;/p&gt;&quot;],
     [&quot;SRID=4326;POINT(10 10)&quot;, &quot;&lt;p&gt;This is longitude 10 and latitude 10.&lt;/p&gt;&quot;],
+    ...
+]
+</pre>
+<p>Geometries can be displayed with individual styles by passing an object
+containing <tt class="docutils literal"><span class="pre">html</span></tt> and <tt class="docutils literal"><span class="pre">style</span></tt> keys instead of an HTML string:</p>
+<pre class="literal-block">
+[
+    [&quot;SRID=4326;POINT(10 10)&quot;, {
+        html: &quot;&lt;p&gt;A good looking point&lt;/p&gt;&quot;,
+        style: {
+            fillColor: '#00FF00'
+        }
+    }],
     ...
 ]
 </pre>

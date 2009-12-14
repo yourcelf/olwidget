@@ -1,4 +1,4 @@
-from os.path import join
+import re
 
 from django.contrib.gis.gdal import OGRException, OGRGeometry
 from django.contrib.gis.geos import GEOSGeometry
@@ -8,14 +8,21 @@ from django.utils import simplejson
 from django.conf import settings
 from django import forms
 
+def reduce_url_parts(a, b):
+    if a[-1] == "/":
+        return a + b
+    return a + "/" + b
 
+def url_join(*args):
+    return reduce(reduce_url_parts, args)
+    
 # Default settings for paths and API URLs.  These can all be overridden by
 # specifying a value in settings.py
 
 api_defaults = {
     'GOOGLE_API_KEY': "",
     'YAHOO_APP_ID': "",
-    'OLWIDGET_MEDIA_URL': join(settings.MEDIA_URL, "olwidget"),
+    'OLWIDGET_MEDIA_URL': url_join(settings.MEDIA_URL, "olwidget"),
     'GOOGLE_API': "http://maps.google.com/maps?file=api&v=2",
     'YAHOO_API': "http://api.maps.yahoo.com/ajaxymap?v=3.0",
     'OSM_API': "http://openstreetmap.org/openlayers/OpenStreetMap.js",
@@ -27,59 +34,18 @@ for key, default in api_defaults.iteritems():
     if not hasattr(settings, key):
         setattr(settings, key, default)
 
-OLWIDGET_JS = join(settings.OLWIDGET_MEDIA_URL, "js/olwidget.js")
-OLWIDGET_CSS = join(settings.OLWIDGET_MEDIA_URL, "css/olwidget.css")
+OLWIDGET_JS = url_join(settings.OLWIDGET_MEDIA_URL, "js/olwidget.js")
+OLWIDGET_CSS = url_join(settings.OLWIDGET_MEDIA_URL, "css/olwidget.css")
 
 DEFAULT_PROJ = "4326"
 
-PEP8_OPTIONS_TRANSLATION = {
-    # map constructor options
-    'map_options': 'mapOptions',
-    'max_resolution': 'maxResolution',
-    'min_resolution': 'minResolution',
-    'max_extent': 'maxExtent',
-    'min_extent': 'minExtent',
-    'min_scale': 'minScale',
-    'max_scale': 'maxScale',
-    'display_projection': 'displayProjection',
-    'num_zoom_levels': 'numZoomLevels',
-    # olwidget options
-    'map_div_class': 'mapDivClass',
-    'map_div_style': 'mapDivStyle',
-    'default_lon': 'defaultLon',
-    'default_lat': 'defaultLat',
-    'default_zoom': 'defaultZoom',
-    'hide_textarea': 'hideTextarea',
-    'is_collection': 'isCollection',
-    'popups_outside': 'popupsOutside',
-    'popup_direction': 'popupDirection',
-    'popup_pagination_separator': 'popupPaginationSeparator',
-    'cluster_display': 'clusterDisplay',
-    'cluster_style': 'clusterStyle',
-    'font_size': 'fontSize',
-    'font_family': 'fontFamily',
-    'font_color': 'fontColor',
-    # overlay style options
-    'overlay_style': 'overlayStyle',
-    'fill_color': 'fillColor',
-    'fill_opacity': 'fillOpacity',
-    'stroke_color': 'strokeColor',
-    'stroke_width': 'strokeWidth',
-    'stroke_linecap': 'strokeLinecap',
-    'stroke_dash_style': 'strokeDashstyle',
-    'point_radius': 'pointRadius',
-    'external_graphic': 'externalGraphic',
-    'graphic_height': 'graphicHeight',
-    'graphic_x_offset': 'graphicXOffset',
-    'graphic_y_offset': 'graphicYOffset',
-    'graphic_opacity': 'graphicOpacity',
-    'graphic_name': 'graphicName',
-}
+def separated_lowercase_to_lower_camelcase(input):
+    return re.sub('_\w', lambda match: match.group(0)[-1].upper(), input)
 
 def translate_options(options):
     translated = {}
     for key, value in options.iteritems():
-        new_key = PEP8_OPTIONS_TRANSLATION.get(key, key)
+        new_key = separated_lowercase_to_lower_camelcase(key)
         # recurse
         if isinstance(value, dict):
             translated[new_key] = translate_options(value)
@@ -244,8 +210,15 @@ class InfoMap(forms.Widget, MapMixin):
         if not self.info:
             info_json = '[]'
         else:
-            # convert fields to wkt
-            wkt_array = [[add_srid(get_wkt(geom)), html] for geom, html in self.info]
+            # convert fields to wkt and translate options if needed
+            wkt_array = []
+            for geom, attr in self.info:
+                wkt = add_srid(get_wkt(geom))
+                if isinstance(attr, dict):
+                    wkt_array.append([wkt, translate_options(attr)])
+                else:
+                    wkt_array.append([wkt, attr])
+
             info_json = simplejson.dumps(wkt_array)
 
         # arbitrary unique id

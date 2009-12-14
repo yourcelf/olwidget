@@ -87,8 +87,9 @@ popups over geometries.  Constructor::
 
 
 ``info``
-    A list of [geometry, html] pairs.  The html will be rendered in a popup
-    when the geometry is clicked.
+    A list of ``[geometry, attr]`` pairs.  ``attr`` can be either a string
+    containing html, or a dict containing ``html`` and ``style`` keys.  The 
+    html is displayed when the geometry is clicked.
 ``options``
     A dict of options for map display.  See Options_ below.
 ``template``
@@ -101,6 +102,10 @@ An example info map::
     map = InfoMap([
         [mymodel.point, "<p>This is where I had my first kiss.</p>"],
         [othermodel.polygon, "<p>This is my home town.</p>"],
+        [othermodel.point, {
+            'html': "<p>Special style for this point.</p>", 
+            'style': {'fill_color': '#00FF00'},
+        }],
         ...
     ])
 
