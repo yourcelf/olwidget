@@ -523,7 +523,7 @@ olwidget.InfoMap = OpenLayers.Class(olwidget.BaseMap, {
             var htmlInfo = infoArray[i][1];
             for (var k = 0; k < feature.length; k++) {
                 if (typeof htmlInfo === "object") {
-                    feature[k].attributes = { html: htmlInfo.html };
+                    feature[k].attributes = htmlInfo
                     if (typeof htmlInfo.style !== "undefined") {
                         feature[k].style = OpenLayers.Util.applyDefaults(htmlInfo.style, this.opts.overlayStyle);
                     }
