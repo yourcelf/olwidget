@@ -236,6 +236,7 @@ class InfoMap(forms.Widget, MapMixin):
     def __unicode__(self):
         return self.render(None, None)
 
+ewkt_re = re.compile("^SRID=(?P<srid>\d+);(?P<wkt>.+)$", re.I)
 def get_wkt(value, srid=DEFAULT_PROJ):
     """
     `value` is either a WKT string or a geometry field.  Returns WKT in the
@@ -248,7 +249,11 @@ def get_wkt(value, srid=DEFAULT_PROJ):
         elif isinstance(value, GEOSGeometry):
             ogr = value.ogr
         elif isinstance(value, basestring):
-            ogr = OGRGeometry(value)
+            match = ewkt_re.match(value)
+            if match:
+                ogr = OGRGeometry(match.group('wkt'), match.group('srid'))
+            else:
+                ogr = OGRGeometry(value)
 
     wkt = ''
     if ogr:
