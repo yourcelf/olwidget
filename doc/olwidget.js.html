@@ -379,6 +379,7 @@ Yahoo, Microsoft VE, OpenStreetMaps, and MetaCarta.</li>
 <li>Popups <a class="reference external" href="examples/info_inside_outside.html">inside and outside map viewport</a></li>
 <li>Info map with <a class="reference external" href="examples/info_markers.html">image markers</a></li>
 <li>Info map with <a class="reference external" href="examples/info_per_point_style.html">different styles per geometry</a></li>
+<li>Info map with <a class="reference external" href="examples/info_cluster_per_point_style.html">clustered points and per-geometry styles</a></li>
 </ul>
 </div>
 </div>
@@ -473,22 +474,6 @@ be one of:</p>
 the different points' HTML.</li>
 </ul>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">clusterStyle</span></tt> (object)</dt>
-<dd><p class="first">The default style is:</p>
-<pre class="literal-block">
-{
-    pointRadius: &quot;${radius}&quot;,
-    strokeWidth: &quot;${width}&quot;,
-    label: &quot;${label}&quot;,
-    fontSize: &quot;11px&quot;,
-    fontFamily: &quot;Helvetica, sans-serif&quot;,
-    fontColor: &quot;#ffffff&quot;
-}
-</pre>
-<p class="last">The arguments expressed with <tt class="docutils literal"><span class="pre">${}</span></tt> are programmatically replaced with
-values based on the cluster.  Setting them to specific values will prevent
-this programatic replacement.</p>
-</dd>
 </dl>
 </div>
 <div class="section" id="common-options">
@@ -524,8 +509,11 @@ this is only used if there is no geometry (e.g. the textarea is empty).</dd>
 <tt class="docutils literal"><span class="pre">defaultZoom</span></tt>, <tt class="docutils literal"><span class="pre">defaultLat</span></tt>, and <tt class="docutils literal"><span class="pre">defaultLon</span></tt>.  If no vector data is
 present, the map will use the defaults.</dd>
 <dt><tt class="docutils literal"><span class="pre">overlayStyle</span></tt> (object)</dt>
-<dd>A list of style definitions for the geometry overlays.  See
+<dd>An object with style definitions for the geometry overlays.  See
 <a class="reference external" href="http://docs.openlayers.org/library/feature_styling.html">OpenLayers styling</a>.</dd>
+<dt><tt class="docutils literal"><span class="pre">overlayStyleContext</span></tt> (object)</dt>
+<dd>An object with functions which expand <tt class="docutils literal"><span class="pre">'${var}'</span></tt> symbolizers in style
+definitions.  See <a class="reference external" href="http://dev.openlayers.org/docs/files/OpenLayers/Style-js.html#OpenLayers.Style.context">OpenLayers Style context</a>.</dd>
 <dt><tt class="docutils literal"><span class="pre">mapDivClass</span></tt> (string; default <tt class="docutils literal"><span class="pre">''</span></tt>)</dt>
 <dd>A CSS class name to add to the div which is created to contain the map.</dd>
 <dt><tt class="docutils literal"><span class="pre">mapDivStyle</span></tt> (object, default <tt class="docutils literal"><span class="pre">{width:</span> <span class="pre">'600px',</span> <span class="pre">height:</span> <span class="pre">'400px'}</span></tt>)</dt>

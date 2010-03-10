@@ -9,7 +9,7 @@ from django.conf import settings
 from django import forms
 
 def reduce_url_parts(a, b):
-    if a[-1] == "/":
+    if a and a[-1] == "/":
         return a + b
     return a + "/" + b
 

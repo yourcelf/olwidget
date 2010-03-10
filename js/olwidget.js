@@ -243,7 +243,7 @@ olwidget.BaseMap = OpenLayers.Class(OpenLayers.Map, {
                 }
             }
         }
-        var styleMap = new OpenLayers.StyleMap({'default': new OpenLayers.Style(opts.overlayStyle)});
+        var styleMap = new OpenLayers.StyleMap({'default': new OpenLayers.Style(opts.overlayStyle, opts.styleContext)});
 
         // Super constructor
         OpenLayers.Map.prototype.initialize.apply(this, [mapDiv.id, opts.mapOptions]);
@@ -253,8 +253,17 @@ olwidget.BaseMap = OpenLayers.Class(OpenLayers.Map, {
     },
     initCenter: function() {
         if (this.opts.zoomToDataExtent && this.vectorLayer.features.length > 0) {
-            if (this.vectorLayer.features.length == 1 &&
+            if (this.opts.cluster) {
+                var extent = this.vectorLayer.features[0].geometry.getBounds();
+                for (var i = 0; i < this.vectorLayer.features.length; i++) {
+                    for (var j = 0; j < this.vectorLayer.features[i].cluster.length; j++) {
+                        extent.extend(this.vectorLayer.features[i].cluster[j].geometry.getBounds());
+                    }
+                }
+                this.zoomToExtent(extent);
+            } else if (this.vectorLayer.features.length == 1 &&
                     this.vectorLayer.features[0].geometry.CLASS_NAME == "OpenLayers.Geometry.Point") {
+
                 this.setCenter(this.vectorLayer.features[0].geometry.getBounds().getCenterLonLat(), 
                                this.opts.defaultZoom);
             } else {
@@ -487,16 +496,7 @@ olwidget.InfoMap = OpenLayers.Class(olwidget.BaseMap, {
             popupDirection: 'auto',
             popupPaginationSeparator: ' of ',
             cluster: false,
-            clusterDisplay: "paginate",
-            clusterStyle: {
-                pointRadius: "${radius}",
-                strokeWidth: "${width}",
-                label: "${label}",
-                labelSelect: true,
-                fontSize: "11px",
-                fontFamily: "Helvetica, sans-serif",
-                fontColor: "#ffffff"
-            }
+            clusterDisplay: "paginate"
         };
 
         options = olwidget.deepJoinOptions(infomapDefaults, options);
@@ -525,7 +525,7 @@ olwidget.InfoMap = OpenLayers.Class(olwidget.BaseMap, {
                 if (typeof htmlInfo === "object") {
                     feature[k].attributes = htmlInfo
                     if (typeof htmlInfo.style !== "undefined") {
-                        feature[k].style = OpenLayers.Util.applyDefaults(htmlInfo.style, this.opts.overlayStyle);
+                        feature[k].style = OpenLayers.Util.applyDefaults(htmlInfo.style, this.opts.overlayStyleContext);
                     }
                 } else {
                     feature[k].attributes = { html: htmlInfo };
@@ -548,7 +548,16 @@ olwidget.InfoMap = OpenLayers.Class(olwidget.BaseMap, {
         this.select.activate();
     },
     addClusterStrategy: function() {
-        var style_context = {
+        var defaultClusterStyle = {
+                pointRadius: "${radius}",
+                strokeWidth: "${width}",
+                label: "${label}",
+                labelSelect: true,
+                fontSize: "11px",
+                fontFamily: "Helvetica, sans-serif",
+                fontColor: "#ffffff"
+        };
+        var context = {
             width: function(feature) {
                 return (feature.cluster) ? 2 : 1;
             },
@@ -572,16 +581,24 @@ olwidget.InfoMap = OpenLayers.Class(olwidget.BaseMap, {
                 return (feature.cluster && feature.cluster.length > 1) ? feature.cluster.length : '';
             }
         };
+        if (this.opts.overlayStyleContext !== undefined) {
+            OpenLayers.Util.applyDefaults(context, this.opts.overlayStyleContext);
+        }
 
         var defaultStyleOpts = OpenLayers.Util.applyDefaults(
-            OpenLayers.Util.applyDefaults({}, this.opts.clusterStyle), 
+            OpenLayers.Util.applyDefaults({}, defaultClusterStyle), 
             this.vectorLayer.styleMap.styles['default'].defaultStyle);
         var selectStyleOpts = OpenLayers.Util.applyDefaults(
-            OpenLayers.Util.applyDefaults({}, this.opts.clusterStyle),
+            OpenLayers.Util.applyDefaults({}, defaultClusterStyle),
             this.vectorLayer.styleMap.styles['select'].defaultStyle);
+        if (this.opts.clusterStyle !== undefined) {
+            defaultStyleOpts = olwidget.deepJoinOptions(defaultStyleOpts, this.opts.clusterStyle);
+            selectStyleOpts = olwidget.deepJoinOptions(selectStyleOpts, this.opts.clusterStyle);
+            window['console'] && console.warn("olwidget: ``clusterStyle`` option is deprecated.  Use ``overlayStyle`` instead.");
+        }
 
-        var defaultStyle = new OpenLayers.Style(defaultStyleOpts, {context: style_context});
-        var selectStyle = new OpenLayers.Style(selectStyleOpts, {context: style_context});
+        var defaultStyle = new OpenLayers.Style(defaultStyleOpts, {context: context});
+        var selectStyle = new OpenLayers.Style(selectStyleOpts, {context: context});
         this.removeLayer(this.vectorLayer);
         this.vectorLayer = new OpenLayers.Layer.Vector(this.opts.name, { 
             styleMap: new OpenLayers.StyleMap({ 'default': defaultStyle, 'select': selectStyle }),
@@ -827,7 +844,7 @@ olwidget.Popup = OpenLayers.Class(OpenLayers.Popup.Framed, {
 
                 var count = document.createElement("div");
                 count.className = "olwidgetPaginationCount";
-                count.innerHTML = (this.page + 1) + " of " + this.contentHTML.length;
+                count.innerHTML = (this.page + 1) + this.separator + this.contentHTML.length;
                 var next = document.createElement("div");
                 next.className = "olwidgetPaginationNext";
                 next.innerHTML = "next";
