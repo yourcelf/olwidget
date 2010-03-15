@@ -1,0 +1,15 @@
+    <div id="{{ id }}"></div>
+    <script type='text/javascript'>
+        new olwidget.InfoMap("{{ id }}", {{ info_array|safe }}, 
+            OpenLayers.Util.applyDefaults({{ map_opts|safe }}, {
+                overlayStyle: { fillColor: "${specialAttributeHandler}" },
+                overlayStyleContext: {
+                    specialAttributeHandler: function(feature) {
+                        return "#0000ff";
+                    }
+                }
+            })
+        );
+    </script>
+
+

@@ -243,7 +243,10 @@ olwidget.BaseMap = OpenLayers.Class(OpenLayers.Map, {
                 }
             }
         }
-        var styleMap = new OpenLayers.StyleMap({'default': new OpenLayers.Style(opts.overlayStyle, opts.styleContext)});
+        var styleMap = new OpenLayers.StyleMap({'default': 
+            new OpenLayers.Style(opts.overlayStyle, {
+                context: opts.overlayStyleContext
+            })});
 
         // Super constructor
         OpenLayers.Map.prototype.initialize.apply(this, [mapDiv.id, opts.mapOptions]);
@@ -525,7 +528,8 @@ olwidget.InfoMap = OpenLayers.Class(olwidget.BaseMap, {
                 if (typeof htmlInfo === "object") {
                     feature[k].attributes = htmlInfo
                     if (typeof htmlInfo.style !== "undefined") {
-                        feature[k].style = OpenLayers.Util.applyDefaults(htmlInfo.style, this.opts.overlayStyleContext);
+                        feature[k].style = OpenLayers.Util.applyDefaults(htmlInfo.style, {
+                            context: this.opts.overlayStyleContext});
                     }
                 } else {
                     feature[k].attributes = { html: htmlInfo };
