@@ -113,6 +113,14 @@ def point_infomodel(request):
     map = InfoMap(geoms)
     return render_to_response("testolwidget/info_maps.html", {'map': map})
 
+def per_point_style_cluster_infomodel(request):
+    geoms = []
+    for point in PointModel.objects.all():
+        geoms.append([point.point, '%s' % point.point])
+
+    map = InfoMap(geoms, template="testolwidget/style_info.html")
+    return render_to_response("testolwidget/info_maps.html", {'map': map})
+
 def style_infomodel(request):
     geoms = []
     for i, point in enumerate(PointModel.objects.all()):

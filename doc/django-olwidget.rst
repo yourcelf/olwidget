@@ -255,6 +255,12 @@ The following options are shared by all ``olwidget`` map types:
     * ``display``: (string) Can be set to ``none`` to hide features from
       rendering.
 
+``overlay_style_context`` (dict)
+    A dict containing javascript functions which expand symbolizers in
+    ``overlay_style``.  See 
+    `this example <examples/info_cluster_per_point_style.html>`_ for a
+    javascript usage example.
+
 ``map_div_class`` (string; default ``''``) 
     A CSS class name to add to the div which is created to contain the map.
 ``map_div_style`` (dict, default ``{width: '600px', height: '400px'}``)  

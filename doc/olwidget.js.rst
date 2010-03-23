@@ -80,7 +80,7 @@ Info Maps
 * Popups `inside and outside map viewport <examples/info_inside_outside.html>`_
 * Info map with `image markers <examples/info_markers.html>`_
 * Info map with `different styles per geometry <examples/info_per_point_style.html>`_
-
+* Info map with `clustered points and per-geometry styles <examples/info_cluster_per_point_style.html>`_
 
 Documentation
 ~~~~~~~~~~~~~
@@ -170,22 +170,6 @@ following options:
     * ``'paginate'`` -- adds a pagination control to the popup to click through
       the different points' HTML.
 
-``clusterStyle`` (object)
-    The default style is::
-
-        { 
-            pointRadius: "${radius}",
-            strokeWidth: "${width}",
-            label: "${label}",
-            fontSize: "11px",
-            fontFamily: "Helvetica, sans-serif",
-            fontColor: "#ffffff" 
-        }
-
-    The arguments expressed with ``${}`` are programmatically replaced with
-    values based on the cluster.  Setting them to specific values will prevent
-    this programatic replacement.
-
 .. _options:
 
 Common options
@@ -222,8 +206,11 @@ The following options are shared by ``olwidget.EditableMap`` and
     ``defaultZoom``, ``defaultLat``, and ``defaultLon``.  If no vector data is
     present, the map will use the defaults.
 ``overlayStyle`` (object) 
-    A list of style definitions for the geometry overlays.  See 
+    An object with style definitions for the geometry overlays.  See 
     `OpenLayers styling <http://docs.openlayers.org/library/feature_styling.html>`_.
+``overlayStyleContext`` (object)
+    An object with functions which expand ``'${var}'`` symbolizers in style
+    definitions.  See `OpenLayers Style context <http://dev.openlayers.org/docs/files/OpenLayers/Style-js.html#OpenLayers.Style.context>`_.  
 ``mapDivClass`` (string; default ``''``) 
     A CSS class name to add to the div which is created to contain the map.
 ``mapDivStyle`` (object, default ``{width: '600px', height: '400px'}``)  

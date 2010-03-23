@@ -27,8 +27,13 @@
                 }
 
             }
-            var map = new olwidget.InfoMap('map', data, { cluster: true }); 
-            map.zoomTo(3);
+            var map = new olwidget.InfoMap('map', data, { 
+                cluster: true,
+                // Testing deprecation warning.  Don't use this option.
+                clusterStyle: {
+                    fillColor: "#ff0000"
+                }
+            }); 
         //]]></script>
     </body>
 </html>
