@@ -179,7 +179,6 @@ olwidget.BaseMap = OpenLayers.Class(OpenLayers.Map, {
         var defaults = {
             mapOptions: {
                 units: 'm',
-                maxResolution: 156543.0339,
                 projection: "EPSG:900913",
                 displayProjection: "EPSG:4326",
                 maxExtent: [-20037508.34, -20037508.34, 20037508.34, 20037508.34],
@@ -297,7 +296,9 @@ olwidget.EditableMap = OpenLayers.Class(olwidget.BaseMap, {
         }
 
         this.initWKT();
-        this.initCenter();
+        if (this.opts.layers.length > 0) {
+            this.initCenter();
+        }
         this.initControls();
     },
     initWKT: function() {
