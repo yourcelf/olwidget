@@ -22,6 +22,7 @@ def url_join(*args):
 api_defaults = {
     'GOOGLE_API_KEY': "",
     'YAHOO_APP_ID': "",
+    'CLOUDMADE_API_KEY': "",
     'OLWIDGET_MEDIA_URL': url_join(settings.MEDIA_URL, "olwidget"),
     'GOOGLE_API': "http://maps.google.com/maps?file=api&v=2",
     'YAHOO_API': "http://api.maps.yahoo.com/ajaxymap?v=3.0",
@@ -29,6 +30,8 @@ api_defaults = {
     'OL_API': "http://openlayers.org/api/2.8/OpenLayers.js",
     'MS_VE_API' : "http://dev.virtualearth.net/mapcontrol/mapcontrol.ashx?v=6.1",
 }
+api_defaults['CLOUDMADE_API'] = url_join(api_defaults['OLWIDGET_MEDIA_URL'], 
+        "js/cloudmade.js")
 
 for key, default in api_defaults.iteritems():
     if not hasattr(settings, key):
@@ -74,6 +77,8 @@ class MapMixin(object):
                 js.add(settings.YAHOO_API + "&appid=%s" % settings.YAHOO_APP_ID)
             elif layer.startswith("ve."):
                 js.add(settings.MS_VE_API)
+            elif layer.startswith("cloudmade."):
+                js.add(settings.CLOUDMADE_API + "#" + settings.CLOUDMADE_API_KEY)
         js = [settings.OL_API, OLWIDGET_JS] + list(js)
         return forms.Media(css={'all': (OLWIDGET_CSS,)}, js=js)
     media = property(_media)

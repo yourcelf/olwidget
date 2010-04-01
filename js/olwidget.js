@@ -62,25 +62,28 @@ var olwidget = {
      * Constructors for layers
      */
     wms: {
-        map: function() {
-            return new OpenLayers.Layer.WMS(
-                    "OpenLayers WMS",
-                    "http://labs.metacarta.com/wms/vmap0",
-                    {layers: 'basic'}
-            );
-        },
-        nasa: function() {
-            return new OpenLayers.Layer.WMS(
-                    "NASA Global Mosaic",
-                    "http://t1.hypercube.telascience.org/cgi-bin/landsat7",
-                    {layers: "landsat7"}
-            );
-        },
-        blank: function() {
-            return new OpenLayers.Layer("", {isBaseLayer: true});
+        map: function(type) {
+            if (type === "map") {
+                return new OpenLayers.Layer.WMS(
+                        "OpenLayers WMS",
+                        "http://labs.metacarta.com/wms/vmap0",
+                        {layers: 'basic'}
+                );
+            } else if (type === "nasa") {
+                return new OpenLayers.Layer.WMS(
+                        "NASA Global Mosaic",
+                        "http://t1.hypercube.telascience.org/cgi-bin/landsat7",
+                        {layers: "landsat7"}
+                );
+            } else if (type === "blank") {
+                return new OpenLayers.Layer("", {isBaseLayer: true});
+            }
         }
     },
     osm: {
+        map: function(type) {
+            return this[type]();
+        },
         mapnik: function() {
             // Not using OpenLayers.Layer.OSM.Mapnik constructor because of
             // an IE6 bug.  This duplicates that constructor.
@@ -98,6 +101,9 @@ var olwidget = {
         }
     },
     google: {
+        map: function(type) {
+            return this[type]();
+        },
         streets: function() {
             return new OpenLayers.Layer.Google("Google Streets", 
                     {sphericalMercator: true, numZoomLevels: 20});
@@ -108,7 +114,8 @@ var olwidget = {
         },
         satellite: function() {
             return new OpenLayers.Layer.Google("Google Satellite", 
-                    {sphericalMercator: true, type: G_SATELLITE_MAP});
+                    {sphericalMercator: true, type: G_SATELLITE_MAP,
+                        numZoomLevels: 22});
         },
         hybrid: function() {
             return new OpenLayers.Layer.Google("Google Hybrid", 
@@ -116,13 +123,13 @@ var olwidget = {
         }
     },
     yahoo: {
-        map: function() {
+        map: function(type) {
             return new OpenLayers.Layer.Yahoo("Yahoo", 
                     {sphericalMercator: true, numZoomLevels: 20});
         }
     },
     ve: {
-        map: function(type, typeName) {
+        map: function(type) {
             /* 
                VE does not play nice with vector layers at zoom level 1.
                Also, map may need "panMethod: OpenLayers.Easing.Linear.easeOut"
@@ -132,13 +139,23 @@ var olwidget = {
 
             */
                 
-            return new OpenLayers.Layer.VirtualEarth("Microsoft VE (" + typeName + ")", 
-                {sphericalMercator: true, minZoomLevel: 2, type: type });
+            var typeCode = this.types[type]();
+            return new OpenLayers.Layer.VirtualEarth("Microsoft VE (" + type + ")", 
+                {sphericalMercator: true, minZoomLevel: 2, type: typeCode });
         },
-        road: function() { return this.map(VEMapStyle.Road, "Road"); },
-        shaded: function() { return this.map(VEMapStyle.Shaded, "Shaded"); },
-        aerial: function() { return this.map(VEMapStyle.Aerial, "Aerial"); },
-        hybrid: function() { return this.map(VEMapStyle.Hybrid, "Hybrid"); }
+        types: {
+            road: function() { return VEMapStyle.Road },
+            shaded: function() { return VEMapStyle.Shaded },
+            aerial: function() { return VEMapStyle.Aerial },
+            hybrid: function() { return VEMapStyle.Hybrid },
+        }
+    },
+    cloudmade: {
+        map: function(type) {
+            return new OpenLayers.Layer.CloudMade("CloudMade", {
+                styleId: type
+            });
+        }
     },
 
 
@@ -233,7 +250,7 @@ olwidget.BaseMap = OpenLayers.Class(OpenLayers.Map, {
         var layers = [];
         for (var i = 0; i < opts.layers.length; i++) {
             var parts = opts.layers[i].split(".");
-            layers.push(olwidget[parts[0]][parts[1]]());
+            layers.push(olwidget[parts[0]].map(parts[1]));
             
             // workaround for problems with Microsoft layers and vector layer drift
             // (see http://openlayers.com/dev/examples/ve-novibrate.html)
