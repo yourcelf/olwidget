@@ -55,5 +55,5 @@ class MultiLinestringModel(models.Model):
     def get_absolute_url(self):
         return reverse("testolwidget-show-multilinestringmodel", args=[self.id])
 
-    def get_absolute_url(self):
+    def get_edit_url(self):
         return reverse("testolwidget-edit-multilinestringmodel", args=[self.id])
