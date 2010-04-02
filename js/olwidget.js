@@ -78,6 +78,7 @@ var olwidget = {
             } else if (type === "blank") {
                 return new OpenLayers.Layer("", {isBaseLayer: true});
             }
+            return false;
         }
     },
     osm: {
@@ -147,7 +148,7 @@ var olwidget = {
             road: function() { return VEMapStyle.Road },
             shaded: function() { return VEMapStyle.Shaded },
             aerial: function() { return VEMapStyle.Aerial },
-            hybrid: function() { return VEMapStyle.Hybrid },
+            hybrid: function() { return VEMapStyle.Hybrid }
         }
     },
     cloudmade: {
