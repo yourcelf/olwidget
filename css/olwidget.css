@@ -110,3 +110,7 @@ div.olControlEditingToolbar {
 .olwidgetPopupStemBL, .olwidgetPopupStemBR {
     background: url("../img/popup_icons.png") no-repeat scroll -96px 0px;
 }
+/* Put the attribution in a less obtrusive position. */
+.olControlAttribution {
+    bottom: 0em !important;
+}
