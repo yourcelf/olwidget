@@ -1,314 +1,70 @@
-<?xml version="1.0" encoding="utf-8" ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<meta name="generator" content="Docutils 0.5: http://docutils.sourceforge.net/" />
-<title>olwidget.js v0.3</title>
-<style type="text/css">
-
-/*
-:Author: David Goodger (goodger@python.org)
-:Id: $Id: html4css1.css 5196 2007-06-03 20:25:28Z wiemann $
-:Copyright: This stylesheet has been placed in the public domain.
-
-Default cascading style sheet for the HTML output of Docutils.
-
-See http://docutils.sf.net/docs/howto/html-stylesheets.html for how to
-customize this style sheet.
-*/
-
-/* used to remove borders from tables and images */
-.borderless, table.borderless td, table.borderless th {
-  border: 0 }
-
-table.borderless td, table.borderless th {
-  /* Override padding for "table.docutils td" with "! important".
-     The right padding separates the table cells. */
-  padding: 0 0.5em 0 0 ! important }
-
-.first {
-  /* Override more specific margin styles with "! important". */
-  margin-top: 0 ! important }
-
-.last, .with-subtitle {
-  margin-bottom: 0 ! important }
-
-.hidden {
-  display: none }
-
-a.toc-backref {
-  text-decoration: none ;
-  color: black }
-
-blockquote.epigraph {
-  margin: 2em 5em ; }
-
-dl.docutils dd {
-  margin-bottom: 0.5em }
-
-/* Uncomment (and remove this text!) to get bold-faced definition list terms
-dl.docutils dt {
-  font-weight: bold }
-*/
-
-div.abstract {
-  margin: 2em 5em }
-
-div.abstract p.topic-title {
-  font-weight: bold ;
-  text-align: center }
-
-div.admonition, div.attention, div.caution, div.danger, div.error,
-div.hint, div.important, div.note, div.tip, div.warning {
-  margin: 2em ;
-  border: medium outset ;
-  padding: 1em }
-
-div.admonition p.admonition-title, div.hint p.admonition-title,
-div.important p.admonition-title, div.note p.admonition-title,
-div.tip p.admonition-title {
-  font-weight: bold ;
-  font-family: sans-serif }
-
-div.attention p.admonition-title, div.caution p.admonition-title,
-div.danger p.admonition-title, div.error p.admonition-title,
-div.warning p.admonition-title {
-  color: red ;
-  font-weight: bold ;
-  font-family: sans-serif }
-
-/* Uncomment (and remove this text!) to get reduced vertical space in
-   compound paragraphs.
-div.compound .compound-first, div.compound .compound-middle {
-  margin-bottom: 0.5em }
-
-div.compound .compound-last, div.compound .compound-middle {
-  margin-top: 0.5em }
-*/
-
-div.dedication {
-  margin: 2em 5em ;
-  text-align: center ;
-  font-style: italic }
-
-div.dedication p.topic-title {
-  font-weight: bold ;
-  font-style: normal }
-
-div.figure {
-  margin-left: 2em ;
-  margin-right: 2em }
-
-div.footer, div.header {
-  clear: both;
-  font-size: smaller }
-
-div.line-block {
-  display: block ;
-  margin-top: 1em ;
-  margin-bottom: 1em }
-
-div.line-block div.line-block {
-  margin-top: 0 ;
-  margin-bottom: 0 ;
-  margin-left: 1.5em }
-
-div.sidebar {
-  margin: 0 0 0.5em 1em ;
-  border: medium outset ;
-  padding: 1em ;
-  background-color: #ffffee ;
-  width: 40% ;
-  float: right ;
-  clear: right }
-
-div.sidebar p.rubric {
-  font-family: sans-serif ;
-  font-size: medium }
-
-div.system-messages {
-  margin: 5em }
-
-div.system-messages h1 {
-  color: red }
-
-div.system-message {
-  border: medium outset ;
-  padding: 1em }
-
-div.system-message p.system-message-title {
-  color: red ;
-  font-weight: bold }
-
-div.topic {
-  margin: 2em }
-
-h1.section-subtitle, h2.section-subtitle, h3.section-subtitle,
-h4.section-subtitle, h5.section-subtitle, h6.section-subtitle {
-  margin-top: 0.4em }
-
-h1.title {
-  text-align: center }
-
-h2.subtitle {
-  text-align: center }
-
-hr.docutils {
-  width: 75% }
-
-img.align-left {
-  clear: left }
-
-img.align-right {
-  clear: right }
-
-ol.simple, ul.simple {
-  margin-bottom: 1em }
-
-ol.arabic {
-  list-style: decimal }
-
-ol.loweralpha {
-  list-style: lower-alpha }
-
-ol.upperalpha {
-  list-style: upper-alpha }
-
-ol.lowerroman {
-  list-style: lower-roman }
-
-ol.upperroman {
-  list-style: upper-roman }
-
-p.attribution {
-  text-align: right ;
-  margin-left: 50% }
-
-p.caption {
-  font-style: italic }
-
-p.credits {
-  font-style: italic ;
-  font-size: smaller }
-
-p.label {
-  white-space: nowrap }
-
-p.rubric {
-  font-weight: bold ;
-  font-size: larger ;
-  color: maroon ;
-  text-align: center }
-
-p.sidebar-title {
-  font-family: sans-serif ;
-  font-weight: bold ;
-  font-size: larger }
-
-p.sidebar-subtitle {
-  font-family: sans-serif ;
-  font-weight: bold }
-
-p.topic-title {
-  font-weight: bold }
-
-pre.address {
-  margin-bottom: 0 ;
-  margin-top: 0 ;
-  font-family: serif ;
-  font-size: 100% }
-
-pre.literal-block, pre.doctest-block {
-  margin-left: 2em ;
-  margin-right: 2em }
-
-span.classifier {
-  font-family: sans-serif ;
-  font-style: oblique }
-
-span.classifier-delimiter {
-  font-family: sans-serif ;
-  font-weight: bold }
-
-span.interpreted {
-  font-family: sans-serif }
-
-span.option {
-  white-space: nowrap }
-
-span.pre {
-  white-space: pre }
-
-span.problematic {
-  color: red }
-
-span.section-subtitle {
-  /* font-size relative to parent (h1..h6 element) */
-  font-size: 80% }
-
-table.citation {
-  border-left: solid 1px gray;
-  margin-left: 1px }
-
-table.docinfo {
-  margin: 2em 4em }
-
-table.docutils {
-  margin-top: 0.5em ;
-  margin-bottom: 0.5em }
-
-table.footnote {
-  border-left: solid 1px black;
-  margin-left: 1px }
-
-table.docutils td, table.docutils th,
-table.docinfo td, table.docinfo th {
-  padding-left: 0.5em ;
-  padding-right: 0.5em ;
-  vertical-align: top }
-
-table.docutils th.field-name, table.docinfo th.docinfo-name {
-  font-weight: bold ;
-  text-align: left ;
-  white-space: nowrap ;
-  padding-left: 0 }
-
-h1 tt.docutils, h2 tt.docutils, h3 tt.docutils,
-h4 tt.docutils, h5 tt.docutils, h6 tt.docutils {
-  font-size: 100% }
-
-ul.auto-toc {
-  list-style-type: none }
-
-</style>
-</head>
-<body>
-<div class="document" id="olwidget-js-v0-3">
-<h1 class="title">olwidget.js v0.3</h1>
-
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>olwidget.js documentation &mdash; olwidget v0.3 documentation</title>
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.3',
+        COLLAPSE_MODINDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="olwidget v0.3 documentation" href="index.html" />
+    <link rel="next" title="Examples" href="examples.html" />
+    <link rel="prev" title="django-olwidget documentation" href="django-olwidget.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="examples.html" title="Examples"
+             accesskey="N">next</a></li>
+        <li class="right" >
+          <a href="django-olwidget.html" title="django-olwidget documentation"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">olwidget v0.3 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="olwidget-js-documentation">
+<span id="olwidget-js"></span><h1><a class="toc-backref" href="#id1">olwidget.js documentation</a><a class="headerlink" href="#olwidget-js-documentation" title="Permalink to this headline">¶</a></h1>
 <p>Note: the API has changed.  See a list of <a class="reference external" href="backwards_incompatible_changes.html">backwards incompatible changes</a> if you are upgrading.</p>
 <div class="contents topic" id="contents">
 <p class="topic-title first">Contents</p>
 <ul class="simple">
-<li><a class="reference internal" href="#introduction" id="id1">Introduction</a></li>
-<li><a class="reference internal" href="#installation" id="id2">Installation</a></li>
-<li><a class="reference internal" href="#examples" id="id3">Examples</a><ul>
-<li><a class="reference internal" href="#editable-maps" id="id4">Editable Maps</a></li>
-<li><a class="reference internal" href="#info-maps" id="id5">Info Maps</a></li>
+<li><a class="reference internal" href="#olwidget-js-documentation" id="id1">olwidget.js documentation</a><ul>
+<li><a class="reference internal" href="#introduction" id="id2">Introduction</a></li>
+<li><a class="reference internal" href="#installation" id="id3">Installation</a></li>
+<li><a class="reference internal" href="#examples" id="id4">Examples</a></li>
+<li><a class="reference internal" href="#documentation" id="id5">Documentation</a><ul>
+<li><a class="reference internal" href="#olwidget-editablemap-constructor" id="id6">olwidget.EditableMap constructor</a></li>
+<li><a class="reference internal" href="#olwidget-infomap-constructor" id="id7">olwidget.InfoMap constructor</a></li>
+<li><a class="reference internal" href="#common-options" id="id8">Common options</a></li>
+<li><a class="reference internal" href="#projections" id="id9">Projections</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#documentation" id="id6">Documentation</a><ul>
-<li><a class="reference internal" href="#olwidget-editablemap-constructor" id="id7">olwidget.EditableMap constructor</a></li>
-<li><a class="reference internal" href="#olwidget-infomap-constructor" id="id8">olwidget.InfoMap constructor</a></li>
-<li><a class="reference internal" href="#common-options" id="id9">Common options</a></li>
-<li><a class="reference internal" href="#projections" id="id10">Projections</a></li>
 </ul>
 </li>
 </ul>
 </div>
 <div class="section" id="introduction">
-<h1><a class="toc-backref" href="#id1">Introduction</a></h1>
+<h2><a class="toc-backref" href="#id2">Introduction</a><a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
 <p><tt class="docutils literal"><span class="pre">olwidget</span></tt> is a javascript library to make editing and displaying geometries
 and information on OpenLayers maps easier.  It defines two primary types:</p>
 <ul class="simple">
@@ -320,77 +76,54 @@ such as <a class="reference external" href="http://postgis.refractions.net/">Pos
 <li><tt class="docutils literal"><span class="pre">olwidget.InfoMap</span></tt> is a map class that displays popup info-windows over
 geometries when clicked.  The popups are stylable using CSS, work with
 clustered as well as non-clustered points, and can be shown both inside
-and outside the Map's &quot;viewport&quot;.</li>
+and outside the Map&#8217;s &#8220;viewport&#8221;.</li>
 </ul>
 <p><tt class="docutils literal"><span class="pre">olwidget</span></tt> supports multiple geometry types, any number of maps per page,
 multiple map providers, and much more (see <a class="reference internal" href="#common-options">Common options</a> below).  A simple
 example:</p>
-<pre class="literal-block">
-&lt;html&gt;
-    &lt;head&gt;
-        &lt;script type='text/javascript' src='http://openlayers.org/api/2.8/OpenLayers.js'&gt;&lt;/script&gt;
-        &lt;script type='text/javascript' src='http://openstreetmap.org/openlayers/OpenStreetMap.js'&gt;&lt;/script&gt;
-        &lt;script type='text/javascript' src='js/olwidget.js'&gt;&lt;/script&gt;
-        &lt;link rel='stylesheet' href='css/olwidget.css' /&gt;
-    &lt;/head&gt;
-    &lt;body&gt;
-        &lt;!-- a map with an editable overlay --&gt;
-        &lt;textarea id='my_point'&gt;SRID=4326;POINT(0 0)&lt;/textarea&gt;
-        &lt;script type='text/javascript'&gt;
-            new olwidget.EditableMap('my_point', {name: 'My Point'});
-        &lt;/script&gt;
+<div class="highlight-html"><div class="highlight"><pre><span class="nt">&lt;html&gt;</span>
+    <span class="nt">&lt;head&gt;</span>
+        <span class="nt">&lt;script </span><span class="na">type=</span><span class="s">&#39;text/javascript&#39;</span> <span class="na">src=</span><span class="s">&#39;http://openlayers.org/api/2.8/OpenLayers.js&#39;</span><span class="nt">&gt;&lt;/script&gt;</span>
+        <span class="nt">&lt;script </span><span class="na">type=</span><span class="s">&#39;text/javascript&#39;</span> <span class="na">src=</span><span class="s">&#39;http://openstreetmap.org/openlayers/OpenStreetMap.js&#39;</span><span class="nt">&gt;&lt;/script&gt;</span>
+        <span class="nt">&lt;script </span><span class="na">type=</span><span class="s">&#39;text/javascript&#39;</span> <span class="na">src=</span><span class="s">&#39;js/olwidget.js&#39;</span><span class="nt">&gt;&lt;/script&gt;</span>
+        <span class="nt">&lt;link</span> <span class="na">rel=</span><span class="s">&#39;stylesheet&#39;</span> <span class="na">href=</span><span class="s">&#39;css/olwidget.css&#39;</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;/head&gt;</span>
+    <span class="nt">&lt;body&gt;</span>
+        <span class="c">&lt;!-- a map with an editable overlay --&gt;</span>
+        <span class="nt">&lt;textarea</span> <span class="na">id=</span><span class="s">&#39;my_point&#39;</span><span class="nt">&gt;</span>SRID=4326;POINT(0 0)<span class="nt">&lt;/textarea&gt;</span>
+        <span class="nt">&lt;script </span><span class="na">type=</span><span class="s">&#39;text/javascript&#39;</span><span class="nt">&gt;</span>
+            <span class="k">new</span> <span class="nx">olwidget</span><span class="p">.</span><span class="nx">EditableMap</span><span class="p">(</span><span class="s1">&#39;my_point&#39;</span><span class="o">,</span> <span class="p">{</span><span class="nx">name</span><span class="o">:</span> <span class="s1">&#39;My Point&#39;</span><span class="p">});</span>
+        <span class="nt">&lt;/script&gt;</span>
 
-        &lt;!-- a map displaying an info popup over a geometry --&gt;
-        &lt;div id='map'&gt;&lt;/div&gt;
-        &lt;script type='text/javascript'&gt;
-            new olwidget.InfoMap('map', [
-                ['SRID=4326;POINT(0 0)', &quot;&lt;p&gt;Here at the zero point!&lt;/p&gt;&quot;]
-            ]);
-        &lt;/script&gt;
-    &lt;/body&gt;
-&lt;/html&gt;
-</pre>
+        <span class="c">&lt;!-- a map displaying an info popup over a geometry --&gt;</span>
+        <span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">&#39;map&#39;</span><span class="nt">&gt;&lt;/div&gt;</span>
+        <span class="nt">&lt;script </span><span class="na">type=</span><span class="s">&#39;text/javascript&#39;</span><span class="nt">&gt;</span>
+            <span class="k">new</span> <span class="nx">olwidget</span><span class="p">.</span><span class="nx">InfoMap</span><span class="p">(</span><span class="s1">&#39;map&#39;</span><span class="o">,</span> <span class="p">[</span>
+                <span class="p">[</span><span class="s1">&#39;SRID=4326;POINT(0 0)&#39;</span><span class="o">,</span> <span class="s2">&quot;&lt;p&gt;Here at the zero point!&lt;/p&gt;&quot;</span><span class="p">]</span>
+            <span class="p">]);</span>
+        <span class="nt">&lt;/script&gt;</span>
+    <span class="nt">&lt;/body&gt;</span>
+<span class="nt">&lt;/html&gt;</span>
+</pre></div>
+</div>
 </div>
 <div class="section" id="installation">
-<h1><a class="toc-backref" href="#id2">Installation</a></h1>
+<h2><a class="toc-backref" href="#id3">Installation</a><a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
 <p>Copy or link the olwidget/js/, olwidget/css/, and olwidget/img/ directories
-into your website's path.  The three directories should share a parent.</p>
+into your website&#8217;s path.  The three directories should share a parent.</p>
 </div>
 <div class="section" id="examples">
-<h1><a class="toc-backref" href="#id3">Examples</a></h1>
-<div class="section" id="editable-maps">
-<h2><a class="toc-backref" href="#id4">Editable Maps</a></h2>
-<ul class="simple">
-<li><a class="reference external" href="examples/simple.html">Simple example</a></li>
-<li><a class="reference external" href="examples/collection.html">Collections</a> of multiple geometries.</li>
-<li>Read only maps and <a class="reference external" href="examples/read_only_and_multiple_maps.html">multiple maps per page</a></li>
-<li>Custom <a class="reference external" href="examples/custom_start_point_and_colors.html">starting locations and colors</a></li>
-<li><a class="reference external" href="examples/other_providers.html">Other map providers</a>, including Google,
-Yahoo, Microsoft VE, OpenStreetMaps, MetaCarta, and CloudMade.</li>
-<li><a class="reference external" href="examples/multiple_geometries.html">Multiple geometry types</a></li>
-<li><a class="reference external" href="examples/other_projections.html">Other projections</a></li>
-</ul>
-</div>
-<div class="section" id="info-maps">
-<h2><a class="toc-backref" href="#id5">Info Maps</a></h2>
-<ul class="simple">
-<li><a class="reference external" href="examples/info_geometries.html">Info popups over geometries</a></li>
-<li><a class="reference external" href="examples/info_cluster.html">Clustered points</a></li>
-<li>Popups <a class="reference external" href="examples/info_inside_outside.html">inside and outside map viewport</a></li>
-<li>Info map with <a class="reference external" href="examples/info_markers.html">image markers</a></li>
-<li>Info map with <a class="reference external" href="examples/info_per_point_style.html">different styles per geometry</a></li>
-<li>Info map with <a class="reference external" href="examples/info_cluster_per_point_style.html">clustered points and per-geometry styles</a></li>
-</ul>
-</div>
+<h2><a class="toc-backref" href="#id4">Examples</a><a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<p>See <a class="reference external" href="examples.html#examples"><em>Examples</em></a> for several examples of olwidget in action.</p>
 </div>
 <div class="section" id="documentation">
-<h1><a class="toc-backref" href="#id6">Documentation</a></h1>
+<h2><a class="toc-backref" href="#id5">Documentation</a><a class="headerlink" href="#documentation" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="olwidget-editablemap-constructor">
-<h2><a class="toc-backref" href="#id7">olwidget.EditableMap constructor</a></h2>
+<h3><a class="toc-backref" href="#id6">olwidget.EditableMap constructor</a><a class="headerlink" href="#olwidget-editablemap-constructor" title="Permalink to this headline">¶</a></h3>
 <p>Format:</p>
-<pre class="literal-block">
-new olwidget.EditableMap(&lt;textareaId&gt;, [options]);
-</pre>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="k">new</span> <span class="nx">olwidget</span><span class="p">.</span><span class="nx">EditableMap</span><span class="p">(</span><span class="o">&lt;</span><span class="nx">textareaId</span><span class="o">&gt;,</span> <span class="p">[</span><span class="nx">options</span><span class="p">]);</span>
+</pre></div>
+</div>
 <ul class="simple">
 <li><tt class="docutils literal"><span class="pre">textareaId</span></tt>: the DOM id of the textarea to replace</li>
 <li><tt class="docutils literal"><span class="pre">options</span></tt>: An object containing options for the resulting map.  All fields
@@ -412,35 +145,35 @@ array such as <tt class="docutils literal"><span class="pre">['point',</span> <s
 </dl>
 </div>
 <div class="section" id="olwidget-infomap-constructor">
-<h2><a class="toc-backref" href="#id8">olwidget.InfoMap constructor</a></h2>
+<h3><a class="toc-backref" href="#id7">olwidget.InfoMap constructor</a><a class="headerlink" href="#olwidget-infomap-constructor" title="Permalink to this headline">¶</a></h3>
 <p>Format:</p>
-<pre class="literal-block">
-new olwidget.InfoMap(&lt;mapDivId&gt;, &lt;infoArray&gt;, [options]);
-</pre>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="k">new</span> <span class="nx">olwidget</span><span class="p">.</span><span class="nx">InfoMap</span><span class="p">(</span><span class="o">&lt;</span><span class="nx">mapDivId</span><span class="o">&gt;,</span> <span class="o">&lt;</span><span class="nx">infoArray</span><span class="o">&gt;,</span> <span class="p">[</span><span class="nx">options</span><span class="p">]);</span>
+</pre></div>
+</div>
 <ul>
 <li><p class="first"><tt class="docutils literal"><span class="pre">mapDivId</span></tt>: the DOM id of a div to replace with this map.</p>
 </li>
-<li><p class="first"><tt class="docutils literal"><span class="pre">infoArray</span></tt>: an Array of (E)WKT geometries and content HTML for popups, such as</p>
-<pre class="literal-block">
-[
-    [&quot;SRID=4326;POINT(0 0)&quot;, &quot;&lt;p&gt;This is the zero point.&lt;/p&gt;&quot;],
-    [&quot;SRID=4326;POINT(10 10)&quot;, &quot;&lt;p&gt;This is longitude 10 and latitude 10.&lt;/p&gt;&quot;],
-    ...
-]
-</pre>
+<li><p class="first"><tt class="docutils literal"><span class="pre">infoArray</span></tt>: an Array of (E)WKT geometries and content HTML for popups, such as:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="p">[</span>
+    <span class="p">[</span><span class="s2">&quot;SRID=4326;POINT(0 0)&quot;</span><span class="o">,</span> <span class="s2">&quot;&lt;p&gt;This is the zero point.&lt;/p&gt;&quot;</span><span class="p">]</span><span class="o">,</span>
+    <span class="p">[</span><span class="s2">&quot;SRID=4326;POINT(10 10)&quot;</span><span class="o">,</span> <span class="s2">&quot;&lt;p&gt;This is longitude 10 and latitude 10.&lt;/p&gt;&quot;</span><span class="p">]</span><span class="o">,</span>
+    <span class="p">...</span>
+<span class="p">]</span>
+</pre></div>
+</div>
 <p>Geometries can be displayed with individual styles by passing an object
 containing <tt class="docutils literal"><span class="pre">html</span></tt> and <tt class="docutils literal"><span class="pre">style</span></tt> keys instead of an HTML string:</p>
-<pre class="literal-block">
-[
-    [&quot;SRID=4326;POINT(10 10)&quot;, {
-        html: &quot;&lt;p&gt;A good looking point&lt;/p&gt;&quot;,
-        style: {
-            fillColor: '#00FF00'
-        }
-    }],
-    ...
-]
-</pre>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="p">[</span>
+    <span class="p">[</span><span class="s2">&quot;SRID=4326;POINT(10 10)&quot;</span><span class="o">,</span> <span class="p">{</span>
+        <span class="nx">html</span><span class="o">:</span> <span class="s2">&quot;&lt;p&gt;A good looking point&lt;/p&gt;&quot;</span><span class="o">,</span>
+        <span class="nx">style</span><span class="o">:</span> <span class="p">{</span>
+            <span class="nx">fillColor</span><span class="o">:</span> <span class="s1">&#39;#00FF00&#39;</span>
+        <span class="p">}</span>
+    <span class="p">}]</span><span class="o">,</span>
+    <span class="p">...</span>
+<span class="p">]</span>
+</pre></div>
+</div>
 </li>
 <li><p class="first"><tt class="docutils literal"><span class="pre">options</span></tt>: An object containing options for the resulting map.  All fields
 are optional.</p>
@@ -450,17 +183,17 @@ are optional.</p>
 following options:</p>
 <dl class="docutils">
 <dt><tt class="docutils literal"><span class="pre">popupsOutside</span></tt> (boolean; default <tt class="docutils literal"><span class="pre">false</span></tt>)</dt>
-<dd>If false, popups are contained within the map's viewport.  If true, popups
-may expand outside the map's viewport.</dd>
+<dd>If false, popups are contained within the map&#8217;s viewport.  If true, popups
+may expand outside the map&#8217;s viewport.</dd>
 <dt><tt class="docutils literal"><span class="pre">popupDirection</span></tt> (string; default <tt class="docutils literal"><span class="pre">auto</span></tt>)</dt>
 <dd><p class="first">The direction from the clicked geometry that a popup will extend.  This may
 be one of:</p>
 <ul class="last simple">
-<li><tt class="docutils literal"><span class="pre">tr</span></tt> -- top right</li>
-<li><tt class="docutils literal"><span class="pre">tl</span></tt> -- top left</li>
-<li><tt class="docutils literal"><span class="pre">br</span></tt> -- bottom right</li>
-<li><tt class="docutils literal"><span class="pre">bl</span></tt> -- bottom left</li>
-<li><tt class="docutils literal"><span class="pre">auto</span></tt> -- automatically choose direction.</li>
+<li><tt class="docutils literal"><span class="pre">tr</span></tt> &#8211; top right</li>
+<li><tt class="docutils literal"><span class="pre">tl</span></tt> &#8211; top left</li>
+<li><tt class="docutils literal"><span class="pre">br</span></tt> &#8211; bottom right</li>
+<li><tt class="docutils literal"><span class="pre">bl</span></tt> &#8211; bottom left</li>
+<li><tt class="docutils literal"><span class="pre">auto</span></tt> &#8211; automatically choose direction.</li>
 </ul>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">cluster</span></tt> (boolean; default <tt class="docutils literal"><span class="pre">false</span></tt>)</dt>
@@ -469,15 +202,15 @@ be one of:</p>
 <dt><tt class="docutils literal"><span class="pre">clusterDisplay</span></tt> (string; default <tt class="docutils literal"><span class="pre">'paginate'</span></tt>)</dt>
 <dd><p class="first">The way HTML from clustered points is handled:</p>
 <ul class="last simple">
-<li><tt class="docutils literal"><span class="pre">'list'</span></tt> -- constructs an unordered list of contents</li>
-<li><tt class="docutils literal"><span class="pre">'paginate'</span></tt> -- adds a pagination control to the popup to click through
-the different points' HTML.</li>
+<li><tt class="docutils literal"><span class="pre">'list'</span></tt> &#8211; constructs an unordered list of contents</li>
+<li><tt class="docutils literal"><span class="pre">'paginate'</span></tt> &#8211; adds a pagination control to the popup to click through
+the different points&#8217; HTML.</li>
 </ul>
 </dd>
 </dl>
 </div>
 <div class="section" id="common-options">
-<span id="options"></span><h2><a class="toc-backref" href="#id9">Common options</a></h2>
+<span id="options"></span><h3><a class="toc-backref" href="#id8">Common options</a><a class="headerlink" href="#common-options" title="Permalink to this headline">¶</a></h3>
 <p>The following options are shared by <tt class="docutils literal"><span class="pre">olwidget.EditableMap</span></tt> and
 <tt class="docutils literal"><span class="pre">olwidget.InfoMap</span></tt>:</p>
 <dl class="docutils">
@@ -496,9 +229,9 @@ using the normal OpenLayers apis (see <a class="reference external" href="exampl
 (e.g.  maps.google.com or openstreetmap.org apis).  For CloudMade maps, use
 the included <tt class="docutils literal"><span class="pre">cloudmade.js</span></tt> file, and append the API key as the hash
 portion of the URL, for example:</p>
-<pre class="literal-block">
-&lt;script src=&quot;js/cloudmade.js#&lt;your API key&gt;&quot; type=&quot;text/javascript&quot;&gt;&lt;/script&gt;
-</pre>
+<div class="highlight-html"><div class="highlight"><pre><span class="nt">&lt;script </span><span class="na">src=</span><span class="s">&quot;js/cloudmade.js#&lt;your API key&gt;&quot;</span> <span class="na">type=</span><span class="s">&quot;text/javascript&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
+</pre></div>
+</div>
 <p class="last">See the <a class="reference external" href="examples/other_providers.html">other providers</a> for a full
 example of all built-in layer providers.</p>
 </dd>
@@ -532,9 +265,9 @@ Properties may include:</p>
 <ul class="simple">
 <li><tt class="docutils literal"><span class="pre">units</span></tt>: (string) default <tt class="docutils literal"><span class="pre">'m'</span></tt> (meters)</li>
 <li><tt class="docutils literal"><span class="pre">projection</span></tt>: (string) default <tt class="docutils literal"><span class="pre">&quot;EPSG:900913&quot;</span></tt> (the projection used
-by Google, OSM, Yahoo, and VirtualEarth -- See <a class="reference internal" href="#projections">Projections</a> below).</li>
+by Google, OSM, Yahoo, and VirtualEarth &#8211; See <a class="reference internal" href="#projections">Projections</a> below).</li>
 <li><tt class="docutils literal"><span class="pre">displayProjection</span></tt>: (string) default <tt class="docutils literal"><span class="pre">&quot;EPSG:4326&quot;</span></tt> (the latitude
-and longitude we're all familiar with -- See <a class="reference internal" href="#projections">Projections</a> below).</li>
+and longitude we&#8217;re all familiar with &#8211; See <a class="reference internal" href="#projections">Projections</a> below).</li>
 <li><tt class="docutils literal"><span class="pre">maxResolution</span></tt>: (float) default <tt class="docutils literal"><span class="pre">156543.0339</span></tt>.  Value should be
 expressed in the projection specified in <tt class="docutils literal"><span class="pre">projection</span></tt>.</li>
 <li><tt class="docutils literal"><span class="pre">maxExtent</span></tt>: default <tt class="docutils literal"><span class="pre">[-20037508.34,</span> <span class="pre">-20037508.34,</span> <span class="pre">20037508.34,</span>
@@ -551,7 +284,7 @@ may be included, and will be passed directly.</p>
 </dl>
 </div>
 <div class="section" id="projections">
-<h2><a class="toc-backref" href="#id10">Projections</a></h2>
+<h3><a class="toc-backref" href="#id9">Projections</a><a class="headerlink" href="#projections" title="Permalink to this headline">¶</a></h3>
 <p><tt class="docutils literal"><span class="pre">olwidget</span></tt> uses the projections given in <tt class="docutils literal"><span class="pre">mapOptions</span></tt> to determine the
 input and output of WKT data.  By default, it expects incoming WKT data to use
 <tt class="docutils literal"><span class="pre">&quot;EPSG:4326&quot;</span></tt> (familiar latitudes and longitudes), which is transformed
@@ -562,16 +295,79 @@ the SRID present in any initial WKT data, and uses the projection specified in
 <p>To change the projection used for WKT, define the
 <tt class="docutils literal"><span class="pre">mapOptions.displayProjection</span></tt>.  For example, the following will use
 <tt class="docutils literal"><span class="pre">EPSG:900913</span></tt> for all WKT data in addition to map display:</p>
-<pre class="literal-block">
-new olwidget.EditableMap('textareaId', {
-    mapOptions: {
-        projection: &quot;EPSG:900913&quot;,
-        displayProjection: &quot;EPSG:900913&quot;
-    }
-});
-</pre>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="k">new</span> <span class="nx">olwidget</span><span class="p">.</span><span class="nx">EditableMap</span><span class="p">(</span><span class="s1">&#39;textareaId&#39;</span><span class="o">,</span> <span class="p">{</span>
+    <span class="nx">mapOptions</span><span class="o">:</span> <span class="p">{</span>
+        <span class="nx">projection</span><span class="o">:</span> <span class="s2">&quot;EPSG:900913&quot;</span><span class="o">,</span>
+        <span class="nx">displayProjection</span><span class="o">:</span> <span class="s2">&quot;EPSG:900913&quot;</span>
+    <span class="p">}</span>
+<span class="p">});</span>
+</pre></div>
 </div>
 </div>
 </div>
-</body>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <h3><a href="index.html">Table Of Contents</a></h3>
+            <ul>
+<li><a class="reference external" href="">olwidget.js documentation</a><ul>
+<li><a class="reference external" href="#introduction">Introduction</a></li>
+<li><a class="reference external" href="#installation">Installation</a></li>
+<li><a class="reference external" href="#examples">Examples</a></li>
+<li><a class="reference external" href="#documentation">Documentation</a><ul>
+<li><a class="reference external" href="#olwidget-editablemap-constructor">olwidget.EditableMap constructor</a></li>
+<li><a class="reference external" href="#olwidget-infomap-constructor">olwidget.InfoMap constructor</a></li>
+<li><a class="reference external" href="#common-options">Common options</a></li>
+<li><a class="reference external" href="#projections">Projections</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+            <h4>Previous topic</h4>
+            <p class="topless"><a href="django-olwidget.html"
+                                  title="previous chapter">django-olwidget documentation</a></p>
+            <h4>Next topic</h4>
+            <p class="topless"><a href="examples.html"
+                                  title="next chapter">Examples</a></p>
+          <div id="searchbox" style="display: none">
+            <h3>Quick search</h3>
+              <form class="search" action="search.html" method="get">
+                <input type="text" name="q" size="18" />
+                <input type="submit" value="Go" />
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+              </form>
+              <p class="searchtip" style="font-size: 90%">
+              Enter search terms or a module, class or function name.
+              </p>
+          </div>
+          <script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="examples.html" title="Examples"
+             >next</a></li>
+        <li class="right" >
+          <a href="django-olwidget.html" title="django-olwidget documentation"
+             >previous</a> |</li>
+        <li><a href="index.html">olwidget v0.3 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+      &copy; Copyright 2010, Charlie DeTar.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.6.2.
+    </div>
+  </body>
 </html>

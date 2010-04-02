@@ -1,342 +1,114 @@
-<?xml version="1.0" encoding="utf-8" ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<meta name="generator" content="Docutils 0.5: http://docutils.sourceforge.net/" />
-<title>olwidget Django app documentation</title>
-<style type="text/css">
-
-/*
-:Author: David Goodger (goodger@python.org)
-:Id: $Id: html4css1.css 5196 2007-06-03 20:25:28Z wiemann $
-:Copyright: This stylesheet has been placed in the public domain.
-
-Default cascading style sheet for the HTML output of Docutils.
-
-See http://docutils.sf.net/docs/howto/html-stylesheets.html for how to
-customize this style sheet.
-*/
-
-/* used to remove borders from tables and images */
-.borderless, table.borderless td, table.borderless th {
-  border: 0 }
-
-table.borderless td, table.borderless th {
-  /* Override padding for "table.docutils td" with "! important".
-     The right padding separates the table cells. */
-  padding: 0 0.5em 0 0 ! important }
-
-.first {
-  /* Override more specific margin styles with "! important". */
-  margin-top: 0 ! important }
-
-.last, .with-subtitle {
-  margin-bottom: 0 ! important }
-
-.hidden {
-  display: none }
-
-a.toc-backref {
-  text-decoration: none ;
-  color: black }
-
-blockquote.epigraph {
-  margin: 2em 5em ; }
-
-dl.docutils dd {
-  margin-bottom: 0.5em }
-
-/* Uncomment (and remove this text!) to get bold-faced definition list terms
-dl.docutils dt {
-  font-weight: bold }
-*/
-
-div.abstract {
-  margin: 2em 5em }
-
-div.abstract p.topic-title {
-  font-weight: bold ;
-  text-align: center }
-
-div.admonition, div.attention, div.caution, div.danger, div.error,
-div.hint, div.important, div.note, div.tip, div.warning {
-  margin: 2em ;
-  border: medium outset ;
-  padding: 1em }
-
-div.admonition p.admonition-title, div.hint p.admonition-title,
-div.important p.admonition-title, div.note p.admonition-title,
-div.tip p.admonition-title {
-  font-weight: bold ;
-  font-family: sans-serif }
-
-div.attention p.admonition-title, div.caution p.admonition-title,
-div.danger p.admonition-title, div.error p.admonition-title,
-div.warning p.admonition-title {
-  color: red ;
-  font-weight: bold ;
-  font-family: sans-serif }
-
-/* Uncomment (and remove this text!) to get reduced vertical space in
-   compound paragraphs.
-div.compound .compound-first, div.compound .compound-middle {
-  margin-bottom: 0.5em }
-
-div.compound .compound-last, div.compound .compound-middle {
-  margin-top: 0.5em }
-*/
-
-div.dedication {
-  margin: 2em 5em ;
-  text-align: center ;
-  font-style: italic }
-
-div.dedication p.topic-title {
-  font-weight: bold ;
-  font-style: normal }
-
-div.figure {
-  margin-left: 2em ;
-  margin-right: 2em }
-
-div.footer, div.header {
-  clear: both;
-  font-size: smaller }
-
-div.line-block {
-  display: block ;
-  margin-top: 1em ;
-  margin-bottom: 1em }
-
-div.line-block div.line-block {
-  margin-top: 0 ;
-  margin-bottom: 0 ;
-  margin-left: 1.5em }
-
-div.sidebar {
-  margin: 0 0 0.5em 1em ;
-  border: medium outset ;
-  padding: 1em ;
-  background-color: #ffffee ;
-  width: 40% ;
-  float: right ;
-  clear: right }
-
-div.sidebar p.rubric {
-  font-family: sans-serif ;
-  font-size: medium }
-
-div.system-messages {
-  margin: 5em }
-
-div.system-messages h1 {
-  color: red }
-
-div.system-message {
-  border: medium outset ;
-  padding: 1em }
-
-div.system-message p.system-message-title {
-  color: red ;
-  font-weight: bold }
-
-div.topic {
-  margin: 2em }
-
-h1.section-subtitle, h2.section-subtitle, h3.section-subtitle,
-h4.section-subtitle, h5.section-subtitle, h6.section-subtitle {
-  margin-top: 0.4em }
-
-h1.title {
-  text-align: center }
-
-h2.subtitle {
-  text-align: center }
-
-hr.docutils {
-  width: 75% }
-
-img.align-left {
-  clear: left }
-
-img.align-right {
-  clear: right }
-
-ol.simple, ul.simple {
-  margin-bottom: 1em }
-
-ol.arabic {
-  list-style: decimal }
-
-ol.loweralpha {
-  list-style: lower-alpha }
-
-ol.upperalpha {
-  list-style: upper-alpha }
-
-ol.lowerroman {
-  list-style: lower-roman }
-
-ol.upperroman {
-  list-style: upper-roman }
-
-p.attribution {
-  text-align: right ;
-  margin-left: 50% }
-
-p.caption {
-  font-style: italic }
-
-p.credits {
-  font-style: italic ;
-  font-size: smaller }
-
-p.label {
-  white-space: nowrap }
-
-p.rubric {
-  font-weight: bold ;
-  font-size: larger ;
-  color: maroon ;
-  text-align: center }
-
-p.sidebar-title {
-  font-family: sans-serif ;
-  font-weight: bold ;
-  font-size: larger }
-
-p.sidebar-subtitle {
-  font-family: sans-serif ;
-  font-weight: bold }
-
-p.topic-title {
-  font-weight: bold }
-
-pre.address {
-  margin-bottom: 0 ;
-  margin-top: 0 ;
-  font-family: serif ;
-  font-size: 100% }
-
-pre.literal-block, pre.doctest-block {
-  margin-left: 2em ;
-  margin-right: 2em }
-
-span.classifier {
-  font-family: sans-serif ;
-  font-style: oblique }
-
-span.classifier-delimiter {
-  font-family: sans-serif ;
-  font-weight: bold }
-
-span.interpreted {
-  font-family: sans-serif }
-
-span.option {
-  white-space: nowrap }
-
-span.pre {
-  white-space: pre }
-
-span.problematic {
-  color: red }
-
-span.section-subtitle {
-  /* font-size relative to parent (h1..h6 element) */
-  font-size: 80% }
-
-table.citation {
-  border-left: solid 1px gray;
-  margin-left: 1px }
-
-table.docinfo {
-  margin: 2em 4em }
-
-table.docutils {
-  margin-top: 0.5em ;
-  margin-bottom: 0.5em }
-
-table.footnote {
-  border-left: solid 1px black;
-  margin-left: 1px }
-
-table.docutils td, table.docutils th,
-table.docinfo td, table.docinfo th {
-  padding-left: 0.5em ;
-  padding-right: 0.5em ;
-  vertical-align: top }
-
-table.docutils th.field-name, table.docinfo th.docinfo-name {
-  font-weight: bold ;
-  text-align: left ;
-  white-space: nowrap ;
-  padding-left: 0 }
-
-h1 tt.docutils, h2 tt.docutils, h3 tt.docutils,
-h4 tt.docutils, h5 tt.docutils, h6 tt.docutils {
-  font-size: 100% }
-
-ul.auto-toc {
-  list-style-type: none }
-
-</style>
-</head>
-<body>
-<div class="document" id="olwidget-django-app-documentation">
-<h1 class="title">olwidget Django app documentation</h1>
-
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>django-olwidget documentation &mdash; olwidget v0.3 documentation</title>
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.3',
+        COLLAPSE_MODINDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="olwidget v0.3 documentation" href="index.html" />
+    <link rel="next" title="olwidget.js documentation" href="olwidget.js.html" />
+    <link rel="prev" title="Welcome to olwidget’s documentation!" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="olwidget.js.html" title="olwidget.js documentation"
+             accesskey="N">next</a></li>
+        <li class="right" >
+          <a href="index.html" title="Welcome to olwidget’s documentation!"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">olwidget v0.3 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="django-olwidget-documentation">
+<span id="django-olwidget"></span><h1><a class="toc-backref" href="#id2">django-olwidget documentation</a><a class="headerlink" href="#django-olwidget-documentation" title="Permalink to this headline">¶</a></h1>
 <div class="contents topic" id="contents">
 <p class="topic-title first">Contents</p>
 <ul class="simple">
-<li><a class="reference internal" href="#installation" id="id2">Installation</a></li>
-<li><a class="reference internal" href="#map-widgets" id="id3">Map widgets</a><ul>
-<li><a class="reference internal" href="#editablemap" id="id4">EditableMap</a></li>
-<li><a class="reference internal" href="#mapdisplay" id="id5">MapDisplay</a></li>
-<li><a class="reference internal" href="#infomap" id="id6">InfoMap</a></li>
+<li><a class="reference internal" href="#django-olwidget-documentation" id="id2">django-olwidget documentation</a><ul>
+<li><a class="reference internal" href="#installation" id="id3">Installation</a></li>
+<li><a class="reference internal" href="#map-widgets" id="id4">Map widgets</a><ul>
+<li><a class="reference internal" href="#editablemap" id="id5">EditableMap</a></li>
+<li><a class="reference internal" href="#mapdisplay" id="id6">MapDisplay</a></li>
+<li><a class="reference internal" href="#infomap" id="id7">InfoMap</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#inside-admin" id="id7">Inside Admin</a><ul>
-<li><a class="reference internal" href="#changelist-maps" id="id8">Changelist maps</a></li>
+<li><a class="reference internal" href="#inside-admin" id="id8">Inside Admin</a><ul>
+<li><a class="reference internal" href="#changelist-maps" id="id9">Changelist maps</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id1" id="id9">Options</a><ul>
-<li><a class="reference internal" href="#common-options" id="id10">Common options</a></li>
-<li><a class="reference internal" href="#additional-options-for-editablemap-and-mapdisplay-types" id="id11">Additional options for <tt class="docutils literal"><span class="pre">EditableMap</span></tt> and <tt class="docutils literal"><span class="pre">MapDisplay</span></tt> types</a></li>
-<li><a class="reference internal" href="#additional-options-for-infomap" id="id12">Additional options for <tt class="docutils literal"><span class="pre">InfoMap</span></tt></a></li>
+<li><a class="reference internal" href="#options" id="id10">Options</a><ul>
+<li><a class="reference internal" href="#common-options" id="id11">Common options</a></li>
+<li><a class="reference internal" href="#additional-options-for-editablemap-and-mapdisplay-types" id="id12">Additional options for <tt class="docutils literal"><span class="pre">EditableMap</span></tt> and <tt class="docutils literal"><span class="pre">MapDisplay</span></tt> types</a></li>
+<li><a class="reference internal" href="#additional-options-for-infomap" id="id13">Additional options for <tt class="docutils literal"><span class="pre">InfoMap</span></tt></a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
 </div>
 <div class="section" id="installation">
-<h1><a class="toc-backref" href="#id2">Installation</a></h1>
-<p>Installation of the <tt class="docutils literal"><span class="pre">olwidget</span></tt> Django app requires a couple of steps -- these
+<h2><a class="toc-backref" href="#id3">Installation</a><a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<p>Installation of the <tt class="docutils literal"><span class="pre">olwidget</span></tt> Django app requires a couple of steps &#8211; these
 should be familiar to users of other reusable Django apps:</p>
-<ol class="arabic simple">
-<li>Copy or link the <tt class="docutils literal"><span class="pre">olwidget</span></tt> directory in <tt class="docutils literal"><span class="pre">django-olwidget</span></tt> into the search
-path for your django project.</li>
-<li>Copy or link the media (<tt class="docutils literal"><span class="pre">css</span></tt>, <tt class="docutils literal"><span class="pre">img</span></tt>, and <tt class="docutils literal"><span class="pre">js</span></tt>) into a directory
-named <tt class="docutils literal"><span class="pre">olwidget</span></tt> under your project's <tt class="docutils literal"><span class="pre">MEDIA_URL</span></tt>.  If you wish to name
+<ol class="arabic">
+<li><p class="first">Install <tt class="docutils literal"><span class="pre">django-olwidget</span></tt> using your preferred method for python modules.
+The folder <tt class="docutils literal"><span class="pre">olwidget</span></tt> in the <tt class="docutils literal"><span class="pre">django-olwidget</span></tt> directory must end up in
+your python path.  You could do this by copying or symlinking it into your
+path, or with:</p>
+<div class="highlight-python"><pre>python setup.py install</pre>
+</div>
+<p>The preferred method is to install from git source using <a class="reference external" href="http://pip.openplans.org/">pip</a> with <a class="reference external" href="http://pypi.python.org/pypi/virtualenv">virtualenv</a>.  The <a class="reference external" href="http://pip.openplans.org/#requirements-files">requirements file</a> entry for this is as
+follows:</p>
+<div class="highlight-python"><pre>-e git://github.com/yourcelf/olwidget.git#egg=django-olwidget</pre>
+</div>
+</li>
+<li><p class="first">Copy or link the media (<tt class="docutils literal"><span class="pre">css</span></tt>, <tt class="docutils literal"><span class="pre">img</span></tt>, and <tt class="docutils literal"><span class="pre">js</span></tt>) into a directory
+named <tt class="docutils literal"><span class="pre">olwidget</span></tt> under your project&#8217;s <tt class="docutils literal"><span class="pre">MEDIA_URL</span></tt>.  If you wish to name
 the directory something else, define <tt class="docutils literal"><span class="pre">OLWIDGET_MEDIA_URL</span></tt> with the URL
-for the media files in your settings file.</li>
-<li>Include <tt class="docutils literal"><span class="pre">'olwidget'</span></tt> in your project's settings <tt class="docutils literal"><span class="pre">INSTALLED_APPS</span></tt> list.</li>
-<li>(Optional) If you want to use Google, Yahoo or CloudMade map layers, you
+for the media files in your settings file.</p>
+</li>
+<li><p class="first">Include <tt class="docutils literal"><span class="pre">'olwidget'</span></tt> in your project&#8217;s settings <tt class="docutils literal"><span class="pre">INSTALLED_APPS</span></tt> list.</p>
+</li>
+<li><p class="first">(Optional) If you want to use Google, Yahoo or CloudMade map layers, you
 must include <tt class="docutils literal"><span class="pre">GOOGLE_API_KEY</span></tt>, <tt class="docutils literal"><span class="pre">YAHOO_APP_ID</span></tt> or <tt class="docutils literal"><span class="pre">CLOUDMADE_API_KEY</span></tt>
 in your settings file.  <tt class="docutils literal"><span class="pre">olwidget</span></tt> uses OpenStreetMaps by default, which
-requires no key.</li>
+requires no key.</p>
+</li>
 </ol>
 </div>
 <div class="section" id="map-widgets">
-<h1><a class="toc-backref" href="#id3">Map widgets</a></h1>
+<h2><a class="toc-backref" href="#id4">Map widgets</a><a class="headerlink" href="#map-widgets" title="Permalink to this headline">¶</a></h2>
 <p><tt class="docutils literal"><span class="pre">olwidget</span></tt> defines 3 widget types that can be used to display maps:</p>
 <div class="section" id="editablemap">
-<h2><a class="toc-backref" href="#id4">EditableMap</a></h2>
+<h3><a class="toc-backref" href="#id5">EditableMap</a><a class="headerlink" href="#editablemap" title="Permalink to this headline">¶</a></h3>
 <p><tt class="docutils literal"><span class="pre">EditableMap</span></tt> is a widget type for use in forms to allows editing of
 geometries.  Constructor:</p>
-<pre class="literal-block">
-olwidget.widgets.EditableMap(options=None, template=None)
-</pre>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">olwidget</span><span class="o">.</span><span class="n">widgets</span><span class="o">.</span><span class="n">EditableMap</span><span class="p">(</span><span class="n">options</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">template</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
+</pre></div>
+</div>
 <dl class="docutils">
 <dt><tt class="docutils literal"><span class="pre">options</span></tt></dt>
 <dd>A dict of options for map display.  See <a class="reference internal" href="#options">Options</a> below.</dd>
@@ -344,26 +116,26 @@ olwidget.widgets.EditableMap(options=None, template=None)
 <dd>A template to use for rendering the map.</dd>
 </dl>
 <p>An example form definition that uses an editable map:</p>
-<pre class="literal-block">
-from django import forms
-from olwidget.widgets import EditableMap
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django</span> <span class="kn">import</span> <span class="n">forms</span>
+<span class="kn">from</span> <span class="nn">olwidget.widgets</span> <span class="kn">import</span> <span class="n">EditableMap</span>
 
-class MyForm(forms.Form):
-    location = forms.CharField(widget=EditableMap())
-
-# In a template:
-
-&lt;head&gt; {{ form.media }} &lt;/head&gt;
-&lt;body&gt;... {{ form }} ...&lt;/body&gt;
-</pre>
+<span class="k">class</span> <span class="nc">MyForm</span><span class="p">(</span><span class="n">forms</span><span class="o">.</span><span class="n">Form</span><span class="p">):</span>
+    <span class="n">location</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">widget</span><span class="o">=</span><span class="n">EditableMap</span><span class="p">())</span>
+</pre></div>
+</div>
+<p>In a template:</p>
+<div class="highlight-django"><div class="highlight"><pre><span class="x">&lt;head&gt; </span><span class="cp">{{</span> <span class="nv">form.media</span> <span class="cp">}}</span><span class="x"> &lt;/head&gt;</span>
+<span class="x">&lt;body&gt;... </span><span class="cp">{{</span> <span class="nv">form</span> <span class="cp">}}</span><span class="x"> ...&lt;/body&gt;</span>
+</pre></div>
+</div>
 </div>
 <div class="section" id="mapdisplay">
-<h2><a class="toc-backref" href="#id5">MapDisplay</a></h2>
+<h3><a class="toc-backref" href="#id6">MapDisplay</a><a class="headerlink" href="#mapdisplay" title="Permalink to this headline">¶</a></h3>
 <p><tt class="docutils literal"><span class="pre">MapDisplay</span></tt> is used for displaying geometries on read-only maps.
 Constructor:</p>
-<pre class="literal-block">
-olwidget.widgets.MapDisplay(fields, options=None, template=None)
-</pre>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">olwidget</span><span class="o">.</span><span class="n">widgets</span><span class="o">.</span><span class="n">MapDisplay</span><span class="p">(</span><span class="n">fields</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">template</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
+</pre></div>
+</div>
 <dl class="docutils">
 <dt><tt class="docutils literal"><span class="pre">fields</span></tt></dt>
 <dd>A list of geometries to display on the map, either valid geometry
@@ -374,24 +146,24 @@ strings or geometry fields.</dd>
 <dd>A template to use for rendering the map.</dd>
 </dl>
 <p>An example simple read-only display map:</p>
-<pre class="literal-block">
-from olwidget.widgets import MapDisplay
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">olwidget.widgets</span> <span class="kn">import</span> <span class="n">MapDisplay</span>
 
-map = MapDisplay(fields=[mymodel.start_point, mymodel.destination])
-
-# In a template:
-
-&lt;head&gt; {{ map.media }} &lt;/head&gt;
-&lt;body&gt;... {{ map }} ...&lt;/body&gt;
-</pre>
+<span class="nb">map</span> <span class="o">=</span> <span class="n">MapDisplay</span><span class="p">(</span><span class="n">fields</span><span class="o">=</span><span class="p">[</span><span class="n">mymodel</span><span class="o">.</span><span class="n">start_point</span><span class="p">,</span> <span class="n">mymodel</span><span class="o">.</span><span class="n">destination</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>In a template:</p>
+<div class="highlight-django"><div class="highlight"><pre><span class="x">&lt;head&gt; </span><span class="cp">{{</span> <span class="nv">map.media</span> <span class="cp">}}</span><span class="x"> &lt;/head&gt;</span>
+<span class="x">&lt;body&gt;... </span><span class="cp">{{</span> <span class="nv">map</span> <span class="cp">}}</span><span class="x"> ...&lt;/body&gt;</span>
+</pre></div>
+</div>
 </div>
 <div class="section" id="infomap">
-<h2><a class="toc-backref" href="#id6">InfoMap</a></h2>
+<h3><a class="toc-backref" href="#id7">InfoMap</a><a class="headerlink" href="#infomap" title="Permalink to this headline">¶</a></h3>
 <p><tt class="docutils literal"><span class="pre">InfoMap</span></tt> is used for displaying read-only maps with clickable information
 popups over geometries.  Constructor:</p>
-<pre class="literal-block">
-olwidget.widgets.InfoMap(info, options=None, template=None)
-</pre>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">olwidget</span><span class="o">.</span><span class="n">widgets</span><span class="o">.</span><span class="n">InfoMap</span><span class="p">(</span><span class="n">info</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">template</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
+</pre></div>
+</div>
 <dl class="docutils">
 <dt><tt class="docutils literal"><span class="pre">info</span></tt></dt>
 <dd>A list of <tt class="docutils literal"><span class="pre">[geometry,</span> <span class="pre">attr]</span></tt> pairs.  <tt class="docutils literal"><span class="pre">attr</span></tt> can be either a string
@@ -403,109 +175,109 @@ html is displayed when the geometry is clicked.</dd>
 <dd>A template to use for rendering the map.</dd>
 </dl>
 <p>An example info map:</p>
-<pre class="literal-block">
-from olwidget.widgets import InfoMap
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">olwidget.widgets</span> <span class="kn">import</span> <span class="n">InfoMap</span>
 
-map = InfoMap([
-    [mymodel.point, &quot;&lt;p&gt;This is where I had my first kiss.&lt;/p&gt;&quot;],
-    [othermodel.polygon, &quot;&lt;p&gt;This is my home town.&lt;/p&gt;&quot;],
-    [othermodel.point, {
-        'html': &quot;&lt;p&gt;Special style for this point.&lt;/p&gt;&quot;,
-        'style': {'fill_color': '#00FF00'},
-    }],
-    ...
-])
-
-# In a template:
-
-&lt;head&gt; {{ map.media }} &lt;/head&gt;
-&lt;body&gt;... {{ map }} ...&lt;/body&gt;
-</pre>
+<span class="nb">map</span> <span class="o">=</span> <span class="n">InfoMap</span><span class="p">([</span>
+    <span class="p">[</span><span class="n">mymodel</span><span class="o">.</span><span class="n">point</span><span class="p">,</span> <span class="s">&quot;&lt;p&gt;This is where I had my first kiss.&lt;/p&gt;&quot;</span><span class="p">],</span>
+    <span class="p">[</span><span class="n">othermodel</span><span class="o">.</span><span class="n">polygon</span><span class="p">,</span> <span class="s">&quot;&lt;p&gt;This is my home town.&lt;/p&gt;&quot;</span><span class="p">],</span>
+    <span class="p">[</span><span class="n">othermodel</span><span class="o">.</span><span class="n">point</span><span class="p">,</span> <span class="p">{</span>
+        <span class="s">&#39;html&#39;</span><span class="p">:</span> <span class="s">&quot;&lt;p&gt;Special style for this point.&lt;/p&gt;&quot;</span><span class="p">,</span>
+        <span class="s">&#39;style&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;fill_color&#39;</span><span class="p">:</span> <span class="s">&#39;#00FF00&#39;</span><span class="p">},</span>
+    <span class="p">}],</span>
+    <span class="o">...</span>
+<span class="p">])</span>
+</pre></div>
+</div>
+<p>In a template:</p>
+<div class="highlight-django"><div class="highlight"><pre><span class="x">&lt;head&gt; </span><span class="cp">{{</span> <span class="nv">map.media</span> <span class="cp">}}</span><span class="x"> &lt;/head&gt;</span>
+<span class="x">&lt;body&gt;... </span><span class="cp">{{</span> <span class="nv">map</span> <span class="cp">}}</span><span class="x"> ...&lt;/body&gt;</span>
+</pre></div>
+</div>
 </div>
 </div>
 <div class="section" id="inside-admin">
-<h1><a class="toc-backref" href="#id7">Inside Admin</a></h1>
+<h2><a class="toc-backref" href="#id8">Inside Admin</a><a class="headerlink" href="#inside-admin" title="Permalink to this headline">¶</a></h2>
 <p><tt class="docutils literal"><span class="pre">olwidget</span></tt> has several advantages over the built-in geodjango admin map
 implementation, including greater map customization, support for more geometry
 types, and the option to include a map in admin changelist pages.</p>
 <p>To use <tt class="docutils literal"><span class="pre">olwidget</span></tt> for admin, simply use <tt class="docutils literal"><span class="pre">olwidget.admin.GeoModelAdmin</span></tt> or a
 subclass of it as the ModelAdmin type for your model.</p>
 <p>Example using <tt class="docutils literal"><span class="pre">olwidget</span></tt> in admin:</p>
-<pre class="literal-block">
-# admin.py
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># admin.py</span>
 
-from django.contrib import admin
-from olwidget.admin import GeoModelAdmin
-from myapp import Restaurant, Owner
+<span class="kn">from</span> <span class="nn">django.contrib</span> <span class="kn">import</span> <span class="n">admin</span>
+<span class="kn">from</span> <span class="nn">olwidget.admin</span> <span class="kn">import</span> <span class="n">GeoModelAdmin</span>
+<span class="kn">from</span> <span class="nn">myapp</span> <span class="kn">import</span> <span class="n">Restaurant</span><span class="p">,</span> <span class="n">Owner</span>
 
-# Use the default map
-admin.site.register(Restaurant, GeoModelAdmin)
+<span class="c"># Use the default map</span>
+<span class="n">admin</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">Restaurant</span><span class="p">,</span> <span class="n">GeoModelAdmin</span><span class="p">)</span>
 
-# Customize the map
-class MyGeoAdmin(GeoModelAdmin):
-    options = {
-        'layers': ['google.streets'],
-        'default_lat': 44,
-        'default_lon': -72,
-    }
+<span class="c"># Customize the map</span>
+<span class="k">class</span> <span class="nc">MyGeoAdmin</span><span class="p">(</span><span class="n">GeoModelAdmin</span><span class="p">):</span>
+    <span class="n">options</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s">&#39;layers&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s">&#39;google.streets&#39;</span><span class="p">],</span>
+        <span class="s">&#39;default_lat&#39;</span><span class="p">:</span> <span class="mf">44</span><span class="p">,</span>
+        <span class="s">&#39;default_lon&#39;</span><span class="p">:</span> <span class="o">-</span><span class="mf">72</span><span class="p">,</span>
+    <span class="p">}</span>
 
-admin.site.register(Owner, MyGeoAdmin)
-</pre>
+<span class="n">admin</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">Owner</span><span class="p">,</span> <span class="n">MyGeoAdmin</span><span class="p">)</span>
+</pre></div>
+</div>
 <p><tt class="docutils literal"><span class="pre">olwidget.admin.GeoModelAdmin</span></tt> uses the <tt class="docutils literal"><span class="pre">olwidget.widgets.EditableMap</span></tt> for
 display, so all the map display options listed below in <a class="reference internal" href="#options">Options</a> for editable
 map types  can be used with maps in admin.</p>
 <div class="section" id="changelist-maps">
-<h2><a class="toc-backref" href="#id8">Changelist maps</a></h2>
+<h3><a class="toc-backref" href="#id9">Changelist maps</a><a class="headerlink" href="#changelist-maps" title="Permalink to this headline">¶</a></h3>
 <p>To show a clickable map on the admin changelist page, use the <tt class="docutils literal"><span class="pre">list_map</span></tt>
 property to specify which fields to display:</p>
-<pre class="literal-block">
-# an example model:
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># an example model:</span>
 
-class City(models.Model):
-    location = models.PointField()
+<span class="k">class</span> <span class="nc">City</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">location</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">PointField</span><span class="p">()</span>
 
-# admin.py
+<span class="c"># admin.py</span>
 
-from django.contrib import admin
-from olwidget.admin import GeoModelAdmin
-from myapp import City
+<span class="kn">from</span> <span class="nn">django.contrib</span> <span class="kn">import</span> <span class="n">admin</span>
+<span class="kn">from</span> <span class="nn">olwidget.admin</span> <span class="kn">import</span> <span class="n">GeoModelAdmin</span>
+<span class="kn">from</span> <span class="nn">myapp</span> <span class="kn">import</span> <span class="n">City</span>
 
-class CityGeoAdmin(GeoModelAdmin):
-    list_map = ['location']
+<span class="k">class</span> <span class="nc">CityGeoAdmin</span><span class="p">(</span><span class="n">GeoModelAdmin</span><span class="p">):</span>
+    <span class="n">list_map</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;location&#39;</span><span class="p">]</span>
 
-admin.site.register(City, CityGeoAdmin)
-</pre>
+<span class="n">admin</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">City</span><span class="p">,</span> <span class="n">CityGeoAdmin</span><span class="p">)</span>
+</pre></div>
+</div>
 <p>Options can be set for the changelist map using the <tt class="docutils literal"><span class="pre">list_map_options</span></tt>
 property:</p>
-<pre class="literal-block">
-class CityGeoAdmin(GeoModelAdmin):
-    list_map = ['location']
-    list_map_options = {
-        # group nearby points into clusters
-        'cluster': True,
-        'cluster_display': 'list',
-    }
-</pre>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">CityGeoAdmin</span><span class="p">(</span><span class="n">GeoModelAdmin</span><span class="p">):</span>
+    <span class="n">list_map</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;location&#39;</span><span class="p">]</span>
+    <span class="n">list_map_options</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="c"># group nearby points into clusters</span>
+        <span class="s">&#39;cluster&#39;</span><span class="p">:</span> <span class="bp">True</span><span class="p">,</span>
+        <span class="s">&#39;cluster_display&#39;</span><span class="p">:</span> <span class="s">&#39;list&#39;</span><span class="p">,</span>
+    <span class="p">}</span>
+</pre></div>
+</div>
 <p>Changelist maps use the <tt class="docutils literal"><span class="pre">olwidget.widgets.InfoMap</span></tt> type for display, so all
 the options listed below in <a class="reference internal" href="#options">Options</a> for InfoMap types can be used for
 <tt class="docutils literal"><span class="pre">list_map_options</span></tt>.</p>
 </div>
 </div>
-<div class="section" id="id1">
-<span id="options"></span><h1><a class="toc-backref" href="#id9">Options</a></h1>
+<div class="section" id="options">
+<span id="id1"></span><h2><a class="toc-backref" href="#id10">Options</a><a class="headerlink" href="#options" title="Permalink to this headline">¶</a></h2>
 <p>All of the <tt class="docutils literal"><span class="pre">olwidget</span></tt> map types can be passed an <tt class="docutils literal"><span class="pre">options</span></tt> dictionary
 that controls the look and feel of the map.  An example:</p>
-<pre class="literal-block">
-from olwidget.widgets import MapDisplay
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">olwidget.widgets</span> <span class="kn">import</span> <span class="n">MapDisplay</span>
 
-map = MapDisplay(options={
-    'layers': ['osm.mapnik', 'google.hybrid', 'yahoo'],
-    'default_lat': 44,
-    'default_lon': -72,
-})
-</pre>
+<span class="nb">map</span> <span class="o">=</span> <span class="n">MapDisplay</span><span class="p">(</span><span class="n">options</span><span class="o">=</span><span class="p">{</span>
+    <span class="s">&#39;layers&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s">&#39;osm.mapnik&#39;</span><span class="p">,</span> <span class="s">&#39;google.hybrid&#39;</span><span class="p">,</span> <span class="s">&#39;yahoo&#39;</span><span class="p">],</span>
+    <span class="s">&#39;default_lat&#39;</span><span class="p">:</span> <span class="mf">44</span><span class="p">,</span>
+    <span class="s">&#39;default_lon&#39;</span><span class="p">:</span> <span class="o">-</span><span class="mf">72</span><span class="p">,</span>
+<span class="p">})</span>
+</pre></div>
+</div>
 <div class="section" id="common-options">
-<h2><a class="toc-backref" href="#id10">Common options</a></h2>
+<h3><a class="toc-backref" href="#id11">Common options</a><a class="headerlink" href="#common-options" title="Permalink to this headline">¶</a></h3>
 <p>The following options are shared by all <tt class="docutils literal"><span class="pre">olwidget</span></tt> map types:</p>
 <dl class="docutils">
 <dt><tt class="docutils literal"><span class="pre">name</span></tt> (string; defaults to <tt class="docutils literal"><span class="pre">&quot;data&quot;</span></tt>)</dt>
@@ -524,8 +296,8 @@ is the number for a cloudmade style).  A blank map can be obtained using
 <dd>Longitude for the center point of the map.</dd>
 <dt><tt class="docutils literal"><span class="pre">default_zoom</span></tt> (int; default <tt class="docutils literal"><span class="pre">4</span></tt>)</dt>
 <dd>The zoom level to use on the map.</dd>
-<dt><tt class="docutils literal"><span class="pre">zoom_to_data_extent</span></tt> (<tt class="docutils literal"><span class="pre">True</span></tt>/<tt class="docutils literal"><span class="pre">False</span></tt>; default <tt class="docutils literal"><span class="pre">True</span></tt>)</dt>
-<dd>If <tt class="docutils literal"><span class="pre">True</span></tt>, the map will zoom to the extent of its vector data instead of
+<dt><tt class="docutils literal"><span class="pre">zoom_to_data_extent</span></tt> (<tt class="xref docutils literal"><span class="pre">True</span></tt>/<tt class="xref docutils literal"><span class="pre">False</span></tt>; default <tt class="xref docutils literal"><span class="pre">True</span></tt>)</dt>
+<dd>If <tt class="xref docutils literal"><span class="pre">True</span></tt>, the map will zoom to the extent of its vector data instead of
 <tt class="docutils literal"><span class="pre">default_zoom</span></tt>, <tt class="docutils literal"><span class="pre">default_lat</span></tt>, and <tt class="docutils literal"><span class="pre">default_lon</span></tt>.  If no vector data
 is present, the map will use the defaults.</dd>
 <dt><tt class="docutils literal"><span class="pre">overlay_style</span></tt> (dict)</dt>
@@ -575,7 +347,7 @@ Properties may include:</p>
 <li><tt class="docutils literal"><span class="pre">projection</span></tt>: (string) default <tt class="docutils literal"><span class="pre">&quot;EPSG:900913&quot;</span></tt> (the projection used
 by Google, OSM, Yahoo, and VirtualEarth).</li>
 <li><tt class="docutils literal"><span class="pre">display_projection</span></tt>: (string) default <tt class="docutils literal"><span class="pre">&quot;EPSG:4326&quot;</span></tt> (the latitude
-and longitude we're all familiar with).</li>
+and longitude we&#8217;re all familiar with).</li>
 <li><tt class="docutils literal"><span class="pre">max_resolution</span></tt>: (float) default <tt class="docutils literal"><span class="pre">156543.0339</span></tt>.  Value should be
 expressed in the projection specified in <tt class="docutils literal"><span class="pre">projection</span></tt>.</li>
 <li><tt class="docutils literal"><span class="pre">max_extent</span></tt>: default <tt class="docutils literal"><span class="pre">[-20037508.34,</span> <span class="pre">-20037508.34,</span> <span class="pre">20037508.34,</span>
@@ -592,7 +364,7 @@ may be included, and will be passed directly.</p>
 </dl>
 </div>
 <div class="section" id="additional-options-for-editablemap-and-mapdisplay-types">
-<h2><a class="toc-backref" href="#id11">Additional options for <tt class="docutils literal"><span class="pre">EditableMap</span></tt> and <tt class="docutils literal"><span class="pre">MapDisplay</span></tt> types</a></h2>
+<h3><a class="toc-backref" href="#id12">Additional options for <tt class="docutils literal"><span class="pre">EditableMap</span></tt> and <tt class="docutils literal"><span class="pre">MapDisplay</span></tt> types</a><a class="headerlink" href="#additional-options-for-editablemap-and-mapdisplay-types" title="Permalink to this headline">¶</a></h3>
 <p>In addition to the common options listed above, <tt class="docutils literal"><span class="pre">EditableMap</span></tt> and
 <tt class="docutils literal"><span class="pre">MapDisplay</span></tt>, and <tt class="docutils literal"><span class="pre">GeoModelAdmin</span></tt> accept the following options:</p>
 <dl class="docutils">
@@ -603,22 +375,22 @@ may be included, and will be passed directly.</p>
 </dl>
 </div>
 <div class="section" id="additional-options-for-infomap">
-<h2><a class="toc-backref" href="#id12">Additional options for <tt class="docutils literal"><span class="pre">InfoMap</span></tt></a></h2>
+<h3><a class="toc-backref" href="#id13">Additional options for <tt class="docutils literal"><span class="pre">InfoMap</span></tt></a><a class="headerlink" href="#additional-options-for-infomap" title="Permalink to this headline">¶</a></h3>
 <p>In addition to the common options listed above, <tt class="docutils literal"><span class="pre">InfoMap</span></tt> accepts the
 following options:</p>
 <dl class="docutils">
 <dt><tt class="docutils literal"><span class="pre">popups_outside</span></tt> (boolean; default <tt class="docutils literal"><span class="pre">false</span></tt>)</dt>
-<dd>If false, popups are contained within the map's viewport.  If true, popups
-may expand outside the map's viewport.</dd>
+<dd>If false, popups are contained within the map&#8217;s viewport.  If true, popups
+may expand outside the map&#8217;s viewport.</dd>
 <dt><tt class="docutils literal"><span class="pre">popup_direction</span></tt> (string; default <tt class="docutils literal"><span class="pre">auto</span></tt>)</dt>
 <dd><p class="first">The direction from the clicked geometry that a popup will extend.  This may
 be one of:</p>
 <ul class="last simple">
-<li><tt class="docutils literal"><span class="pre">tr</span></tt> -- top right</li>
-<li><tt class="docutils literal"><span class="pre">tl</span></tt> -- top left</li>
-<li><tt class="docutils literal"><span class="pre">br</span></tt> -- bottom right</li>
-<li><tt class="docutils literal"><span class="pre">bl</span></tt> -- bottom left</li>
-<li><tt class="docutils literal"><span class="pre">auto</span></tt> -- automatically choose direction.</li>
+<li><tt class="docutils literal"><span class="pre">tr</span></tt> &#8211; top right</li>
+<li><tt class="docutils literal"><span class="pre">tl</span></tt> &#8211; top left</li>
+<li><tt class="docutils literal"><span class="pre">br</span></tt> &#8211; bottom right</li>
+<li><tt class="docutils literal"><span class="pre">bl</span></tt> &#8211; bottom left</li>
+<li><tt class="docutils literal"><span class="pre">auto</span></tt> &#8211; automatically choose direction.</li>
 </ul>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">cluster</span></tt> (boolean; default <tt class="docutils literal"><span class="pre">false</span></tt>)</dt>
@@ -627,23 +399,23 @@ be one of:</p>
 <dt><tt class="docutils literal"><span class="pre">cluster_display</span></tt> (string; default <tt class="docutils literal"><span class="pre">'paginate'</span></tt>)</dt>
 <dd><p class="first">The way HTML from clustered points is handled:</p>
 <ul class="last simple">
-<li><tt class="docutils literal"><span class="pre">'list'</span></tt> -- constructs an unordered list of contents</li>
-<li><tt class="docutils literal"><span class="pre">'paginate'</span></tt> -- adds a pagination control to the popup to click through
-the different points' HTML.</li>
+<li><tt class="docutils literal"><span class="pre">'list'</span></tt> &#8211; constructs an unordered list of contents</li>
+<li><tt class="docutils literal"><span class="pre">'paginate'</span></tt> &#8211; adds a pagination control to the popup to click through
+the different points&#8217; HTML.</li>
 </ul>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">cluster_style</span></tt> (dict)</dt>
 <dd><p class="first">The default style is:</p>
-<pre class="literal-block">
-{
-    point_radius: &quot;${radius}&quot;,
-    stroke_width: &quot;${width}&quot;,
-    label: &quot;${label}&quot;,
-    font_size: &quot;11px&quot;,
-    font_family: &quot;Helvetica, sans-serif&quot;,
-    font_color: &quot;#ffffff&quot;
-}
-</pre>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">{</span>
+    <span class="n">point_radius</span><span class="p">:</span> <span class="s">&quot;${radius}&quot;</span><span class="p">,</span>
+    <span class="n">stroke_width</span><span class="p">:</span> <span class="s">&quot;${width}&quot;</span><span class="p">,</span>
+    <span class="n">label</span><span class="p">:</span> <span class="s">&quot;${label}&quot;</span><span class="p">,</span>
+    <span class="n">font_size</span><span class="p">:</span> <span class="s">&quot;11px&quot;</span><span class="p">,</span>
+    <span class="n">font_family</span><span class="p">:</span> <span class="s">&quot;Helvetica, sans-serif&quot;</span><span class="p">,</span>
+    <span class="n">font_color</span><span class="p">:</span> <span class="s">&quot;#ffffff&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
 <p class="last">The arguments expressed with <tt class="docutils literal"><span class="pre">${}</span></tt> are programmatically replaced with
 values based on the cluster.  Setting them to specific values will prevent
 this programatic replacement.</p>
@@ -652,5 +424,75 @@ this programatic replacement.</p>
 </div>
 </div>
 </div>
-</body>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <h3><a href="index.html">Table Of Contents</a></h3>
+            <ul>
+<li><a class="reference external" href="">django-olwidget documentation</a><ul>
+<li><a class="reference external" href="#installation">Installation</a></li>
+<li><a class="reference external" href="#map-widgets">Map widgets</a><ul>
+<li><a class="reference external" href="#editablemap">EditableMap</a></li>
+<li><a class="reference external" href="#mapdisplay">MapDisplay</a></li>
+<li><a class="reference external" href="#infomap">InfoMap</a></li>
+</ul>
+</li>
+<li><a class="reference external" href="#inside-admin">Inside Admin</a><ul>
+<li><a class="reference external" href="#changelist-maps">Changelist maps</a></li>
+</ul>
+</li>
+<li><a class="reference external" href="#options">Options</a><ul>
+<li><a class="reference external" href="#common-options">Common options</a></li>
+<li><a class="reference external" href="#additional-options-for-editablemap-and-mapdisplay-types">Additional options for <tt class="docutils literal"><span class="pre">EditableMap</span></tt> and <tt class="docutils literal"><span class="pre">MapDisplay</span></tt> types</a></li>
+<li><a class="reference external" href="#additional-options-for-infomap">Additional options for <tt class="docutils literal"><span class="pre">InfoMap</span></tt></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+            <h4>Previous topic</h4>
+            <p class="topless"><a href="index.html"
+                                  title="previous chapter">Welcome to olwidget&#8217;s documentation!</a></p>
+            <h4>Next topic</h4>
+            <p class="topless"><a href="olwidget.js.html"
+                                  title="next chapter">olwidget.js documentation</a></p>
+          <div id="searchbox" style="display: none">
+            <h3>Quick search</h3>
+              <form class="search" action="search.html" method="get">
+                <input type="text" name="q" size="18" />
+                <input type="submit" value="Go" />
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+              </form>
+              <p class="searchtip" style="font-size: 90%">
+              Enter search terms or a module, class or function name.
+              </p>
+          </div>
+          <script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="olwidget.js.html" title="olwidget.js documentation"
+             >next</a></li>
+        <li class="right" >
+          <a href="index.html" title="Welcome to olwidget’s documentation!"
+             >previous</a> |</li>
+        <li><a href="index.html">olwidget v0.3 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+      &copy; Copyright 2010, Charlie DeTar.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.6.2.
+    </div>
+  </body>
 </html>

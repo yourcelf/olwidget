@@ -113,4 +113,5 @@ div.olControlEditingToolbar {
 /* Put the attribution in a less obtrusive position. */
 .olControlAttribution {
     bottom: 0em !important;
+    right: 0;
 }
