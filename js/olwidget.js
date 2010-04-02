@@ -152,7 +152,7 @@ var olwidget = {
     },
     cloudmade: {
         map: function(type) {
-            return new OpenLayers.Layer.CloudMade("CloudMade", {
+            return new OpenLayers.Layer.CloudMade("CloudMade " + type, {
                 styleId: type
             });
         }

@@ -321,9 +321,10 @@ named <tt class="docutils literal"><span class="pre">olwidget</span></tt> under 
 the directory something else, define <tt class="docutils literal"><span class="pre">OLWIDGET_MEDIA_URL</span></tt> with the URL
 for the media files in your settings file.</li>
 <li>Include <tt class="docutils literal"><span class="pre">'olwidget'</span></tt> in your project's settings <tt class="docutils literal"><span class="pre">INSTALLED_APPS</span></tt> list.</li>
-<li>(Optional) If you want to use Google or Yahoo map layers, you must include
-<tt class="docutils literal"><span class="pre">GOOGLE_API_KEY</span></tt> or <tt class="docutils literal"><span class="pre">YAHOO_APP_ID</span></tt> in your settings file.  <tt class="docutils literal"><span class="pre">olwidget</span></tt>
-uses OpenStreetMaps by default, which requires no key.</li>
+<li>(Optional) If you want to use Google, Yahoo or CloudMade map layers, you
+must include <tt class="docutils literal"><span class="pre">GOOGLE_API_KEY</span></tt>, <tt class="docutils literal"><span class="pre">YAHOO_APP_ID</span></tt> or <tt class="docutils literal"><span class="pre">CLOUDMADE_API_KEY</span></tt>
+in your settings file.  <tt class="docutils literal"><span class="pre">olwidget</span></tt> uses OpenStreetMaps by default, which
+requires no key.</li>
 </ol>
 </div>
 <div class="section" id="map-widgets">
@@ -514,7 +515,8 @@ map = MapDisplay(options={
 <tt class="docutils literal"><span class="pre">'osm.osmarender'</span></tt>, <tt class="docutils literal"><span class="pre">'google.streets'</span></tt>, <tt class="docutils literal"><span class="pre">'google.physical'</span></tt>,
 <tt class="docutils literal"><span class="pre">'google.satellite'</span></tt>, <tt class="docutils literal"><span class="pre">'google.hybrid'</span></tt>, <tt class="docutils literal"><span class="pre">'ve.road'</span></tt>,
 <tt class="docutils literal"><span class="pre">'ve.shaded'</span></tt>, <tt class="docutils literal"><span class="pre">'ve.aerial'</span></tt>, <tt class="docutils literal"><span class="pre">'ve.hybrid'</span></tt>, <tt class="docutils literal"><span class="pre">'wms.map'</span></tt>,
-<tt class="docutils literal"><span class="pre">'wms.nasa'</span></tt>, and <tt class="docutils literal"><span class="pre">'yahoo.map'</span></tt>.  A blank map can be obtained using
+<tt class="docutils literal"><span class="pre">'wms.nasa'</span></tt>, <tt class="docutils literal"><span class="pre">'yahoo.map'</span></tt>, and <tt class="docutils literal"><span class="pre">'cloudmade.&lt;num&gt;'</span></tt> (where <tt class="docutils literal"><span class="pre">&lt;num&gt;</span></tt>
+is the number for a cloudmade style).  A blank map can be obtained using
 <tt class="docutils literal"><span class="pre">'wms.blank'</span></tt>.</dd>
 <dt><tt class="docutils literal"><span class="pre">default_lat</span></tt> (float; default 0)</dt>
 <dd>Latitude for the center point of the map.</dd>

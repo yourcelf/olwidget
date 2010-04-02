@@ -488,12 +488,19 @@ the different points' HTML.</li>
 <tt class="docutils literal"><span class="pre">'osm.osmarender'</span></tt>, <tt class="docutils literal"><span class="pre">'google.streets'</span></tt>, <tt class="docutils literal"><span class="pre">'google.physical'</span></tt>,
 <tt class="docutils literal"><span class="pre">'google.satellite'</span></tt>, <tt class="docutils literal"><span class="pre">'google.hybrid'</span></tt>, <tt class="docutils literal"><span class="pre">'ve.road'</span></tt>,
 <tt class="docutils literal"><span class="pre">'ve.shaded'</span></tt>, <tt class="docutils literal"><span class="pre">'ve.aerial'</span></tt>, <tt class="docutils literal"><span class="pre">'ve.hybrid'</span></tt>, <tt class="docutils literal"><span class="pre">'wms.map'</span></tt>,
-<tt class="docutils literal"><span class="pre">'wms.nasa'</span></tt>, and <tt class="docutils literal"><span class="pre">'yahoo.map'</span></tt>.  A blank map can be obtained using
+<tt class="docutils literal"><span class="pre">'wms.nasa'</span></tt>, <tt class="docutils literal"><span class="pre">'yahoo.map'</span></tt>, and <tt class="docutils literal"><span class="pre">'cloudmade.&lt;num&gt;'</span></tt> (where <tt class="docutils literal"><span class="pre">&lt;num&gt;</span></tt>
+is the number for a cloudmade style).  A blank map can be obtained using
 <tt class="docutils literal"><span class="pre">'wms.blank'</span></tt>.  Additional providers or options can be manually added
-using the normal OpenLayers apis
-(see <a class="reference external" href="examples/other_providers.html">this provider example</a>).</p>
-<p class="last">You must include separately whatever javascript sources needed to use these
-(e.g.  maps.google.com or openstreetmap.org apis).</p>
+using the normal OpenLayers apis (see <a class="reference external" href="examples/other_providers.html">this provider example</a>).</p>
+<p>You must also include whatever javascript sources are needed to use these
+(e.g.  maps.google.com or openstreetmap.org apis).  For CloudMade maps, use
+the included <tt class="docutils literal"><span class="pre">cloudmade.js</span></tt> file, and append the API key as the hash
+portion of the URL, for example:</p>
+<pre class="literal-block">
+&lt;script src=&quot;js/cloudmade.js#&lt;your API key&gt;&quot; type=&quot;text/javascript&quot;&gt;&lt;/script&gt;
+</pre>
+<p class="last">See the <a class="reference external" href="examples/other_providers.html">other providers</a> for a full
+example of all built-in layer providers.</p>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">defaultLat</span></tt> (float; default 0)</dt>
 <dd>Latitude for the center point of the map.  For <tt class="docutils literal"><span class="pre">olwidget.EditableMap</span></tt>,

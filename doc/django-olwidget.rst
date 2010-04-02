@@ -16,9 +16,10 @@ should be familiar to users of other reusable Django apps:
     the directory something else, define ``OLWIDGET_MEDIA_URL`` with the URL
     for the media files in your settings file.
 3.  Include ``'olwidget'`` in your project's settings ``INSTALLED_APPS`` list.
-4.  (Optional) If you want to use Google or Yahoo map layers, you must include
-    ``GOOGLE_API_KEY`` or ``YAHOO_APP_ID`` in your settings file.  ``olwidget``
-    uses OpenStreetMaps by default, which requires no key.
+4.  (Optional) If you want to use Google, Yahoo or CloudMade map layers, you
+    must include ``GOOGLE_API_KEY``, ``YAHOO_APP_ID`` or ``CLOUDMADE_API_KEY``
+    in your settings file.  ``olwidget`` uses OpenStreetMaps by default, which
+    requires no key.
 
 Map widgets
 ~~~~~~~~~~~
@@ -214,7 +215,8 @@ The following options are shared by all ``olwidget`` map types:
     ``'osm.osmarender'``, ``'google.streets'``, ``'google.physical'``,
     ``'google.satellite'``, ``'google.hybrid'``, ``'ve.road'``,
     ``'ve.shaded'``, ``'ve.aerial'``, ``'ve.hybrid'``, ``'wms.map'``,
-    ``'wms.nasa'``, and ``'yahoo.map'``.  A blank map can be obtained using
+    ``'wms.nasa'``, ``'yahoo.map'``, and ``'cloudmade.<num>'`` (where ``<num>``
+    is the number for a cloudmade style).  A blank map can be obtained using
     ``'wms.blank'``.  
 ``default_lat`` (float; default 0)
     Latitude for the center point of the map.

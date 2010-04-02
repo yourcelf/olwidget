@@ -185,13 +185,21 @@ The following options are shared by ``olwidget.EditableMap`` and
     ``'osm.osmarender'``, ``'google.streets'``, ``'google.physical'``,
     ``'google.satellite'``, ``'google.hybrid'``, ``'ve.road'``,
     ``'ve.shaded'``, ``'ve.aerial'``, ``'ve.hybrid'``, ``'wms.map'``,
-    ``'wms.nasa'``, and ``'yahoo.map'``.  A blank map can be obtained using
+    ``'wms.nasa'``, ``'yahoo.map'``, and ``'cloudmade.<num>'`` (where ``<num>``
+    is the number for a cloudmade style).  A blank map can be obtained using
     ``'wms.blank'``.  Additional providers or options can be manually added
-    using the normal OpenLayers apis
-    (see `this provider example <examples/other_providers.html>`_).
+    using the normal OpenLayers apis (see `this provider example
+    <examples/other_providers.html>`_).
 
-    You must include separately whatever javascript sources needed to use these
-    (e.g.  maps.google.com or openstreetmap.org apis).
+    You must also include whatever javascript sources are needed to use these
+    (e.g.  maps.google.com or openstreetmap.org apis).  For CloudMade maps, use
+    the included ``cloudmade.js`` file, and append the API key as the hash
+    portion of the URL, for example::
+
+        <script src="js/cloudmade.js#<your API key>" type="text/javascript"></script>
+
+    See the `other providers <examples/other_providers.html>`_ for a full
+    example of all built-in layer providers.
 ``defaultLat`` (float; default 0)
     Latitude for the center point of the map.  For ``olwidget.EditableMap``,
     this is only used if there is no geometry (e.g. the textarea is empty).
