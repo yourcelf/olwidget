@@ -14,5 +14,3 @@ Welcome to olwidget's documentation!
   standalone olwidget.js <olwidget.js>
   examples
   backwards_incompatible_changes
-
-:ref:`search`
