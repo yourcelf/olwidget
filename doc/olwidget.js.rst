@@ -69,7 +69,7 @@ Editable Maps
 * Read only maps and `multiple maps per page <examples/read_only_and_multiple_maps.html>`_
 * Custom `starting locations and colors <examples/custom_start_point_and_colors.html>`_
 * `Other map providers <examples/other_providers.html>`_, including Google,
-  Yahoo, Microsoft VE, OpenStreetMaps, and MetaCarta.
+  Yahoo, Microsoft VE, OpenStreetMaps, MetaCarta, and CloudMade.
 * `Multiple geometry types <examples/multiple_geometries.html>`_
 * `Other projections <examples/other_projections.html>`_
 
