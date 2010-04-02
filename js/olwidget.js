@@ -145,10 +145,10 @@ var olwidget = {
                 {sphericalMercator: true, minZoomLevel: 2, type: typeCode });
         },
         types: {
-            road: function() { return VEMapStyle.Road },
-            shaded: function() { return VEMapStyle.Shaded },
-            aerial: function() { return VEMapStyle.Aerial },
-            hybrid: function() { return VEMapStyle.Hybrid }
+            road: function() { return VEMapStyle.Road; },
+            shaded: function() { return VEMapStyle.Shaded; },
+            aerial: function() { return VEMapStyle.Aerial; },
+            hybrid: function() { return VEMapStyle.Hybrid; }
         }
     },
     cloudmade: {
@@ -165,11 +165,11 @@ var olwidget = {
      * Useful for applying defaults in nested objects.
      */
     deepJoinOptions: function(destination, source) {
-        if (destination == undefined) {
+        if (destination === undefined) {
             destination = {};
         }
         for (var a in source) {
-            if (source[a] != undefined) {
+            if (source[a] !== undefined) {
                 if (typeof(source[a]) == 'object' && source[a].constructor != Array) {
                     destination[a] = this.deepJoinOptions(destination[a], source[a]);
                 } else {
@@ -255,7 +255,7 @@ olwidget.BaseMap = OpenLayers.Class(OpenLayers.Map, {
             // workaround for problems with Microsoft layers and vector layer drift
             // (see http://openlayers.com/dev/examples/ve-novibrate.html)
             if (parts[0] == "ve") {
-                if (opts.mapOptions.panMethod == undefined) {
+                if (opts.mapOptions.panMethod === undefined) {
                     opts.mapOptions.panMethod = OpenLayers.Easing.Linear.easeOut;
                 }
             }
@@ -529,7 +529,7 @@ olwidget.InfoMap = OpenLayers.Class(olwidget.BaseMap, {
             this.div.style.position = 'relative';
         }
 
-        if (this.opts.cluster == true) {
+        if (this.opts.cluster === true) {
             this.addClusterStrategy();
         }
 
@@ -545,7 +545,7 @@ olwidget.InfoMap = OpenLayers.Class(olwidget.BaseMap, {
             var htmlInfo = infoArray[i][1];
             for (var k = 0; k < feature.length; k++) {
                 if (typeof htmlInfo === "object") {
-                    feature[k].attributes = htmlInfo
+                    feature[k].attributes = htmlInfo;
                     if (typeof htmlInfo.style !== "undefined") {
                         feature[k].style = OpenLayers.Util.applyDefaults(htmlInfo.style, {
                             context: this.opts.overlayStyleContext});
@@ -613,11 +613,11 @@ olwidget.InfoMap = OpenLayers.Class(olwidget.BaseMap, {
             this.vectorLayer.styleMap.styles['default'].defaultStyle);
         var selectStyleOpts = OpenLayers.Util.applyDefaults(
             OpenLayers.Util.applyDefaults({}, defaultClusterStyle),
-            this.vectorLayer.styleMap.styles['select'].defaultStyle);
+                this.vectorLayer.styleMap.styles.select.defaultStyle);
         if (this.opts.clusterStyle !== undefined) {
             defaultStyleOpts = olwidget.deepJoinOptions(defaultStyleOpts, this.opts.clusterStyle);
             selectStyleOpts = olwidget.deepJoinOptions(selectStyleOpts, this.opts.clusterStyle);
-            window['console'] && console.warn("olwidget: ``clusterStyle`` option is deprecated.  Use ``overlayStyle`` instead.");
+            window.console && console.warn("olwidget: ``clusterStyle`` option is deprecated.  Use ``overlayStyle`` instead.");
         }
 
         var defaultStyle = new OpenLayers.Style(defaultStyleOpts, {context: context});
@@ -644,7 +644,7 @@ olwidget.InfoMap = OpenLayers.Class(olwidget.BaseMap, {
         this.popups.push(popup);
         var popupDiv = popup.draw();
         if (popupDiv) {
-            popupDiv.style.zIndex = this.Z_INDEX_BASE['Popup'] +
+            popupDiv.style.zIndex = this.Z_INDEX_BASE.Popup +
                                     this.popups.length;
             this.div.appendChild(popupDiv);
             // store a reference to this function so we can unregister on removal
@@ -790,7 +790,7 @@ olwidget.Popup = OpenLayers.Class(OpenLayers.Popup.Framed, {
             this.fixedRelativePosition = true;
             this.relativePosition = relativePosition;
         }
-        if (separator == undefined) {
+        if (separator === undefined) {
             this.separator = ' of ';
         } else {
             this.separator = separator;
@@ -809,7 +809,7 @@ olwidget.Popup = OpenLayers.Class(OpenLayers.Popup.Framed, {
      * the array element specified by this.page.
      */
     setContentHTML: function(contentHTML) {
-        if (contentHTML != null) {
+        if (contentHTML !== null) {
             this.contentHTML = contentHTML;
         }
 
@@ -823,7 +823,7 @@ olwidget.Popup = OpenLayers.Class(OpenLayers.Popup.Framed, {
             showPagination = this.contentHTML.length > 1;
         }
 
-        if ((this.contentDiv != null) && (pageHTML != null)) {
+        if ((this.contentDiv !== null) && (pageHTML !== null)) {
             var popup = this; // for closures
 
             // Clear old contents
@@ -959,10 +959,10 @@ olwidget.Popup = OpenLayers.Class(OpenLayers.Popup.Framed, {
                 block.div.style.width = (w < 0 ? 0 : w) + 'px';
                 block.div.style.height = (h < 0 ? 0 : h) + 'px';
 
-                block.div.style.left = (l != null) ? l + 'px' : '';
-                block.div.style.bottom = (b != null) ? b + 'px' : '';
-                block.div.style.right = (r != null) ? r + 'px' : '';
-                block.div.style.top = (t != null) ? t + 'px' : '';
+                block.div.style.left = (l !== null) ? l + 'px' : '';
+                block.div.style.bottom = (b !== null) ? b + 'px' : '';
+                block.div.style.right = (r !== null) ? r + 'px' : '';
+                block.div.style.top = (t !== null) ? t + 'px' : '';
 
                 block.div.className = positionBlock.className;
             }
@@ -972,7 +972,7 @@ olwidget.Popup = OpenLayers.Class(OpenLayers.Popup.Framed, {
         }
     },
     updateSize: function() {
-        if (this.map.opts.popupsOutside == true) {
+        if (this.map.opts.popupsOutside === true) {
             var preparedHTML = "<div class='" + this.contentDisplayClass+ "'>" +
                 this.contentDiv.innerHTML +
                 "</div>";
