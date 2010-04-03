@@ -43,34 +43,9 @@
           <div class="body">
             
   <div class="section" id="django-olwidget-documentation">
-<span id="django-olwidget"></span><h1><a class="toc-backref" href="#id2">django-olwidget documentation</a><a class="headerlink" href="#django-olwidget-documentation" title="Permalink to this headline">¶</a></h1>
-<div class="contents topic" id="contents">
-<p class="topic-title first">Contents</p>
-<ul class="simple">
-<li><a class="reference internal" href="#django-olwidget-documentation" id="id2">django-olwidget documentation</a><ul>
-<li><a class="reference internal" href="#installation" id="id3">Installation</a></li>
-<li><a class="reference internal" href="#map-widgets" id="id4">Map widgets</a><ul>
-<li><a class="reference internal" href="#editablemap" id="id5">EditableMap</a></li>
-<li><a class="reference internal" href="#mapdisplay" id="id6">MapDisplay</a></li>
-<li><a class="reference internal" href="#infomap" id="id7">InfoMap</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#inside-admin" id="id8">Inside Admin</a><ul>
-<li><a class="reference internal" href="#changelist-maps" id="id9">Changelist maps</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#options" id="id10">Options</a><ul>
-<li><a class="reference internal" href="#common-options" id="id11">Common options</a></li>
-<li><a class="reference internal" href="#additional-options-for-editablemap-and-mapdisplay-types" id="id12">Additional options for <tt class="docutils literal"><span class="pre">EditableMap</span></tt> and <tt class="docutils literal"><span class="pre">MapDisplay</span></tt> types</a></li>
-<li><a class="reference internal" href="#additional-options-for-infomap" id="id13">Additional options for <tt class="docutils literal"><span class="pre">InfoMap</span></tt></a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-</div>
+<span id="django-olwidget"></span><h1>django-olwidget documentation<a class="headerlink" href="#django-olwidget-documentation" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="installation">
-<h2><a class="toc-backref" href="#id3">Installation</a><a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
 <p>Installation of the <tt class="docutils literal"><span class="pre">olwidget</span></tt> Django app requires a couple of steps &#8211; these
 should be familiar to users of other reusable Django apps:</p>
 <ol class="arabic">
@@ -100,10 +75,10 @@ requires no key.</p>
 </ol>
 </div>
 <div class="section" id="map-widgets">
-<h2><a class="toc-backref" href="#id4">Map widgets</a><a class="headerlink" href="#map-widgets" title="Permalink to this headline">¶</a></h2>
+<h2>Map widgets<a class="headerlink" href="#map-widgets" title="Permalink to this headline">¶</a></h2>
 <p><tt class="docutils literal"><span class="pre">olwidget</span></tt> defines 3 widget types that can be used to display maps:</p>
 <div class="section" id="editablemap">
-<h3><a class="toc-backref" href="#id5">EditableMap</a><a class="headerlink" href="#editablemap" title="Permalink to this headline">¶</a></h3>
+<h3>EditableMap<a class="headerlink" href="#editablemap" title="Permalink to this headline">¶</a></h3>
 <p><tt class="docutils literal"><span class="pre">EditableMap</span></tt> is a widget type for use in forms to allows editing of
 geometries.  Constructor:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="n">olwidget</span><span class="o">.</span><span class="n">widgets</span><span class="o">.</span><span class="n">EditableMap</span><span class="p">(</span><span class="n">options</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">template</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
@@ -130,7 +105,7 @@ geometries.  Constructor:</p>
 </div>
 </div>
 <div class="section" id="mapdisplay">
-<h3><a class="toc-backref" href="#id6">MapDisplay</a><a class="headerlink" href="#mapdisplay" title="Permalink to this headline">¶</a></h3>
+<h3>MapDisplay<a class="headerlink" href="#mapdisplay" title="Permalink to this headline">¶</a></h3>
 <p><tt class="docutils literal"><span class="pre">MapDisplay</span></tt> is used for displaying geometries on read-only maps.
 Constructor:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="n">olwidget</span><span class="o">.</span><span class="n">widgets</span><span class="o">.</span><span class="n">MapDisplay</span><span class="p">(</span><span class="n">fields</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">template</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
@@ -158,7 +133,7 @@ strings or geometry fields.</dd>
 </div>
 </div>
 <div class="section" id="infomap">
-<h3><a class="toc-backref" href="#id7">InfoMap</a><a class="headerlink" href="#infomap" title="Permalink to this headline">¶</a></h3>
+<h3>InfoMap<a class="headerlink" href="#infomap" title="Permalink to this headline">¶</a></h3>
 <p><tt class="docutils literal"><span class="pre">InfoMap</span></tt> is used for displaying read-only maps with clickable information
 popups over geometries.  Constructor:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="n">olwidget</span><span class="o">.</span><span class="n">widgets</span><span class="o">.</span><span class="n">InfoMap</span><span class="p">(</span><span class="n">info</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">template</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
@@ -196,7 +171,7 @@ html is displayed when the geometry is clicked.</dd>
 </div>
 </div>
 <div class="section" id="inside-admin">
-<h2><a class="toc-backref" href="#id8">Inside Admin</a><a class="headerlink" href="#inside-admin" title="Permalink to this headline">¶</a></h2>
+<h2>Inside Admin<a class="headerlink" href="#inside-admin" title="Permalink to this headline">¶</a></h2>
 <p><tt class="docutils literal"><span class="pre">olwidget</span></tt> has several advantages over the built-in geodjango admin map
 implementation, including greater map customization, support for more geometry
 types, and the option to include a map in admin changelist pages.</p>
@@ -227,7 +202,7 @@ subclass of it as the ModelAdmin type for your model.</p>
 display, so all the map display options listed below in <a class="reference internal" href="#options">Options</a> for editable
 map types  can be used with maps in admin.</p>
 <div class="section" id="changelist-maps">
-<h3><a class="toc-backref" href="#id9">Changelist maps</a><a class="headerlink" href="#changelist-maps" title="Permalink to this headline">¶</a></h3>
+<h3>Changelist maps<a class="headerlink" href="#changelist-maps" title="Permalink to this headline">¶</a></h3>
 <p>To show a clickable map on the admin changelist page, use the <tt class="docutils literal"><span class="pre">list_map</span></tt>
 property to specify which fields to display:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="c"># an example model:</span>
@@ -264,7 +239,7 @@ the options listed below in <a class="reference internal" href="#options">Option
 </div>
 </div>
 <div class="section" id="options">
-<span id="id1"></span><h2><a class="toc-backref" href="#id10">Options</a><a class="headerlink" href="#options" title="Permalink to this headline">¶</a></h2>
+<span id="id1"></span><h2>Options<a class="headerlink" href="#options" title="Permalink to this headline">¶</a></h2>
 <p>All of the <tt class="docutils literal"><span class="pre">olwidget</span></tt> map types can be passed an <tt class="docutils literal"><span class="pre">options</span></tt> dictionary
 that controls the look and feel of the map.  An example:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">olwidget.widgets</span> <span class="kn">import</span> <span class="n">MapDisplay</span>
@@ -277,7 +252,7 @@ that controls the look and feel of the map.  An example:</p>
 </pre></div>
 </div>
 <div class="section" id="common-options">
-<h3><a class="toc-backref" href="#id11">Common options</a><a class="headerlink" href="#common-options" title="Permalink to this headline">¶</a></h3>
+<h3>Common options<a class="headerlink" href="#common-options" title="Permalink to this headline">¶</a></h3>
 <p>The following options are shared by all <tt class="docutils literal"><span class="pre">olwidget</span></tt> map types:</p>
 <dl class="docutils">
 <dt><tt class="docutils literal"><span class="pre">name</span></tt> (string; defaults to <tt class="docutils literal"><span class="pre">&quot;data&quot;</span></tt>)</dt>
@@ -364,7 +339,7 @@ may be included, and will be passed directly.</p>
 </dl>
 </div>
 <div class="section" id="additional-options-for-editablemap-and-mapdisplay-types">
-<h3><a class="toc-backref" href="#id12">Additional options for <tt class="docutils literal"><span class="pre">EditableMap</span></tt> and <tt class="docutils literal"><span class="pre">MapDisplay</span></tt> types</a><a class="headerlink" href="#additional-options-for-editablemap-and-mapdisplay-types" title="Permalink to this headline">¶</a></h3>
+<h3>Additional options for <tt class="docutils literal"><span class="pre">EditableMap</span></tt> and <tt class="docutils literal"><span class="pre">MapDisplay</span></tt> types<a class="headerlink" href="#additional-options-for-editablemap-and-mapdisplay-types" title="Permalink to this headline">¶</a></h3>
 <p>In addition to the common options listed above, <tt class="docutils literal"><span class="pre">EditableMap</span></tt> and
 <tt class="docutils literal"><span class="pre">MapDisplay</span></tt>, and <tt class="docutils literal"><span class="pre">GeoModelAdmin</span></tt> accept the following options:</p>
 <dl class="docutils">
@@ -375,7 +350,7 @@ may be included, and will be passed directly.</p>
 </dl>
 </div>
 <div class="section" id="additional-options-for-infomap">
-<h3><a class="toc-backref" href="#id13">Additional options for <tt class="docutils literal"><span class="pre">InfoMap</span></tt></a><a class="headerlink" href="#additional-options-for-infomap" title="Permalink to this headline">¶</a></h3>
+<h3>Additional options for <tt class="docutils literal"><span class="pre">InfoMap</span></tt><a class="headerlink" href="#additional-options-for-infomap" title="Permalink to this headline">¶</a></h3>
 <p>In addition to the common options listed above, <tt class="docutils literal"><span class="pre">InfoMap</span></tt> accepts the
 following options:</p>
 <dl class="docutils">

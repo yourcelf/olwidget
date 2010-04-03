@@ -3,11 +3,6 @@
 olwidget.js documentation
 =========================
 
-Note: the API has changed.  See a list of `backwards incompatible changes
-<backwards_incompatible_changes.html>`_ if you are upgrading.
-
-.. contents:: Contents
-
 Introduction
 ~~~~~~~~~~~~
 
@@ -191,7 +186,8 @@ The following options are shared by ``olwidget.EditableMap`` and
 
     .. code-block:: html
 
-        <script src="js/cloudmade.js#<your API key>" type="text/javascript"></script>
+        <!-- API key for http://olwidget.org -->
+        <script src="js/cloudmade.js#06c005818e31487cb270b0bdfc71e115" type="text/javascript"></script>
 
     See the `other providers <examples/other_providers.html>`_ for a full
     example of all built-in layer providers.

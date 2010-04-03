@@ -3,8 +3,6 @@
 django-olwidget documentation
 =============================
 
-.. contents:: Contents
-
 Installation
 ~~~~~~~~~~~~
 

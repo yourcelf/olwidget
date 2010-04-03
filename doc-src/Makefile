@@ -31,17 +31,12 @@ clean:
 	-rm -rf _build/*
 	-rm -rf ../doc/*
 
-doc:
+html:
 	$(SPHINXBUILD) -b html . ../doc/
-	ln -sf ../doc-src/examples ../doc/examples
+	rm -f ../doc/examples
+	ln -s ../doc-src/examples ../doc/examples
 	@echo
 	@echo "Build finished.  The HTML pages are in ../doc"
-
-html:
-	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) _build/html
-	ln -sf ../../examples _build/html/
-	@echo
-	@echo "Build finished. The HTML pages are in _build/html."
 
 dirhtml:
 	$(SPHINXBUILD) -b dirhtml $(ALLSPHINXOPTS) _build/dirhtml

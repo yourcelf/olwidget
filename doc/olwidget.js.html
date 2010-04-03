@@ -43,28 +43,9 @@
           <div class="body">
             
   <div class="section" id="olwidget-js-documentation">
-<span id="olwidget-js"></span><h1><a class="toc-backref" href="#id1">olwidget.js documentation</a><a class="headerlink" href="#olwidget-js-documentation" title="Permalink to this headline">¶</a></h1>
-<p>Note: the API has changed.  See a list of <a class="reference external" href="backwards_incompatible_changes.html">backwards incompatible changes</a> if you are upgrading.</p>
-<div class="contents topic" id="contents">
-<p class="topic-title first">Contents</p>
-<ul class="simple">
-<li><a class="reference internal" href="#olwidget-js-documentation" id="id1">olwidget.js documentation</a><ul>
-<li><a class="reference internal" href="#introduction" id="id2">Introduction</a></li>
-<li><a class="reference internal" href="#installation" id="id3">Installation</a></li>
-<li><a class="reference internal" href="#examples" id="id4">Examples</a></li>
-<li><a class="reference internal" href="#documentation" id="id5">Documentation</a><ul>
-<li><a class="reference internal" href="#olwidget-editablemap-constructor" id="id6">olwidget.EditableMap constructor</a></li>
-<li><a class="reference internal" href="#olwidget-infomap-constructor" id="id7">olwidget.InfoMap constructor</a></li>
-<li><a class="reference internal" href="#common-options" id="id8">Common options</a></li>
-<li><a class="reference internal" href="#projections" id="id9">Projections</a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-</div>
+<span id="olwidget-js"></span><h1>olwidget.js documentation<a class="headerlink" href="#olwidget-js-documentation" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="introduction">
-<h2><a class="toc-backref" href="#id2">Introduction</a><a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
+<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
 <p><tt class="docutils literal"><span class="pre">olwidget</span></tt> is a javascript library to make editing and displaying geometries
 and information on OpenLayers maps easier.  It defines two primary types:</p>
 <ul class="simple">
@@ -108,18 +89,18 @@ example:</p>
 </div>
 </div>
 <div class="section" id="installation">
-<h2><a class="toc-backref" href="#id3">Installation</a><a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
 <p>Copy or link the olwidget/js/, olwidget/css/, and olwidget/img/ directories
 into your website&#8217;s path.  The three directories should share a parent.</p>
 </div>
 <div class="section" id="examples">
-<h2><a class="toc-backref" href="#id4">Examples</a><a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
 <p>See <a class="reference external" href="examples.html#examples"><em>Examples</em></a> for several examples of olwidget in action.</p>
 </div>
 <div class="section" id="documentation">
-<h2><a class="toc-backref" href="#id5">Documentation</a><a class="headerlink" href="#documentation" title="Permalink to this headline">¶</a></h2>
+<h2>Documentation<a class="headerlink" href="#documentation" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="olwidget-editablemap-constructor">
-<h3><a class="toc-backref" href="#id6">olwidget.EditableMap constructor</a><a class="headerlink" href="#olwidget-editablemap-constructor" title="Permalink to this headline">¶</a></h3>
+<h3>olwidget.EditableMap constructor<a class="headerlink" href="#olwidget-editablemap-constructor" title="Permalink to this headline">¶</a></h3>
 <p>Format:</p>
 <div class="highlight-javascript"><div class="highlight"><pre><span class="k">new</span> <span class="nx">olwidget</span><span class="p">.</span><span class="nx">EditableMap</span><span class="p">(</span><span class="o">&lt;</span><span class="nx">textareaId</span><span class="o">&gt;,</span> <span class="p">[</span><span class="nx">options</span><span class="p">]);</span>
 </pre></div>
@@ -145,7 +126,7 @@ array such as <tt class="docutils literal"><span class="pre">['point',</span> <s
 </dl>
 </div>
 <div class="section" id="olwidget-infomap-constructor">
-<h3><a class="toc-backref" href="#id7">olwidget.InfoMap constructor</a><a class="headerlink" href="#olwidget-infomap-constructor" title="Permalink to this headline">¶</a></h3>
+<h3>olwidget.InfoMap constructor<a class="headerlink" href="#olwidget-infomap-constructor" title="Permalink to this headline">¶</a></h3>
 <p>Format:</p>
 <div class="highlight-javascript"><div class="highlight"><pre><span class="k">new</span> <span class="nx">olwidget</span><span class="p">.</span><span class="nx">InfoMap</span><span class="p">(</span><span class="o">&lt;</span><span class="nx">mapDivId</span><span class="o">&gt;,</span> <span class="o">&lt;</span><span class="nx">infoArray</span><span class="o">&gt;,</span> <span class="p">[</span><span class="nx">options</span><span class="p">]);</span>
 </pre></div>
@@ -210,7 +191,7 @@ the different points&#8217; HTML.</li>
 </dl>
 </div>
 <div class="section" id="common-options">
-<span id="options"></span><h3><a class="toc-backref" href="#id8">Common options</a><a class="headerlink" href="#common-options" title="Permalink to this headline">¶</a></h3>
+<span id="options"></span><h3>Common options<a class="headerlink" href="#common-options" title="Permalink to this headline">¶</a></h3>
 <p>The following options are shared by <tt class="docutils literal"><span class="pre">olwidget.EditableMap</span></tt> and
 <tt class="docutils literal"><span class="pre">olwidget.InfoMap</span></tt>:</p>
 <dl class="docutils">
@@ -229,7 +210,8 @@ using the normal OpenLayers apis (see <a class="reference external" href="exampl
 (e.g.  maps.google.com or openstreetmap.org apis).  For CloudMade maps, use
 the included <tt class="docutils literal"><span class="pre">cloudmade.js</span></tt> file, and append the API key as the hash
 portion of the URL, for example:</p>
-<div class="highlight-html"><div class="highlight"><pre><span class="nt">&lt;script </span><span class="na">src=</span><span class="s">&quot;js/cloudmade.js#&lt;your API key&gt;&quot;</span> <span class="na">type=</span><span class="s">&quot;text/javascript&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
+<div class="highlight-html"><div class="highlight"><pre><span class="c">&lt;!-- API key for http://olwidget.org --&gt;</span>
+<span class="nt">&lt;script </span><span class="na">src=</span><span class="s">&quot;js/cloudmade.js#06c005818e31487cb270b0bdfc71e115&quot;</span> <span class="na">type=</span><span class="s">&quot;text/javascript&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
 </pre></div>
 </div>
 <p class="last">See the <a class="reference external" href="examples/other_providers.html">other providers</a> for a full
@@ -284,7 +266,7 @@ may be included, and will be passed directly.</p>
 </dl>
 </div>
 <div class="section" id="projections">
-<h3><a class="toc-backref" href="#id9">Projections</a><a class="headerlink" href="#projections" title="Permalink to this headline">¶</a></h3>
+<h3>Projections<a class="headerlink" href="#projections" title="Permalink to this headline">¶</a></h3>
 <p><tt class="docutils literal"><span class="pre">olwidget</span></tt> uses the projections given in <tt class="docutils literal"><span class="pre">mapOptions</span></tt> to determine the
 input and output of WKT data.  By default, it expects incoming WKT data to use
 <tt class="docutils literal"><span class="pre">&quot;EPSG:4326&quot;</span></tt> (familiar latitudes and longitudes), which is transformed
