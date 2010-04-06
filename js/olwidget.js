@@ -809,7 +809,7 @@ olwidget.Popup = OpenLayers.Class(OpenLayers.Popup.Framed, {
      * the array element specified by this.page.
      */
     setContentHTML: function(contentHTML) {
-        if (contentHTML !== null) {
+        if (contentHTML !== null && contentHTML !== undefined) {
             this.contentHTML = contentHTML;
         }
 

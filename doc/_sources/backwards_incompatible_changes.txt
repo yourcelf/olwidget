@@ -31,14 +31,14 @@ olwidget.js changes
   .. code-block:: javascript
 
         var mymap = new olwidget.Map('textareaId');
-        mymap.map.toZoom(4);
+        mymap.map.zoomTo(4);
 
   The new way:
 
   .. code-block:: javascript
 
         var mymap = new olwidget.EditableMap('textareaId');
-        mymap.toZoom(4);
+        mymap.zoomTo(4);
 
 
 Django app changes

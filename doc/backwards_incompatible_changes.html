@@ -65,12 +65,12 @@ OpenLayers&#8217; mixedCase standard:</p>
 customizations that access the base map type.</p>
 <p>The old way:</p>
 <div class="highlight-javascript"><div class="highlight"><pre><span class="kd">var</span> <span class="nx">mymap</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">olwidget</span><span class="p">.</span><span class="nx">Map</span><span class="p">(</span><span class="s1">&#39;textareaId&#39;</span><span class="p">);</span>
-<span class="nx">mymap</span><span class="p">.</span><span class="nx">map</span><span class="p">.</span><span class="nx">toZoom</span><span class="p">(</span><span class="mi">4</span><span class="p">);</span>
+<span class="nx">mymap</span><span class="p">.</span><span class="nx">map</span><span class="p">.</span><span class="nx">zoomTo</span><span class="p">(</span><span class="mi">4</span><span class="p">);</span>
 </pre></div>
 </div>
 <p>The new way:</p>
 <div class="highlight-javascript"><div class="highlight"><pre><span class="kd">var</span> <span class="nx">mymap</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">olwidget</span><span class="p">.</span><span class="nx">EditableMap</span><span class="p">(</span><span class="s1">&#39;textareaId&#39;</span><span class="p">);</span>
-<span class="nx">mymap</span><span class="p">.</span><span class="nx">toZoom</span><span class="p">(</span><span class="mi">4</span><span class="p">);</span>
+<span class="nx">mymap</span><span class="p">.</span><span class="nx">zoomTo</span><span class="p">(</span><span class="mi">4</span><span class="p">);</span>
 </pre></div>
 </div>
 </li>
