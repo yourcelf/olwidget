@@ -4,7 +4,7 @@ import os
 from distutils.core import setup
 from distutils.command.install import INSTALL_SCHEMES
 
-root = os.path.dirname(__file__)
+root = os.path.abspath(os.path.dirname(__file__))
 os.chdir(root)
 
 master_file = open(os.path.join(root, ".git", "refs", "heads", "master"))
