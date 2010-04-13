@@ -26,16 +26,17 @@ should be familiar to users of other reusable Django apps:
 
         -e git://github.com/yourcelf/olwidget.git#egg=django-olwidget
 
-2.  Copy or link the media (``css``, ``img``, and ``js``) into a directory
-    named ``olwidget`` under your project's ``MEDIA_URL``.  If you wish to name
-    the directory something else, define ``OLWIDGET_MEDIA_URL`` with the URL
-    for the media files in your settings file.
+2.  Copy or link the ``media/olwidget`` directory into to your project's
+    ``MEDIA_ROOT``.  If you wish to name the directory something other than
+    ``olwidget``, define ``OLWIDGET_MEDIA_URL`` with the URL for the media
+    files in your settings file. 
+    
 3.  Include ``'olwidget'`` in your project's settings ``INSTALLED_APPS`` list.
 
 4.  (Optional) If you want to use Google, Yahoo or CloudMade map layers, you
     must include ``GOOGLE_API_KEY``, ``YAHOO_APP_ID`` or ``CLOUDMADE_API_KEY``
-    in your settings file.  ``olwidget`` uses OpenStreetMaps by default, which
-    requires no key.
+    in your settings file.  ``olwidget`` uses an OpenStreetMaps layer by
+    default, which requires no key.
 
 Map widgets
 ~~~~~~~~~~~

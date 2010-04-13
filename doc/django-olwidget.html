@@ -60,17 +60,17 @@ follows:</p>
 <div class="highlight-python"><pre>-e git://github.com/yourcelf/olwidget.git#egg=django-olwidget</pre>
 </div>
 </li>
-<li><p class="first">Copy or link the media (<tt class="docutils literal"><span class="pre">css</span></tt>, <tt class="docutils literal"><span class="pre">img</span></tt>, and <tt class="docutils literal"><span class="pre">js</span></tt>) into a directory
-named <tt class="docutils literal"><span class="pre">olwidget</span></tt> under your project&#8217;s <tt class="docutils literal"><span class="pre">MEDIA_URL</span></tt>.  If you wish to name
-the directory something else, define <tt class="docutils literal"><span class="pre">OLWIDGET_MEDIA_URL</span></tt> with the URL
-for the media files in your settings file.</p>
+<li><p class="first">Copy or link the <tt class="docutils literal"><span class="pre">media/olwidget</span></tt> directory into to your project&#8217;s
+<tt class="docutils literal"><span class="pre">MEDIA_ROOT</span></tt>.  If you wish to name the directory something other than
+<tt class="docutils literal"><span class="pre">olwidget</span></tt>, define <tt class="docutils literal"><span class="pre">OLWIDGET_MEDIA_URL</span></tt> with the URL for the media
+files in your settings file.</p>
 </li>
 <li><p class="first">Include <tt class="docutils literal"><span class="pre">'olwidget'</span></tt> in your project&#8217;s settings <tt class="docutils literal"><span class="pre">INSTALLED_APPS</span></tt> list.</p>
 </li>
 <li><p class="first">(Optional) If you want to use Google, Yahoo or CloudMade map layers, you
 must include <tt class="docutils literal"><span class="pre">GOOGLE_API_KEY</span></tt>, <tt class="docutils literal"><span class="pre">YAHOO_APP_ID</span></tt> or <tt class="docutils literal"><span class="pre">CLOUDMADE_API_KEY</span></tt>
-in your settings file.  <tt class="docutils literal"><span class="pre">olwidget</span></tt> uses OpenStreetMaps by default, which
-requires no key.</p>
+in your settings file.  <tt class="docutils literal"><span class="pre">olwidget</span></tt> uses an OpenStreetMaps layer by
+default, which requires no key.</p>
 </li>
 </ol>
 </div>

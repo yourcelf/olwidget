@@ -1,5 +1,18 @@
 .. _backwards-incompatible:
 
+Backwards incompatible changes introduced in v0.3
+=================================================
+django-olwidget changes
+-----------------------
+* 2009-04-13: Changed the media for the olwidget app to live in
+  "olwidget/media/olwidget/..." by default, in accordance with the convention
+  proposed by `django-staticmedia
+  <http://pypi.python.org/pypi/django-staticmedia/#avoiding-media-filename-conflicts>`_
+  (thanks to `skyl
+  <http://github.com/yourcelf/olwidget/issues/closed#issue/39>`_ for suggesting
+  this good idea).  This doesn't change any URLs, but it has the potential to
+  break symlink paths from previous installations.
+
 Backwards incompatible changes introduced in v0.2
 =================================================
 
