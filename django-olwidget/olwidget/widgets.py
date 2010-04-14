@@ -241,6 +241,9 @@ class InfoMap(forms.Widget, MapMixin):
     def __unicode__(self):
         return self.render(None, None)
 
+class InfoMapMulti(InfoMap):
+    default_template = 'olwidget/info_map_multi.html'
+
 ewkt_re = re.compile("^SRID=(?P<srid>\d+);(?P<wkt>.+)$", re.I)
 def get_wkt(value, srid=DEFAULT_PROJ):
     """

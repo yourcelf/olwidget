@@ -722,6 +722,365 @@ olwidget.InfoMap = OpenLayers.Class(olwidget.BaseMap, {
     }
 });
 
+
+/*
+ *  Base olwidget map type for multiple named vectors.  Extends OpenLayers.Map
+ */
+olwidget.BaseMapMulti = OpenLayers.Class(OpenLayers.Map, {
+    initialize: function(mapDivID, info, options) {
+        this.opts = this.initOptions(options);
+        this.info = info
+        this.initMap(mapDivID, info, this.opts);
+        this.vectorLayers = []; //just for storing the names
+        for (k in info) { this.vectorLayers.push('vectorLayer'+k);}
+    },
+    initOptions: function(options) {
+        var defaults = {
+            mapOptions: {
+                units: 'm',
+                maxResolution: 156543.0339,
+                projection: "EPSG:900913",
+                displayProjection: "EPSG:4326",
+                maxExtent: [-20037508.34, -20037508.34, 20037508.34, 20037508.34],
+                controls: ['LayerSwitcher', 'Navigation', 'PanZoom', 'Attribution']
+            },
+            mapDivClass: '',
+            mapDivStyle: {
+                width: '600px',
+                height: '400px'
+            },
+            name: 'data',
+            layers: ['osm.mapnik'],
+            defaultLon: 0,
+            defaultLat: 0,
+            defaultZoom: 4,
+            zoomToDataExtent: true,
+            overlayStyle: {
+                fillColor: '#ff00ff',
+                strokeColor: '#ff00ff',
+                pointRadius: 6,
+                fillOpacity: 0.5,
+                strokeWidth: 2
+            }
+        };
+        var opts = olwidget.deepJoinOptions(defaults, options);
+
+        // construct objects for serialized options
+        var me = opts.mapOptions.maxExtent;
+        opts.mapOptions.maxExtent = new OpenLayers.Bounds(me[0], me[1], me[2], me[3]);
+        opts.mapOptions.projection = new OpenLayers.Projection(opts.mapOptions.projection);
+        opts.mapOptions.displayProjection = new OpenLayers.Projection(
+                opts.mapOptions.displayProjection);
+        opts.default_center = new OpenLayers.LonLat(opts.defaultLon, opts.defaultLat);
+        opts.default_center.transform(opts.mapOptions.displayProjection,
+                opts.mapOptions.projection);
+        var controls = [];
+        for (var i = 0; i < opts.mapOptions.controls.length; i++) {
+            var control = opts.mapOptions.controls[i];
+            controls.push(new OpenLayers.Control[control]());
+        }
+        opts.mapOptions.controls = controls;
+        return opts;
+    },
+    initMap: function(mapDivID, info, opts) {
+        var mapDiv = document.getElementById(mapDivID);
+        OpenLayers.Util.extend(mapDiv.style, opts.mapDivStyle);
+        mapDiv.className = opts.mapDivClass;
+        var layers = [];
+        for (var i = 0; i < opts.layers.length; i++) {
+            var parts = opts.layers[i].split(".");
+            layers.push(olwidget[parts[0]][parts[1]]());
+            // (see http://openlayers.com/dev/examples/ve-novibrate.html)
+            if (parts[0] == "ve") {
+                if (opts.mapOptions.panMethod == undefined) {
+                    opts.mapOptions.panMethod = OpenLayers.Easing.Linear.easeOut;
+                }
+            }
+        }
+        var styleMap = new OpenLayers.StyleMap({'default': new OpenLayers.Style(opts.overlayStyle, opts.styleContext)});
+        // Super constructor
+        OpenLayers.Map.prototype.initialize.apply(this, [mapDiv.id, opts.mapOptions]);
+        this.vectorArray = []; // contains the actual vectors
+        for (k in info) {
+            this['vectorLayer'+k] = new OpenLayers.Layer.Vector(k, { styleMap: styleMap });
+            layers.push(this['vectorLayer'+k]);
+            this.vectorArray.push(this['vectorLayer'+k]);
+        }
+        this.addLayers(layers);
+    },
+    initCenter: function(info) {
+        var has_features = false;
+        for (key in info) {
+            if (this['vectorLayer'+key].features.length > 0) { has_features = true; break;}
+        }
+        if (this.opts.zoomToDataExtent && has_features) {
+            for( var index=0, n=this.vectorLayers.length; index < n; index++ ){ // should probably just iterate over the actualy vectors, not just the names
+                if (this[this.vectorLayers[index]].features.length > 0) {
+                    var extent = this[this.vectorLayers[index]].features[0].geometry.getBounds(); break;
+                }
+            }
+            if (this.opts.cluster) {
+                for( var index=0, n=this.vectorLayers.length; index < n; index++ ){
+                    for (var i = 0; i < this[this.vectorLayers[index]].features.length; i++) {
+                        for (var j = 0; j < this[this.vectorLayers[index]].features[i].cluster.length; j++) {
+                            extent.extend(this[this.vectorLayers[index]].features[i].cluster[j].geometry.getBounds());
+                        }
+                    }
+                }
+                this.zoomToExtent(extent);
+            } else {
+                for( var index=0, n=this.vectorLayers.length; index < n; index++ ){
+                    extent.extend(this[this.vectorLayers[index]].getDataExtent());
+                }
+                this.zoomToExtent(extent);
+            }
+        } else {
+            this.setCenter(this.opts.default_center, this.opts.defaultZoom);
+        }
+    },
+    clearFeatures: function() {
+        for( var index=0, n=this.vectorLayer.length; index < n; index++ ){ // iterating over the names again.  Maybe it's ok?
+            this[this.vectorLayers[index]].removeFeatures(this[this.vectorLayers[index]].features);
+            this[this.vectorLayers[index]].destroyFeatures();
+        }
+    }
+});
+
+olwidget.InfoMapMulti = OpenLayers.Class(olwidget.BaseMapMulti, {
+    initialize: function(mapDivID, info, options) {
+        var infomapDefaults = {
+            popupsOutside: false,
+            popupDirection: 'auto',
+            popupPaginationSeparator: ' of ',
+            cluster: false,
+            clusterDisplay: "paginate"
+        };
+
+        options = olwidget.deepJoinOptions(infomapDefaults, options);
+        olwidget.BaseMapMulti.prototype.initialize.apply(this, [mapDivID, info, options]);
+
+        // Must have explicitly specified position for popups to work properly.
+        if (!this.div.style.position) {
+            this.div.style.position = 'relative';
+        }
+
+        if (this.opts.cluster == true) {
+            this.addClusterStrategy();
+        }
+
+        for (key in info) {
+            var features = [];
+            infoArray = info[key];
+            for (var i = 0; i < infoArray.length; i++) {
+                var feature = olwidget.ewktToFeature(infoArray[i][0]);
+                feature = olwidget.transformVector(feature, 
+                                    this.displayProjection, this.projection);
+                if (feature.constructor != Array) {
+                    feature = [feature];
+                }
+                var htmlInfo = infoArray[i][1];
+                for (var k = 0; k < feature.length; k++) {
+                    if (typeof htmlInfo === "object") {
+                        feature[k].attributes = htmlInfo
+                        if (typeof htmlInfo.style !== "undefined") {
+                            feature[k].style = OpenLayers.Util.applyDefaults(htmlInfo.style, this.opts.overlayStyleContext);
+                        }
+                    } else {
+                        feature[k].attributes = { html: htmlInfo };
+                    }
+                    features.push(feature[k]);
+                }
+            }
+            this['vectorLayer'+key].addFeatures(features);
+        }
+        this.initCenter(info);
+        this.addMultiSelect();
+    },
+    addMultiSelect: function() {
+        this.selectControl = new OpenLayers.Control.SelectFeature(
+                this.vectorArray,{
+                    clickout: true, toggle: false,
+                    multiple: false, hover: false,
+                    toggleKey: "ctrlKey", // ctrl key removes from selection
+                    multipleKey: "shiftKey" // shift key adds to selection
+                }
+        );
+        this.selectControl.events.register("featurehighlighted", this, 
+                    function(evt) { this.createPopup(evt); });
+        this.selectControl.events.register("featureunhighlighted", this, 
+                    function(evt) { this.deletePopup(); });
+        var map = this;
+        this.events.register("zoomend", this, function(event) { map.deletePopup(); });
+        map.addControl(this.selectControl);
+        this.selectControl.activate();
+    },
+    addClusterStrategy: function() {
+        var defaultClusterStyle = {
+                pointRadius: "${radius}",
+                strokeWidth: "${width}",
+                label: "${label}",
+                labelSelect: true,
+                fontSize: "11px",
+                fontFamily: "Helvetica, sans-serif",
+                fontColor: "#ffffff",
+                fillColor: "${fill}",
+                strokeColor: "${stroke}",
+        };
+        var context = {
+            width: function(feature) {
+                return (feature.cluster) ? 2 : 1;
+            },
+            radius: function(feature) {
+                var n = feature.attributes.count;
+                var pix;
+                if (n == 1) {
+                    pix = 6;
+                } else if (n <= 5) {
+                    pix = 8;
+                } else if (n <= 25) {
+                    pix = 10;
+                } else if (n <= 50) {
+                    pix = 12;
+                } else {
+                    pix = 14;
+                }
+                return pix;
+            },
+            label: function(feature) {
+                return (feature.cluster && feature.cluster.length > 1) ? feature.cluster.length : '';
+            },
+            fill: function(feature) { return feature.cluster[0].style.fillColor;},
+            stroke: function(feature) { return feature.cluster[0].style.strokeColor;}
+        };
+        if (this.opts.overlayStyleContext !== undefined) {
+            OpenLayers.Util.applyDefaults(context, this.opts.overlayStyleContext);
+        }
+        this.vectorArray = []; // have to create the new vectorArray property for the selectControl to work.
+        for( key in this.info ){
+            var defaultStyleOpts = OpenLayers.Util.applyDefaults(
+                OpenLayers.Util.applyDefaults({}, defaultClusterStyle), 
+                this['vectorLayer'+key].styleMap.styles['default'].defaultStyle);
+            var selectStyleOpts = OpenLayers.Util.applyDefaults(
+                OpenLayers.Util.applyDefaults({}, defaultClusterStyle),
+                this['vectorLayer'+key].styleMap.styles['select'].defaultStyle);
+            if (this.opts.clusterStyle !== undefined) {
+                defaultStyleOpts = olwidget.deepJoinOptions(defaultStyleOpts, this.opts.clusterStyle);
+                selectStyleOpts = olwidget.deepJoinOptions(selectStyleOpts, this.opts.clusterStyle);
+                window['console'] && console.warn("olwidget: ``clusterStyle`` option is deprecated.  Use ``overlayStyle`` instead.");
+            }
+
+            var defaultStyle = new OpenLayers.Style(defaultStyleOpts, {context: context});
+            var selectStyle = this['vectorLayer'+key].styleMap.styles['select'].defaultStyle; //new OpenLayers.Style(selectStyleOpts, {context: });
+            this.removeLayer(this['vectorLayer'+key]);
+            this['vectorLayer'+key] = new OpenLayers.Layer.Vector(key, { 
+                    styleMap: new OpenLayers.StyleMap({ 'default': defaultStyle, 'select': selectStyle }),
+                    strategies: [new OpenLayers.Strategy.Cluster()]
+            });
+            this.addLayer(this['vectorLayer'+key]);
+            this.vectorArray.push(this['vectorLayer'+key]);
+        }
+    },
+    /**
+     * Override parent to allow placement of popups outside viewport
+     */
+    addPopup: function(popup, exclusive) {
+        if (exclusive) {
+            //remove all other popups from screen
+            for (var i = this.popups.length - 1; i >= 0; --i) {
+                this.removePopup(this.popups[i]);
+            }
+        }
+
+        popup.map = this;
+        this.popups.push(popup);
+        var popupDiv = popup.draw();
+        if (popupDiv) {
+            popupDiv.style.zIndex = this.Z_INDEX_BASE['Popup'] +
+                                    this.popups.length;
+            this.div.appendChild(popupDiv);
+            // store a reference to this function so we can unregister on removal
+            this.popupMoveFunc = function(event) {
+                var px = this.getPixelFromLonLat(popup.lonlat);
+                popup.moveTo(px);
+            };
+            this.events.register("move", this, this.popupMoveFunc);
+            this.popupMoveFunc();
+        }
+    },
+    /**
+     * Override parent to allow placement of popups outside viewport
+     */
+    removePopup: function(popup) {
+        OpenLayers.Util.removeItem(this.popups, popup);
+        if (popup.div) {
+            try {
+                this.div.removeChild(popup.div);
+                this.events.unregister("move", this, this.popupMoveFunc);
+            } catch (e) { }
+        }
+        popup.map = null;
+    },
+
+    /**
+     * Build a paginated popup
+     */
+    createPopup: function(evt) {
+        var feature = evt.feature;
+        var lonlat;
+        if (feature.geometry.CLASS_NAME == "OpenLayers.Geometry.Point") {
+            lonlat = feature.geometry.getBounds().getCenterLonLat();
+        } else {
+            lonlat = this.getLonLatFromViewPortPx(evt.object.handlers.feature.evt.xy);
+        }
+            
+        var popupHTML = [];
+        if (feature.cluster) {
+            if (this.opts.clusterDisplay == 'list') {
+                if (feature.cluster.length > 1) {
+                    var html = "<ul class='olwidgetClusterList'>";
+                    for (var i = 0; i < feature.cluster.length; i++) {
+                        html += "<li>" + feature.cluster[i].attributes.html + "</li>";
+                    }
+                    html += "</ul>";
+                    popupHTML.push(html);
+                } else {
+                    popupHTML.push(feature.cluster[0].attributes.html);
+                }
+            } else {
+                for (var i = 0; i < feature.cluster.length; i++) {
+                    popupHTML.push(feature.cluster[i].attributes.html);
+                }
+            }
+        } else {
+            popupHTML.push(feature.attributes.html);
+        }
+        var infomap = this;
+        this.popup = new olwidget.Popup(null, 
+                lonlat, null, popupHTML, null, true, 
+                function() {
+                    for (key in infomap.info){
+                        infomap.selectControl.unselect(feature);
+                    }
+                }, 
+                this.opts.popupDirection,
+                this.opts.popupPaginationSeparator);
+        if (this.opts.popupsOutside) {
+            this.popup.panMapIfOutOfView = false;
+        }
+        this.addPopup(this.popup);
+    },
+
+    deletePopup: function() {
+        if (this.popup) {
+            this.popup.destroy();
+            this.popup = null;
+        }
+    }
+});
+
+
+
+
 /*
  * Paginated, framed popup type, CSS stylable.
  */
