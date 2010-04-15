@@ -243,6 +243,12 @@ olwidget.Map = OpenLayers.Class(OpenLayers.Map, {
         if (opts.mapDivClass) {
             mapDiv.className = opts.mapDivClass;
         }
+
+        // Must have explicitly specified position for popups to work properly.
+        if (!mapDiv.style.position) {
+            mapDiv.style.position = 'relative';
+        }
+
         var layers = [];
         for (var i = 0; i < opts.layers.length; i++) {
             var parts = opts.layers[i].split(".");
@@ -294,12 +300,12 @@ olwidget.Map = OpenLayers.Class(OpenLayers.Map, {
     },
     featureUnhighlighted: function(evt) {
         if (!this.editing) {
-            this.deletePopup();
+            this.deleteAllPopups();
         }
     },
     zoomEnd: function(evt) {
         if (!this.editing) {
-            this.deletePopup();
+            this.deleteAllPopups();
         }
     },
 
@@ -380,22 +386,27 @@ olwidget.Map = OpenLayers.Class(OpenLayers.Map, {
         }
         if (popupHTML.length > 0) {
             var infomap = this;
-            this.popup = new olwidget.Popup(null,
+            var popup = new olwidget.Popup(null,
                     lonlat, null, popupHTML, null, true,
                     function() { infomap.selectControl.unselect(feature); },
                     this.opts.popupDirection,
                     this.opts.popupPaginationSeparator);
             if (this.opts.popupsOutside) {
-                this.popup.panMapIfOutOfView = false;
+               popup.panMapIfOutOfView = false;
             }
-            this.addPopup(this.popup);
+            this.addPopup(popup);
         }
     },
-    deletePopup: function() {
-        if (this.popup) {
-            this.popup.destroy();
-            this.popup = null;
+    deleteAllPopups: function() {
+        // must clone this.popups array first; it's modified during iteration
+        var popups = [];
+        for (var i = 0; i < this.popups.length; i++) {
+            popups.push(this.popups[i]);
         }
+        for (var i = 0; i < popups.length; i++) {
+            this.removePopup(popups[i]);
+        }
+        this.popups = [];
     },
     CLASS_NAME: "olwidget.Map"
 });
@@ -512,6 +523,32 @@ olwidget.InfoLayer = OpenLayers.Class(olwidget.BaseVectorLayer, {
     CLASS_NAME: "olwidget.InfoLayer"
 });
 
+olwidget.EditableLayer = OpenLayers.Class(olwidget.BaseVectorLayer, {
+    initialize: function(textareaId, options) {
+        options = olwidget.deepJoinOptions({
+            editable: true,
+            geometry: 'point',
+            hideTextarea: true,
+            isCollection: false
+        }, options);
+
+        olwidget.BaseVectorLayer.prototype.initialize.apply(this, [options]);
+    },
+    afterAdd: function() {
+        OpenLayers.Layer.Vector.prototype.afterAdd.apply(this);
+        this.map.addControl(new OpenLayers.Control.MousePosition());
+    },
+    CLASS_NAME: "olwidget.EditableLayer"
+});
+
+
+olwidget.EditableLayerSwitcher = OpenLayers.Class(OpenLayers.Control, {
+    initialize: function(options) {
+        
+
+    },
+    CLASS_NAME: "olwidget.EditableLayerSwitcher"
+});
 
 
 /*

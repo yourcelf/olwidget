@@ -10,13 +10,19 @@
         <title>Test multi-vector-layer map</title>
     </head>
     <body>
+        <style type="text/css">
+            .olControlAttribution {
+                bottom: 1em !important;
+            }
+        </style>
         <div id='map'></div>
+        <textarea id="mytextarea"></textarea>
         <script type='text/javascript'>//<![CDATA[
             var map = new olwidget.Map('map', {
                 vectorLayers: [
                     new olwidget.InfoLayer([
                         ["POLYGON(-10 -10, -5 -5, -10 -5)", "Right on, bro"],
-                        ["POLYGON(-10 -10, -15 -15, -10 -15)", "Left on, bro"]
+                        ["POLYGON(-11 -11, -15 -15, -11 -15)", "Left on, bro"]
                     ], {name: "polygon"}),
 
                     new olwidget.InfoLayer([
@@ -27,7 +33,9 @@
                     new olwidget.InfoLayer([["Point (-10 10)", "Indeed!"]], {
                         name: "greeny",
                         overlayStyle: { fillColor: "#00FF00" }
-                    })
+                    }),
+
+                    new olwidget.EditableLayer("mytextarea")
                 ],
 
                 // global style!
