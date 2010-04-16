@@ -5,7 +5,7 @@
         <!-- olwidget includes -->
         <script type='text/javascript' src='http://openlayers.org/api/2.8/OpenLayers.js'></script>
         <script type='text/javascript' src='http://openstreetmap.org/openlayers/OpenStreetMap.js'></script>
-        <script type='text/javascript' src='../../js/multiolwidget.js'></script>
+        <script type='text/javascript' src='../../js/olwidget.js'></script>
         <link rel="stylesheet" type="text/css" media="all" href="../../css/olwidget.css" />
         <title>Test multi-vector-layer map</title>
     </head>
@@ -18,8 +18,7 @@
         <div id='map'></div>
         <textarea id="mytextarea"></textarea>
         <script type='text/javascript'>//<![CDATA[
-            var map = new olwidget.Map('map', {
-                vectorLayers: [
+            var map = new olwidget.Map('map', [
                     new olwidget.InfoLayer([
                         ["POLYGON(-10 -10, -5 -5, -10 -5)", "Right on, bro"],
                         ["POLYGON(-11 -11, -15 -15, -11 -15)", "Left on, bro"]
@@ -36,12 +35,12 @@
                     }),
 
                     new olwidget.EditableLayer("mytextarea")
-                ],
-
-                // global style!
-                overlayStyle: {
-                    strokeColor: "#0000FF"
-                }
+                ], {
+                    // global style!
+                    overlayStyle: {
+                        strokeColor: "#0000FF"
+                    },
+                    popupsOutside: true
             }); 
             console.log(map);
         //]]></script>

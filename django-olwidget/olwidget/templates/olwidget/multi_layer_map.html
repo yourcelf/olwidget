@@ -1,0 +1,9 @@
+<div id="{{ id }}"></div>
+<script type="text/javascript">
+    new olwidget.Map("{{ id }}", [
+            {{ vector_layers|join:"," }}
+        ], 
+        {{ map_opts|safe }}
+    );
+</script>
+

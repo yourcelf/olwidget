@@ -10,6 +10,11 @@ admin.autodiscover()
 urlpatterns = patterns('',
      (r'^admin/', include(admin.site.urls)),
 
+     # multi vector layer maps
+     url(r'^test/info/multi$',
+         'testolwidget.views.multi_vector',
+         name = 'testolwidget-views-multi_vector'),
+
      # showing
      url(r'^test/model/(?P<model_id>\d+)?$', 
          'testolwidget.views.show_geomodel',

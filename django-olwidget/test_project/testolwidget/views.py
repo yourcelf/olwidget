@@ -5,7 +5,8 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect, HttpResponse
 
 from testolwidget.models import GeoModel, MultiGeoModel, InfoModel, PointModel, MultiLinestringModel
-from olwidget.widgets import MapDisplay, EditableMap, InfoMap
+from olwidget.widgets import MapDisplay, EditableMap, InfoMap, \
+        Map, InfoLayer
 
 class GeoModelForm(forms.ModelForm):
     point = forms.CharField(widget=EditableMap(options={
@@ -207,4 +208,22 @@ def test(request):
     )
     return HttpResponse("ok!")
 
+def multi_vector(request):
+    points = PointModel.objects.all()
+    multis = MultiGeoModel.objects.all()
+    infos = InfoModel.objects.all()
 
+    map = Map([
+            InfoLayer([[info.geometry, info.story] for info in infos],
+                { 'overlayStyle': {'fill_color': '#0000ff'},
+                    'name': "Nigeria"}),
+            InfoLayer([[p.point, unicode(p)] for p in points],
+                { 'cluster': True, 'name': "Point world" }),
+            InfoLayer([[m.poly, str(i)] for i,m in enumerate(multis)],
+                { 'overlayStyle': {'fill_color': '#ff0000'},
+                    'name': "poly tastic"}),
+        ],
+        {'overlayStyle': {'stroke_color': '#ff0000'}},
+    )
+    return render_to_response("testolwidget/info_maps.html", {'map': map},
+        context_instance=RequestContext(request))

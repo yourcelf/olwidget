@@ -7,6 +7,7 @@ from django.template.loader import render_to_string
 from django.utils import simplejson
 from django.conf import settings
 from django import forms
+from django.utils.safestring import mark_safe
 
 def reduce_url_parts(a, b):
     if a and a[-1] == "/":
@@ -82,6 +83,57 @@ class MapMixin(object):
         js = [settings.OL_API, OLWIDGET_JS] + list(js)
         return forms.Media(css={'all': (OLWIDGET_CSS,)}, js=js)
     media = property(_media)
+
+#
+# New multi layer types
+#
+
+class Map(forms.Widget, MapMixin):
+    default_template = 'olwidget/multi_layer_map.html'
+    def __init__(self, vector_layers=None, options=None, template=None):
+        self.vector_layers = vector_layers or []
+        self.set_options(options, template)
+        super(Map, self).__init__()
+
+    def render(self, name, value, attrs=None):
+        attrs = attrs or {}
+        context = {
+            'id': attrs.get('id', "id_%s" % id(self)),
+            'vector_layers': self.vector_layers,
+            'map_opts': simplejson.dumps(translate_options(self.options)),
+        }
+        return render_to_string(self.template, context)
+
+    def __unicode__(self):
+        return self.render(None, None)
+
+class InfoLayer(forms.Widget):
+    default_template = 'olwidget/info_layer.html'
+
+    def __init__(self, info=None, options=None, template=None):
+        self.info = info or []
+        self.options = options or {}
+        self.template = template or self.default_template
+
+    def __unicode__(self):
+        wkt_array = []
+        for geom, attr in self.info:
+            wkt = add_srid(get_wkt(geom))
+            if isinstance(attr, dict):
+                wkt_array.append([wkt, translate_options(attr)])
+            else:
+                wkt_array.append([wkt, attr])
+        info_json = simplejson.dumps(wkt_array)
+
+        context = {
+            'info_array': info_json,
+            'options': simplejson.dumps(translate_options(self.options)),
+        }
+        return mark_safe(render_to_string(self.template, context))
+
+#
+# Old single layer types
+#
 
 class EditableMap(forms.Textarea, MapMixin):
     """
@@ -240,9 +292,6 @@ class InfoMap(forms.Widget, MapMixin):
 
     def __unicode__(self):
         return self.render(None, None)
-
-class InfoMapMulti(InfoMap):
-    default_template = 'olwidget/info_map_multi.html'
 
 ewkt_re = re.compile("^SRID=(?P<srid>\d+);(?P<wkt>.+)$", re.I)
 def get_wkt(value, srid=DEFAULT_PROJ):
