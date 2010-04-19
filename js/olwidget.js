@@ -301,6 +301,7 @@ olwidget.Map = OpenLayers.Class(OpenLayers.Map, {
         this.events.register("zoomend", this, function(evt) { this.zoomEnd(evt); });
         this.addControl(this.selectControl);
         this.selectControl.activate();
+        this.addControl(new olwidget.EditableLayerSwitcher());
     },
     initCenter: function() {
         if (this.opts.zoomToDataExtent && this.vectorLayers.length > 0) {
@@ -447,6 +448,15 @@ olwidget.BaseVectorLayer = OpenLayers.Class(OpenLayers.Layer.Vector, {
         }, options);
         layerOpts = {};
         OpenLayers.Layer.Vector.prototype.initialize.apply(this, [this.opts.name, layerOpts]);
+        if (this.opts.paging === true) {
+            if (this.strategies === null) {
+                this.strategies = [];
+            }
+            var paging = new OpenLayers.Strategy.Paging();
+            paging.setLayer(this);
+            this.strategies.push(paging);
+            paging.activate();
+        }
     },
     setMap: function(map) {
         OpenLayers.Layer.Vector.prototype.setMap.apply(this, [map]);
@@ -566,17 +576,27 @@ olwidget.EditableLayer = OpenLayers.Class(olwidget.BaseVectorLayer, {
 
         olwidget.BaseVectorLayer.prototype.initialize.apply(this, [options]);
     },
-    afterAdd: function() {
-        OpenLayers.Layer.Vector.prototype.afterAdd.apply(this);
-        this.map.addControl(new OpenLayers.Control.MousePosition());
-    },
     CLASS_NAME: "olwidget.EditableLayer"
 });
 
 
 olwidget.EditableLayerSwitcher = OpenLayers.Class(OpenLayers.Control, {
+    displayClass: "olwidgetEditableLayerSwitcher",
+    roundedCorner: true,
+    roundedCornerColor: "darkblue",
+    editing: null,
+    editableLayers: null,
+    editableLayersDiv: null,
+
     initialize: function(options) {
         OpenLayers.Control.prototype.initialize.apply(this, arguments);
+        this.editableLayers = [];
+    },
+    addMap: function() {
+        OpenLayers.Control.prototype.setMap.apply(this, arguments);
+    },
+    draw: function() {
+        OpenLayers.Control.prototype.draw.apply(this);
     },
     CLASS_NAME: "olwidget.EditableLayerSwitcher"
 });
