@@ -16,13 +16,21 @@
             }
             .olwidgetEditableLayerSwitcher {
                 background: white;
-                left: 5em;
+                left: 50%;
                 padding: 0.1em;
-                border: 1px outset gray;
+                border: 2px outset gray;
+                z-index: 1006;
+            }
+            .olwidgetEditableLayerSwitcher .maxmin {
+                cursor: pointer;
+            }
+            .olwidgetEditableLayerSwitcher input {
+                z-index: 1004;
             }
         </style>
         <div id='map'></div>
-        <textarea id="mytextarea"></textarea>
+        <textarea id="mytextarea">POINT(-7 7)</textarea>
+        <textarea id="mytextarea2">POLYGON(-4 4,3 3,5 5)</textarea>
         <script type='text/javascript'>//<![CDATA[
             var map = new olwidget.Map('map', [
                     new olwidget.InfoLayer([
@@ -40,7 +48,15 @@
                         overlayStyle: { fillColor: "#00FF00" }
                     }),
 
-                    new olwidget.EditableLayer("mytextarea")
+                    new olwidget.EditableLayer("mytextarea", {
+                        hideTextarea: false         
+                    }),
+                    new olwidget.EditableLayer("mytextarea2", {
+                        geometry: "polygon",
+                        name: "poly",
+                        hideTextarea: false
+                    })
+
                 ], {
                     // global style!
                     overlayStyle: {
@@ -48,7 +64,6 @@
                     },
                     popupsOutside: true
             }); 
-            console.log(map);
         //]]></script>
     </body>
 </html>

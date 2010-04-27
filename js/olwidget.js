@@ -427,6 +427,42 @@ olwidget.Map = OpenLayers.Class(OpenLayers.Map, {
             this.addPopup(popup);
         }
     },
+    startEditing: function(layer) {
+        if (this.currentlyEditing) {
+            this.stopEditing();
+        }
+        this.currentlyEditing = layer;
+        if (layer) {
+            layer.events.on({
+                "featuremodified" : layer.modifyWKT,
+                "featureadded" : layer.addWKT,
+                scope: layer
+            });
+            // select control interferes with modify feature control
+            this.selectControl.deactivate();
+            layer.buildPanel();
+            this.addControl(layer.panel);
+        }
+    },
+    stopEditing: function() {
+        if (this.currentlyEditing) {
+            this.currentlyEditing.events.un({
+                "featuremodified": this.currentlyEditing.modifyWKT,
+                "featureadded": this.currentlyEditing.addWKT,
+                scope: this.currentlyEditing
+            });
+            // Point adding sticks around unless we aggressively remove all.
+            for (var i = 0; i < this.currentlyEditing.panel.controls; i++) {
+                this.currentlyEditing.panel.controls[i].deactivate();
+                this.currentlyEditing.panel.controls[i].destroy();
+            }
+            this.removeControl(this.currentlyEditing.panel);
+            this.currentlyEditing.panel.deactivate();
+            this.currentlyEditing.panel.destroy();
+        }
+        this.currentlyEditing = null;
+        this.selectControl.activate();
+    },
     deleteAllPopups: function() {
         // must clone this.popups array first; it's modified during iteration
         var popups = [];
@@ -537,7 +573,7 @@ olwidget.InfoLayer = OpenLayers.Class(olwidget.BaseVectorLayer, {
         this.info = info;
     },
     afterAdd: function() {
-        OpenLayers.Layer.Vector.prototype.afterAdd.apply(this);
+        olwidget.BaseVectorLayer.prototype.afterAdd.apply(this);
         var features = [];
         for (var i = 0; i < this.info.length; i++) {
             var feature = olwidget.ewktToFeature(this.info[i][0]);
@@ -566,6 +602,7 @@ olwidget.InfoLayer = OpenLayers.Class(olwidget.BaseVectorLayer, {
 });
 
 olwidget.EditableLayer = OpenLayers.Class(olwidget.BaseVectorLayer, {
+    editable: true,
     initialize: function(textareaId, options) {
         this.opts = olwidget.deepJoinOptions({
             editable: true,
@@ -573,27 +610,323 @@ olwidget.EditableLayer = OpenLayers.Class(olwidget.BaseVectorLayer, {
             hideTextarea: true,
             isCollection: false
         }, options);
+        olwidget.BaseVectorLayer.prototype.initialize.apply(this, [this.opts]);
 
-        olwidget.BaseVectorLayer.prototype.initialize.apply(this, [options]);
+        this.textarea = document.getElementById(textareaId);
+        if (this.opts.hideTextarea) {
+            this.textarea.style.display = 'none';
+        }
+    },
+    buildPanel: function() {
+        var panel = new OpenLayers.Control.Panel({displayClass: 'olControlEditingToolbar'});
+        var controls = [];
+
+        var nav = new OpenLayers.Control.Navigation();
+        controls.push(nav);
+
+        // Drawing control(s)
+        var geometries;
+        if (this.opts.geometry.constructor == Array) {
+            geometries = this.opts.geometry; 
+        } else {
+            geometries = [this.opts.geometry];
+        }
+        for (var i = 0; i < geometries.length; i++) {
+            var drawControl;
+            if (geometries[i] == 'linestring') {
+                drawControl = new OpenLayers.Control.DrawFeature(this, 
+                    OpenLayers.Handler.Path, 
+                    {'displayClass': 'olControlDrawFeaturePath'});
+            } else if (geometries[i] == 'polygon') {
+                drawControl = new OpenLayers.Control.DrawFeature(this,
+                    OpenLayers.Handler.Polygon,
+                    {'displayClass': 'olControlDrawFeaturePolygon'});
+            } else if (geometries[i] == 'point') {
+                drawControl = new OpenLayers.Control.DrawFeature(this,
+                    OpenLayers.Handler.Point,
+                    {'displayClass': 'olControlDrawFeaturePoint'});
+            }
+            controls.push(drawControl);
+        }
+        // Modify feature control
+        if (this.opts.geometry != 'point' || this.opts.isCollection) {
+            var mod = new OpenLayers.Control.ModifyFeature(this, {clickout: true});
+            controls.push(mod);
+        }
+
+        // Clear all control
+        var context = this;
+        var del = new OpenLayers.Control.Button({
+            displayClass: 'olControlClearFeatures', 
+            trigger: function() {
+                context.clearFeatures();
+            }
+        });
+        controls.push(del);
+        panel.addControls(controls);
+        this.panel = panel;
+    },
+    clearFeatures: function() {
+        this.removeFeatures(this.features);
+        this.destroyFeatures();
+    },
+    afterAdd: function() {
+        olwidget.BaseVectorLayer.prototype.afterAdd.apply(this);
+        // Read any initial WKT from the text field.  We assume that the
+        // WKT uses the projection given in "displayProjection", and ignore
+        // any initial SRID.
+
+        var wkt = this.textarea.value;
+        if (wkt) {
+            // After reading into geometry, immediately write back to 
+            // WKT <textarea> as EWKT (so the SRID is included if it wasn't
+            // before).
+            var geom = olwidget.ewktToFeature(wkt);
+            geom = olwidget.transformVector(geom, this.map.displayProjection, 
+                                            this.map.projection);
+            if (geom.constructor == Array || 
+                    geom.geometry.CLASS_NAME === "OpenLayers.Geometry.MultiLineString" ||
+                    geom.geometry.CLASS_NAME === "OpenLayers.Geometry.MultiPoint" ||
+                    geom.geometry.CLASS_NAME === "OpenLayers.Geometry.MultiPolygon") {
+                // extract geometries from MULTI<geom> types into individual components
+                // (keeps the vector layer flat)
+                if (typeof(geom.geometry) !== "undefined") {
+                    var geoms = [];
+                    for (var i = 0; i < geom.geometry.components.length; i++) {
+                        geoms.push(new OpenLayers.Feature.Vector(geom.geometry.components[i]));
+                    }
+                    this.addFeatures(geoms);
+                } else {
+                    this.addFeatures(geom);
+                }
+            } else {
+                this.addFeatures([geom]);
+            }
+            this.numGeom = this.features.length;
+        }
+    },
+    // Callback for openlayers "featureadded" 
+    addWKT: function(event) {
+        // This function will sync the contents of the `vector` layer with the
+        // WKT in the text field.
+        if (this.opts.isCollection) {
+            this.featureToTextarea(this.features);
+        } else {
+            // Make sure to remove any previously added features.
+            if (this.features.length > 1) {
+                var old_feats = [this.features[0]];
+                this.removeFeatures(old_feats);
+                this.destroyFeatures(old_feats);
+            }
+            this.featureToTextarea(event.feature);
+        }
+    },
+    // Callback for openlayers "featuremodified" 
+    modifyWKT: function(event) {
+        if (this.opts.isCollection){
+            // OpenLayers adds points around the modified feature that we want to strip.
+            // So only take the features up to "numGeom", the number of features counted
+            // when we last added.
+            var feat = [];
+            for (var i = 0; i < this.numGeom; i++) {
+                feat.push(this.features[i].clone());
+            }
+            this.featureToTextarea(feat);
+        } else {
+            this.featureToTextarea(event.feature);
+        }
+    },
+    featureToTextarea: function(feature) {
+        if (this.opts.isCollection) {
+            this.numGeom = feature.length;
+        } else {
+            this.numGeom = 1;
+        }
+        feature = olwidget.transformVector(feature, 
+                this.map.projection, this.map.displayProjection);
+        if (this.opts.isCollection) {
+            // Convert to multi-geometry types if we are a collection.
+            // Passing arrays to the WKT formatter results in a
+            // "GEOMETRYCOLLECTION" type, but if we have only one geometry,
+            // we should use a "MULTI<geometry>" type.
+            if (this.opts.geometry.constructor != Array) {
+                var geoms = [];
+                for (var i = 0; i < feature.length; i++) {
+                    geoms.push(feature[i].geometry);
+                }
+                var GeoClass = olwidget.multiGeometryClasses[this.opts.geometry]; 
+                feature = new OpenLayers.Feature.Vector(new GeoClass(geoms));
+            } 
+        }
+        this.textarea.value = olwidget.featureToEWKT(feature, this.map.displayProjection);
     },
     CLASS_NAME: "olwidget.EditableLayer"
 });
 
 
-olwidget.EditableLayerSwitcher = OpenLayers.Class(OpenLayers.Control, {
+olwidget.EditableLayerSwitcher = OpenLayers.Class(OpenLayers.Control.LayerSwitcher, {
+    currentlyEditing: null,
+    editableLayers: [],
+
     initialize: function(options) {
         OpenLayers.Control.prototype.initialize.apply(this, arguments);
+    },
+    onInputClick: function(e) {
+        if (!this.inputElem.disabled) {
+            this.inputElem.checked = true;
+            this.layerSwitcher.currentlyEditing = this.layer;
+            if (this.layer) {
+                this.layerSwitcher.maximize.innerHTML = "(+) Editing \"" + this.layer.name + "\"";
+                this.map.startEditing(this.layer);
+            } else {
+                this.layerSwitcher.maximize.innerHTML = "(+) Edit";
+                this.map.stopEditing();
+            }
+            this.layerSwitcher.minimizeControl();
+        }
+    },
+    destroy: function() {
+        OpenLayers.Event.stopObservingElement(this.div);
+        this.map.events.un({
+            "addlayer": this.redraw,
+            "changelayer": this.redraw,
+            "removelayer": this.redraw,
+            "changebaselayer": this.redraw,
+            scope: this
+        });
+        clearLayersArray();
+        OpenLayers.Control.prototype.destroy.apply(this, arguments);
+    },
+    clearLayersArray: function() {
+        for (var i = 0; i < this.editableLayers.length; i++) {
+            var layer = this.editableLayers[i];
+            OpenLayers.Event.stopObservingElement(layer.inputElem);
+            OpenLayers.Event.stopObservingElement(layer.labelSpan);
+        }
         this.editableLayers = [];
     },
-    addMap: function() {
+    setMap: function() {
         OpenLayers.Control.prototype.setMap.apply(this, arguments);
+        this.map.events.on({
+            "addlayer": this.redraw,
+            "changelayer": this.redraw,
+            "removelayer": this.redraw,
+            scope: this
+        });
     },
     draw: function() {
         OpenLayers.Control.prototype.draw.apply(this);
-        this.div.innerHTML = "Edit";
-        this.activate();
-        console.log(this.div);
+        this.loadContents()
+        this.redraw();
         return this.div;
+    },
+    buildInput: function(name, checked, layer, map) {
+        var input = document.createElement("input");
+        input.id = this.id + "_edit_switcher_" + this.editableLayers.length;
+        input.name = this.id + "_edit";
+        input.type = "radio";
+        input.value = name;
+        input.checked = checked;
+        if (layer && (!layer.inRange || !layer.visibility)) {
+            input.disabled = true;
+        }
+        var span = document.createElement("span");
+        OpenLayers.Element.addClass(span, "label");
+        span.innerHTML = name;
+
+        var context = {
+            "inputElem": input,
+            "layer": layer,
+            "layerSwitcher": this,
+            "map": map
+        }
+        OpenLayers.Event.observe(input, "mouseup",
+            OpenLayers.Function.bindAsEventListener(this.onInputClick, 
+                                                    context)
+        );
+        OpenLayers.Event.observe(span, "mouseup",
+            OpenLayers.Function.bindAsEventListener(this.onInputClick,
+                                                    context)
+        );
+
+        this.layersDiv.appendChild(input);
+        this.layersDiv.appendChild(span);
+        this.layersDiv.appendChild(document.createElement("br"));
+
+        this.editableLayers.push({
+            'layer': layer,
+            'inputElem': input,
+            'labelSpan': span
+        });
+    },
+    redraw: function() {
+        this.clearLayersArray();
+        this.layersDiv.innerHTML = "";
+
+        this.buildInput("none", !this.currentlyEditing, null, this.map);
+
+        for (var i = 0; i < this.map.layers.length; i++) {
+            var layer = this.map.layers[i];
+            if (layer.editable) {
+                this.buildInput(layer.name, 
+                   this.currentlyEditing && 
+                       this.currentlyEditing.name == layer.name, 
+                   layer, this.map);
+            }
+        }
+    },
+    loadContents: function() {
+        // Set event handlers such that we don't get spurious clicks or mouse
+        // ups for events not initiated in our control.
+        OpenLayers.Event.observe(this.div, "mouseup",
+            OpenLayers.Function.bindAsEventListener(this.mouseUp, this));
+        OpenLayers.Event.observe(this.div, "click", this.ignoreEvent);
+        OpenLayers.Event.observe(this.div, "mousedown",
+            OpenLayers.Function.bindAsEventListener(this.mouseDown, this));
+        OpenLayers.Event.observe(this.div, "dblclick", this.ignoreEvent);
+
+        // Container for layers
+        this.layersDiv = document.createElement("div");
+        this.layersDiv.id = this.id + "_layersDiv";
+        this.layersDiv.style.display = "none";
+        OpenLayers.Element.addClass(this.layersDiv, "layersDiv");
+
+        // Heading
+        this.maximize = document.createElement("div");
+        this.maximize.innerHTML = "(+) Edit" //TODO: i18n
+        OpenLayers.Element.addClass(this.maximize, "maxmin max");
+        this.minimize = document.createElement("div");
+        this.minimize.innerHTML = "(-) Edit"; //TODO: i18n
+        OpenLayers.Element.addClass(this.minimize, "maxmin min");
+        this.minimize.style.display = "none";
+        OpenLayers.Event.observe(this.maximize, "click",
+            OpenLayers.Function.bindAsEventListener(this.maximizeControl, this)
+        );
+        OpenLayers.Event.observe(this.minimize, "click",
+            OpenLayers.Function.bindAsEventListener(this.minimizeControl, this)
+        );
+            
+        this.div.appendChild(this.maximize);
+        this.div.appendChild(this.minimize);
+        this.div.appendChild(this.layersDiv);
+
+    },
+    maximizeControl: function(e) {
+        this.showControls(false);
+        if (e != null) {
+            OpenLayers.Event.stop(e);
+        }
+    },
+    minimizeControl: function(e) {
+        this.showControls(true);
+        if (e != null) {
+            OpenLayers.Event.stop(e);
+        }
+    },
+    showControls: function(minimize) {
+        this.maximize.style.display = minimize ? "" : "none";
+        this.minimize.style.display = minimize ? "none" : "";
+        this.layersDiv.style.display = minimize ? "none" : "";
     },
     CLASS_NAME: "olwidget.EditableLayerSwitcher"
 });
@@ -868,555 +1201,6 @@ olwidget.Popup = OpenLayers.Class(OpenLayers.Popup.Framed, {
 
     CLASS_NAME: "olwidget.Popup"
 });
-
-
-/**************************************************
- * Older single vector layer map types (deprecate?)
- **************************************************/
-
-/*
- *  Base olwidget map type.  Extends OpenLayers.Map
- */
-olwidget.BaseMap = OpenLayers.Class(OpenLayers.Map, {
-    initialize: function(mapDivID, options) {
-        this.opts = this.initOptions(options);
-        this.initMap(mapDivID, this.opts);
-    },
-    /*
-     * Extend the passed in options with defaults, and create unserialized
-     * objects for serialized options (such as projections).
-     */
-    initOptions: function(options) {
-        var defaults = {
-            mapOptions: {
-                units: 'm',
-                projection: "EPSG:900913",
-                displayProjection: "EPSG:4326",
-                maxExtent: [-20037508.34, -20037508.34, 20037508.34, 20037508.34],
-                controls: ['LayerSwitcher', 'Navigation', 'PanZoom', 'Attribution']
-            },
-            mapDivClass: '',
-            mapDivStyle: {
-                width: '600px',
-                height: '400px'
-            },
-            name: 'data',
-            layers: ['osm.mapnik'],
-            defaultLon: 0,
-            defaultLat: 0,
-            defaultZoom: 4,
-            zoomToDataExtent: true,
-            overlayStyle: {
-                fillColor: '#ff00ff',
-                strokeColor: '#ff00ff',
-                pointRadius: 6,
-                fillOpacity: 0.5,
-                strokeWidth: 2
-            }
-        };
-        var opts = olwidget.deepJoinOptions(defaults, options);
-
-        // construct objects for serialized options
-        var me = opts.mapOptions.maxExtent;
-        opts.mapOptions.maxExtent = new OpenLayers.Bounds(me[0], me[1], me[2], me[3]);
-        opts.mapOptions.projection = new OpenLayers.Projection(opts.mapOptions.projection);
-        opts.mapOptions.displayProjection = new OpenLayers.Projection(
-                opts.mapOptions.displayProjection);
-        opts.default_center = new OpenLayers.LonLat(opts.defaultLon, opts.defaultLat);
-        opts.default_center.transform(opts.mapOptions.displayProjection,
-                opts.mapOptions.projection);
-        var controls = [];
-        for (var i = 0; i < opts.mapOptions.controls.length; i++) {
-            var control = opts.mapOptions.controls[i];
-            controls.push(new OpenLayers.Control[control]());
-        }
-        opts.mapOptions.controls = controls;
-        return opts;
-    },
-    /*
-     * Initialize the OpenLayers Map instance and add layers.
-     */
-    initMap: function(mapDivID, opts) {
-        var mapDiv = document.getElementById(mapDivID);
-        OpenLayers.Util.extend(mapDiv.style, opts.mapDivStyle);
-        mapDiv.className = opts.mapDivClass;
-        var layers = [];
-        for (var i = 0; i < opts.layers.length; i++) {
-            var parts = opts.layers[i].split(".");
-            layers.push(olwidget[parts[0]].map(parts[1]));
-            
-            // workaround for problems with Microsoft layers and vector layer drift
-            // (see http://openlayers.com/dev/examples/ve-novibrate.html)
-            if (parts[0] == "ve") {
-                if (opts.mapOptions.panMethod === undefined) {
-                    opts.mapOptions.panMethod = OpenLayers.Easing.Linear.easeOut;
-                }
-            }
-        }
-        var styleMap = new OpenLayers.StyleMap({'default': 
-            new OpenLayers.Style(opts.overlayStyle, {
-                context: opts.overlayStyleContext
-            })});
-
-        // Super constructor
-        OpenLayers.Map.prototype.initialize.apply(this, [mapDiv.id, opts.mapOptions]);
-        this.vectorLayer = new OpenLayers.Layer.Vector(this.opts.name, { styleMap: styleMap });
-        layers.push(this.vectorLayer);
-        this.addLayers(layers);
-    },
-    initCenter: function() {
-        if (this.opts.zoomToDataExtent && this.vectorLayer.features.length > 0) {
-            if (this.opts.cluster) {
-                var extent = this.vectorLayer.features[0].geometry.getBounds();
-                for (var i = 0; i < this.vectorLayer.features.length; i++) {
-                    for (var j = 0; j < this.vectorLayer.features[i].cluster.length; j++) {
-                        extent.extend(this.vectorLayer.features[i].cluster[j].geometry.getBounds());
-                    }
-                }
-                this.zoomToExtent(extent);
-            } else if (this.vectorLayer.features.length == 1 &&
-                    this.vectorLayer.features[0].geometry.CLASS_NAME == "OpenLayers.Geometry.Point") {
-
-                this.setCenter(this.vectorLayer.features[0].geometry.getBounds().getCenterLonLat(), 
-                               this.opts.defaultZoom);
-            } else {
-                this.zoomToExtent(this.vectorLayer.getDataExtent());
-            }
-        } else {
-            this.setCenter(this.opts.default_center, this.opts.defaultZoom);
-        }
-    },
-    clearFeatures: function() {
-        this.vectorLayer.removeFeatures(this.vectorLayer.features);
-        this.vectorLayer.destroyFeatures();
-    }
-});
-
-/*
- *  Map type that implements editable vectors.
- */
-olwidget.EditableMap = OpenLayers.Class(olwidget.BaseMap, {
-    initialize: function(textareaID, options) {
-        var defaults = {
-            editable: true,
-            geometry: 'point',
-            hideTextarea: true,
-            isCollection: false
-        };
-        options = olwidget.deepJoinOptions(defaults, options);
-
-        // set up map div
-        var mapDiv = document.createElement("div");
-        mapDiv.id = textareaID + "_map";
-        this.textarea = document.getElementById(textareaID);
-        this.textarea.parentNode.insertBefore(mapDiv, this.textarea);
-
-        // initialize map
-        olwidget.BaseMap.prototype.initialize.apply(this, [mapDiv.id, options]);
-
-        if (this.opts.hideTextarea) {
-            this.textarea.style.display = 'none';
-        }
-
-        this.initWKT();
-        if (this.opts.layers.length > 0) {
-            this.initCenter();
-        }
-        this.initControls();
-    },
-    initWKT: function() {
-        // Read any initial WKT from the text field.  We assume that the
-        // WKT uses the projection given in "displayProjection", and ignore
-        // any initial SRID.
-
-        var wkt = this.textarea.value;
-        if (wkt) {
-            // After reading into geometry, immediately write back to 
-            // WKT <textarea> as EWKT (so the SRID is included if it wasn't
-            // before).
-            var geom = olwidget.ewktToFeature(wkt);
-            geom = olwidget.transformVector(geom, this.displayProjection, this.projection);
-            if (geom.constructor == Array || 
-                    geom.geometry.CLASS_NAME === "OpenLayers.Geometry.MultiLineString" ||
-                    geom.geometry.CLASS_NAME === "OpenLayers.Geometry.MultiPoint" ||
-                    geom.geometry.CLASS_NAME === "OpenLayers.Geometry.MultiPolygon") {
-                // extract geometries from MULTI<geom> types into individual components
-                // (keeps the vector layer flat)
-                if (typeof(geom.geometry) !== "undefined") {
-                    var geoms = [];
-                    for (var i = 0; i < geom.geometry.components.length; i++) {
-                        geoms.push(new OpenLayers.Feature.Vector(geom.geometry.components[i]));
-                    }
-                    this.vectorLayer.addFeatures(geoms);
-                } else {
-                    this.vectorLayer.addFeatures(geom);
-                }
-            } else {
-                this.vectorLayer.addFeatures([geom]);
-            }
-            this.numGeom = this.vectorLayer.features.length;
-        }
-    },
-    initControls: function() {
-        // Initialize controls for editing geometries, navigating, and map data.
-
-        // This allows editing of the geographic fields -- the modified WKT is
-        // written back to the content field (as EWKT)
-        if (this.opts.editable) {
-            var closuredThis = this;
-            this.vectorLayer.events.on({
-                "featuremodified" : function(event) { closuredThis.modifyWKT(event); },
-                "featureadded": function(event) { closuredThis.addWKT(event); }
-            });
-
-            // Map controls:
-            // Add geometry specific panel of toolbar controls
-            var panel = this.buildPanel(this.vectorLayer);
-            this.addControl(panel);
-            var select = new OpenLayers.Control.SelectFeature( this.vectorLayer,
-                    {toggle: true, clickout: true, hover: false});
-            this.addControl(select);
-            select.activate();
-        }
-    },
-    clearFeatures: function() {
-        olwidget.BaseMap.prototype.clearFeatures.apply(this);
-        this.textarea.value = '';
-    },
-    buildPanel: function(layer) {
-        var panel = new OpenLayers.Control.Panel({displayClass: 'olControlEditingToolbar'});
-        var controls = [];
-
-        var nav = new OpenLayers.Control.Navigation();
-        controls.push(nav);
-
-        // Drawing control(s)
-        var geometries;
-        if (this.opts.geometry.constructor == Array) {
-            geometries = this.opts.geometry; 
-        } else {
-            geometries = [this.opts.geometry];
-        }
-        for (var i = 0; i < geometries.length; i++) {
-            var drawControl;
-            if (geometries[i] == 'linestring') {
-                drawControl = new OpenLayers.Control.DrawFeature(layer, 
-                    OpenLayers.Handler.Path, 
-                    {'displayClass': 'olControlDrawFeaturePath'});
-            } else if (geometries[i] == 'polygon') {
-                drawControl = new OpenLayers.Control.DrawFeature(layer,
-                    OpenLayers.Handler.Polygon,
-                    {'displayClass': 'olControlDrawFeaturePolygon'});
-            } else if (geometries[i] == 'point') {
-                drawControl = new OpenLayers.Control.DrawFeature(layer,
-                    OpenLayers.Handler.Point,
-                    {'displayClass': 'olControlDrawFeaturePoint'});
-            }
-            controls.push(drawControl);
-        }
-            
-        // Modify feature control
-        var mod = new OpenLayers.Control.ModifyFeature(layer);
-        controls.push(mod);
-
-        // Clear all control
-        var closuredThis = this;
-        var del = new OpenLayers.Control.Button({
-            displayClass: 'olControlClearFeatures', 
-            trigger: function() {
-                closuredThis.clearFeatures();
-            }
-        });
-
-        controls.push(del);
-        panel.addControls(controls);
-        return panel;
-    },
-    // Callback for openlayers "featureadded" 
-    addWKT: function(event) {
-        // This function will sync the contents of the `vector` layer with the
-        // WKT in the text field.
-        if (this.opts.isCollection) {
-            this.featureToTextarea(this.vectorLayer.features);
-        } else {
-            // Make sure to remove any previously added features.
-            if (this.vectorLayer.features.length > 1) {
-                var old_feats = [this.vectorLayer.features[0]];
-                this.vectorLayer.removeFeatures(old_feats);
-                this.vectorLayer.destroyFeatures(old_feats);
-            }
-            this.featureToTextarea(event.feature);
-        }
-    },
-    // Callback for openlayers "featuremodified" 
-    modifyWKT: function(event) {
-        if (this.opts.isCollection){
-            // OpenLayers adds points around the modified feature that we want to strip.
-            // So only take the features up to "numGeom", the number of features counted
-            // when we last added.
-            var feat = [];
-            for (var i = 0; i < this.numGeom; i++) {
-                feat.push(this.vectorLayer.features[i].clone());
-            }
-            this.featureToTextarea(feat);
-        } else {
-            this.featureToTextarea(event.feature);
-        }
-    },
-    featureToTextarea: function(feature) {
-        if (this.opts.isCollection) {
-            this.numGeom = feature.length;
-        } else {
-            this.numGeom = 1;
-        }
-        feature = olwidget.transformVector(feature, 
-                this.projection, this.displayProjection);
-        if (this.opts.isCollection) {
-            // Convert to multi-geometry types if we are a collection.
-            // Passing arrays to the WKT formatter results in a
-            // "GEOMETRYCOLLECTION" type, but if we have only one geometry,
-            // we should use a "MULTI<geometry>" type.
-            if (this.opts.geometry.constructor != Array) {
-                var geoms = [];
-                for (var i = 0; i < feature.length; i++) {
-                    geoms.push(feature[i].geometry);
-                }
-                var GeoClass = olwidget.multiGeometryClasses[this.opts.geometry]; 
-                feature = new OpenLayers.Feature.Vector(new GeoClass(geoms));
-            } 
-        }
-        this.textarea.value = olwidget.featureToEWKT(feature, this.displayProjection);
-    }
-});
-
-/*
- *  olwidget.InfoMap -- map type supporting clickable vectors that raise
- *  popups.  The popups are displayed optionally inside or outside the map's
- *  viewport.
- *  
- *  Usage: olwidget.Infomap(mapDivID, infoArray, options)
- *
- *  arguments: 
- *     mapDivID: the DOM id of a div to replace with the map.
- *     infoArray: An array of the form:
- *         [ ["WKT", "html"], ... ]
- *         where "WKT" represents the well-known text form of the geometry,
- *         and "html" represents the HTML content for the popup.
- *     options: An options object.  See distribution documentation for details.
- */
-olwidget.InfoMap = OpenLayers.Class(olwidget.BaseMap, {
-    initialize: function(mapDivID, infoArray, options) {
-        var infomapDefaults = {
-            popupsOutside: false,
-            popupDirection: 'auto',
-            popupPaginationSeparator: ' of ',
-            cluster: false,
-            clusterDisplay: "paginate"
-        };
-
-        options = olwidget.deepJoinOptions(infomapDefaults, options);
-        olwidget.BaseMap.prototype.initialize.apply(this, [mapDivID, options]);
-
-        // Must have explicitly specified position for popups to work properly.
-        if (!this.div.style.position) {
-            this.div.style.position = 'relative';
-        }
-
-        if (this.opts.cluster === true) {
-            this.addClusterStrategy();
-        }
-
-        var features = [];
-        for (var i = 0; i < infoArray.length; i++) {
-            var feature = olwidget.ewktToFeature(infoArray[i][0]);
-            feature = olwidget.transformVector(feature, 
-                this.displayProjection, this.projection);
-
-            if (feature.constructor != Array) {
-                feature = [feature];
-            }
-            var htmlInfo = infoArray[i][1];
-            for (var k = 0; k < feature.length; k++) {
-                if (typeof htmlInfo === "object") {
-                    feature[k].attributes = htmlInfo;
-                    if (typeof htmlInfo.style !== "undefined") {
-                        feature[k].style = OpenLayers.Util.applyDefaults(htmlInfo.style, this.opts.overlayStyle);
-                    }
-                } else {
-                    feature[k].attributes = { html: htmlInfo };
-                }
-                features.push(feature[k]);
-            }
-        }
-        this.vectorLayer.addFeatures(features);
-        this.initCenter();
-
-        this.select = new OpenLayers.Control.SelectFeature(this.vectorLayer, { clickout: true, hover: false });
-        this.select.events.register("featurehighlighted", this, 
-                function(evt) { this.createPopup(evt); });
-        this.select.events.register("featureunhighlighted", this, 
-                function(evt) { this.deletePopup(); });
-        // Zooming changes clusters, so we must delete popup if we zoom.
-        var map = this;
-        this.events.register("zoomend", this, function(event) { map.deletePopup(); });
-        this.addControl(this.select);
-        this.select.activate();
-    },
-    addClusterStrategy: function() {
-        var defaultClusterStyle = {
-                pointRadius: "${radius}",
-                strokeWidth: "${width}",
-                label: "${label}",
-                labelSelect: true,
-                fontSize: "11px",
-                fontFamily: "Helvetica, sans-serif",
-                fontColor: "#ffffff"
-        };
-        var context = {
-            width: function(feature) {
-                return (feature.cluster) ? 2 : 1;
-            },
-            radius: function(feature) {
-                var n = feature.attributes.count;
-                var pix;
-                if (n == 1) {
-                    pix = 6;
-                } else if (n <= 5) {
-                    pix = 8;
-                } else if (n <= 25) {
-                    pix = 10;
-                } else if (n <= 50) {
-                    pix = 12;
-                } else {
-                    pix = 14;
-                }
-                return pix;
-            },
-            label: function(feature) {
-                return (feature.cluster && feature.cluster.length > 1) ? feature.cluster.length : '';
-            }
-        };
-        if (this.opts.overlayStyleContext !== undefined) {
-            OpenLayers.Util.applyDefaults(context, this.opts.overlayStyleContext);
-        }
-
-        var defaultStyleOpts = OpenLayers.Util.applyDefaults(
-            OpenLayers.Util.applyDefaults({}, defaultClusterStyle), 
-            this.vectorLayer.styleMap.styles['default'].defaultStyle);
-        var selectStyleOpts = OpenLayers.Util.applyDefaults(
-            OpenLayers.Util.applyDefaults({}, defaultClusterStyle),
-                this.vectorLayer.styleMap.styles.select.defaultStyle);
-        if (this.opts.clusterStyle !== undefined) {
-            defaultStyleOpts = olwidget.deepJoinOptions(defaultStyleOpts, this.opts.clusterStyle);
-            selectStyleOpts = olwidget.deepJoinOptions(selectStyleOpts, this.opts.clusterStyle);
-            window.console && console.warn("olwidget: ``clusterStyle`` option is deprecated.  Use ``overlayStyle`` instead.");
-        }
-
-        var defaultStyle = new OpenLayers.Style(defaultStyleOpts, {context: context});
-        var selectStyle = new OpenLayers.Style(selectStyleOpts, {context: context});
-        this.removeLayer(this.vectorLayer);
-        this.vectorLayer = new OpenLayers.Layer.Vector(this.opts.name, { 
-            styleMap: new OpenLayers.StyleMap({ 'default': defaultStyle, 'select': selectStyle }),
-            strategies: [new OpenLayers.Strategy.Cluster()]
-        });
-        this.addLayer(this.vectorLayer);
-    },
-    /**
-     * Override parent to allow placement of popups outside viewport
-     */
-    addPopup: function(popup, exclusive) {
-        if (exclusive) {
-            //remove all other popups from screen
-            for (var i = this.popups.length - 1; i >= 0; --i) {
-                this.removePopup(this.popups[i]);
-            }
-        }
-
-        popup.map = this;
-        this.popups.push(popup);
-        var popupDiv = popup.draw();
-        if (popupDiv) {
-            popupDiv.style.zIndex = this.Z_INDEX_BASE.Popup +
-                                    this.popups.length;
-            this.div.appendChild(popupDiv);
-            // store a reference to this function so we can unregister on removal
-            this.popupMoveFunc = function(event) {
-                var px = this.getPixelFromLonLat(popup.lonlat);
-                popup.moveTo(px);
-            };
-            this.events.register("move", this, this.popupMoveFunc);
-            this.popupMoveFunc();
-        }
-    },
-    /**
-     * Override parent to allow placement of popups outside viewport
-     */
-    removePopup: function(popup) {
-        OpenLayers.Util.removeItem(this.popups, popup);
-        if (popup.div) {
-            try {
-                this.div.removeChild(popup.div);
-                this.events.unregister("move", this, this.popupMoveFunc);
-            } catch (e) { }
-        }
-        popup.map = null;
-    },
-
-    /**
-     * Build a paginated popup
-     */
-    createPopup: function(evt) {
-        var feature = evt.feature;
-        var lonlat;
-        if (feature.geometry.CLASS_NAME == "OpenLayers.Geometry.Point") {
-            lonlat = feature.geometry.getBounds().getCenterLonLat();
-        } else {
-            lonlat = this.getLonLatFromViewPortPx(evt.object.handlers.feature.evt.xy);
-        }
-            
-        var popupHTML = [];
-        if (feature.cluster) {
-            if (this.opts.clusterDisplay == 'list') {
-                if (feature.cluster.length > 1) {
-                    var html = "<ul class='olwidgetClusterList'>";
-                    for (var i = 0; i < feature.cluster.length; i++) {
-                        html += "<li>" + feature.cluster[i].attributes.html + "</li>";
-                    }
-                    html += "</ul>";
-                    popupHTML.push(html);
-                } else {
-                    popupHTML.push(feature.cluster[0].attributes.html);
-                }
-            } else {
-                for (var i = 0; i < feature.cluster.length; i++) {
-                    popupHTML.push(feature.cluster[i].attributes.html);
-                }
-            }
-        } else {
-            popupHTML.push(feature.attributes.html);
-        }
-        var infomap = this;
-        this.popup = new olwidget.Popup(null, 
-                lonlat, null, popupHTML, null, true, 
-                function() { infomap.select.unselect(feature); }, 
-                this.opts.popupDirection,
-                this.opts.popupPaginationSeparator);
-        if (this.opts.popupsOutside) {
-            this.popup.panMapIfOutOfView = false;
-        }
-        this.addPopup(this.popup);
-    },
-
-    deletePopup: function() {
-        if (this.popup) {
-            this.popup.destroy();
-            this.popup = null;
-        }
-    }
-});
-
-
-
 
 
 window.olwidget = olwidget;
