@@ -581,13 +581,6 @@ olwidget.EditableLayer = OpenLayers.Class(olwidget.BaseVectorLayer, {
 
 
 olwidget.EditableLayerSwitcher = OpenLayers.Class(OpenLayers.Control, {
-    displayClass: "olwidgetEditableLayerSwitcher",
-    roundedCorner: true,
-    roundedCornerColor: "darkblue",
-    editing: null,
-    editableLayers: null,
-    editableLayersDiv: null,
-
     initialize: function(options) {
         OpenLayers.Control.prototype.initialize.apply(this, arguments);
         this.editableLayers = [];
@@ -597,6 +590,10 @@ olwidget.EditableLayerSwitcher = OpenLayers.Class(OpenLayers.Control, {
     },
     draw: function() {
         OpenLayers.Control.prototype.draw.apply(this);
+        this.div.innerHTML = "Edit";
+        this.activate();
+        console.log(this.div);
+        return this.div;
     },
     CLASS_NAME: "olwidget.EditableLayerSwitcher"
 });
