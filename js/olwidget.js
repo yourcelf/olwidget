@@ -777,9 +777,11 @@ olwidget.EditableLayerSwitcher = OpenLayers.Class(OpenLayers.Control.LayerSwitch
             this.layerSwitcher.currentlyEditing = this.layer;
             if (this.layer) {
                 this.layerSwitcher.maximize.innerHTML = "(+) Editing \"" + this.layer.name + "\"";
+                this.layerSwitcher.minimize.innerHTML = "(-) Editing \"" + this.layer.name + "\"";
                 this.map.startEditing(this.layer);
             } else {
                 this.layerSwitcher.maximize.innerHTML = "(+) Edit";
+                this.layerSwitcher.minimize.innerHTML = "(-) Edit";
                 this.map.stopEditing();
             }
             this.layerSwitcher.minimizeControl();
@@ -909,6 +911,16 @@ olwidget.EditableLayerSwitcher = OpenLayers.Class(OpenLayers.Control.LayerSwitch
         this.div.appendChild(this.maximize);
         this.div.appendChild(this.minimize);
         this.div.appendChild(this.layersDiv);
+        OpenLayers.Rico.Corner.round(this.div, {
+            corners: "bl br",
+            bgColor: "transparent",
+            color: this.activeColor,
+            blend: false
+        });
+        OpenLayers.Rico.Corner.changeOpacity(this.layersDiv, 0.75);
+        OpenLayers.Rico.Corner.changeOpacity(this.maximize, 0.75);
+        OpenLayers.Rico.Corner.changeOpacity(this.minimize, 0.75);
+
 
     },
     maximizeControl: function(e) {
