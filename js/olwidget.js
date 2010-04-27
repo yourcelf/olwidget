@@ -776,12 +776,12 @@ olwidget.EditableLayerSwitcher = OpenLayers.Class(OpenLayers.Control.LayerSwitch
             this.inputElem.checked = true;
             this.layerSwitcher.currentlyEditing = this.layer;
             if (this.layer) {
-                this.layerSwitcher.maximize.innerHTML = "(+) Editing \"" + this.layer.name + "\"";
-                this.layerSwitcher.minimize.innerHTML = "(-) Editing \"" + this.layer.name + "\"";
+                this.layerSwitcher.maximize.innerHTML = "Editing \"" + this.layer.name + "\"";
+                this.layerSwitcher.minimize.innerHTML = "Editing \"" + this.layer.name + "\"";
                 this.map.startEditing(this.layer);
             } else {
-                this.layerSwitcher.maximize.innerHTML = "(+) Edit";
-                this.layerSwitcher.minimize.innerHTML = "(-) Edit";
+                this.layerSwitcher.maximize.innerHTML = "Edit";
+                this.layerSwitcher.minimize.innerHTML = "Edit";
                 this.map.stopEditing();
             }
             this.layerSwitcher.minimizeControl();
@@ -895,10 +895,10 @@ olwidget.EditableLayerSwitcher = OpenLayers.Class(OpenLayers.Control.LayerSwitch
 
         // Heading
         this.maximize = document.createElement("div");
-        this.maximize.innerHTML = "(+) Edit" //TODO: i18n
+        this.maximize.innerHTML = "Edit" //TODO: i18n
         OpenLayers.Element.addClass(this.maximize, "maxmin max");
         this.minimize = document.createElement("div");
-        this.minimize.innerHTML = "(-) Edit"; //TODO: i18n
+        this.minimize.innerHTML = "Edit"; //TODO: i18n
         OpenLayers.Element.addClass(this.minimize, "maxmin min");
         this.minimize.style.display = "none";
         OpenLayers.Event.observe(this.maximize, "click",
