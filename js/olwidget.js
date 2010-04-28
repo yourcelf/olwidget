@@ -632,17 +632,16 @@ olwidget.EditableLayer = OpenLayers.Class(olwidget.BaseVectorLayer, {
                         "title": "Draw points"
                     });
             }
-            controls.push(drawControl);
-            var oldActivate = drawControl.activate;
             drawControl.activate = function() {
-                OpenLayers.Control.prototype.activate.apply(drawControl, []);
-                drawControl.map.div.style.cursor = "crosshair";
+                OpenLayers.Control.prototype.activate.apply(this, []);
+                this.map.div.style.cursor = "crosshair";
             };
             var oldDeactivate = drawControl.deactivate;
             drawControl.deactivate = function() {
-                OpenLayers.Control.prototype.deactivate.apply(drawControl, []);
-                drawControl.map.div.style.cursor = "auto";
+                OpenLayers.Control.prototype.deactivate.apply(this, []);
+                this.map.div.style.cursor = "auto";
             };
+            controls.push(drawControl);
             if (!this.defaultControl) {
                 this.defaultControl = drawControl;
             }
@@ -657,6 +656,10 @@ olwidget.EditableLayer = OpenLayers.Class(olwidget.BaseVectorLayer, {
         }
 
         var context = this;
+
+        controls.push(new olwidget.DeleteVertex(this, {
+            title: "Delete vertices"
+        }));
         
         //
         // Custom controls:
@@ -762,12 +765,11 @@ olwidget.EditableLayer = OpenLayers.Class(olwidget.BaseVectorLayer, {
         if (wkt) {
             var geom = olwidget.ewktToFeature(wkt);
             geom = olwidget.transformVector(geom, this.map.displayProjection, 
-                                            this.map.projection);
-            var class_name = geom.geometry.CLASS_NAME;
+                this.map.projection);
             if (geom.constructor == Array || 
-                    class_name === "OpenLayers.Geometry.MultiLineString" ||
-                    class_name === "OpenLayers.Geometry.MultiPoint" ||
-                    class_name === "OpenLayers.Geometry.MultiPolygon") {
+                    geom.geometry.CLASS_NAME.class_name === "OpenLayers.Geometry.MultiLineString" ||
+                    geom.geometry.CLASS_NAME.class_name === "OpenLayers.Geometry.MultiPoint" ||
+                    geom.geometry.CLASS_NAME.class_name === "OpenLayers.Geometry.MultiPolygon") {
                 // extract geometries from MULTI<geom> types into individual
                 // components (keeps the vector layer flat)
                 if (typeof(geom.geometry) !== "undefined") {
@@ -812,12 +814,16 @@ olwidget.EditableLayer = OpenLayers.Class(olwidget.BaseVectorLayer, {
             // to strip.  So only take the features up to "numGeom", the number
             // of features counted when we last added.
             var feat = [];
-            for (var i = 0; i < this.numGeom; i++) {
+            for (var i = 0; i < Math.min(this.numGeom, this.features.length); i++) {
                 feat.push(this.features[i].clone());
             }
             this.featureToTextarea(feat);
         } else {
-            this.featureToTextarea(event.feature);
+            if (event.feature) {
+                this.featureToTextarea(event.feature);
+            } else {
+                this.textarea.value = "";
+            }
         }
         this.addUndoState();
     },
@@ -1398,6 +1404,90 @@ olwidget.Popup = OpenLayers.Class(OpenLayers.Popup.Framed, {
     },
 
     CLASS_NAME: "olwidget.Popup"
+});
+
+olwidget.DeleteVertex = OpenLayers.Class(OpenLayers.Control.ModifyFeature, {
+    initialize: function(layer, options) {
+        options['toggle'] = false;
+        OpenLayers.Control.ModifyFeature.prototype.initialize.apply(this, [layer, options]);
+        this.selectControl.onUnselect = this.unselectFeature;
+        var control = this;
+        this.selectControl.callbacks.clickout = function(feature) {
+            control.layer.removeFeatures(control.vertices, {silent: true});
+            control.editingFeature = null;
+            if (!this.hover && this.clickout) {
+                this.unselectAll();
+            }
+        };
+        this.editingFeature = null;
+    },
+    selectFeature: function(feature) {
+        if (this.editingFeature && feature.geometry.parent) {
+            if (feature.geometry.parent) {
+                var n = feature.geometry.parent.components.length;
+                feature.geometry.parent.removeComponent(feature.geometry);
+                if (feature.geometry.parent.components.length == n) {
+                    this.layer.removeFeatures([this.editingFeature]);
+                    this.layer.removeFeatures(this.vertices, {silent: true});
+                    this.editingFeature = null;
+                    this.layer.events.triggerEvent("featuremodified");
+
+                } else {
+                    this.layer.drawFeature(this.editingFeature, 
+                                           this.selectControl.renderIntent);
+                    this.layer.events.triggerEvent("featuremodified",
+                                                   {feature: this.editingFeature});
+                    this.selectControl.unhighlight(this.editingFeature);
+                }
+            }
+        } else if (!feature.geometry.parent && 
+                   feature.geometry.CLASS_NAME === "OpenLayers.Geometry.Point") {
+            this.layer.removeFeatures([feature]);
+
+        }
+        this.editingFeature = feature;
+        this.feature = feature;
+        this.modified = false;
+        // no drag controller
+        this.resetVertices();
+        //this.collectVertices();
+        this.onModificationStart(this.feature);
+    },
+    unselectFeature: function(feature) {
+        // override; do nothing
+    },
+    collectVertices: function() {
+        this.vertices = [];
+        this.virtualVertices = [];
+        var control = this;
+        function collectComponentVertices(geometry) {
+            var i, vertex, component, len;
+            if(geometry.CLASS_NAME == "OpenLayers.Geometry.Point") {
+                vertex = new OpenLayers.Feature.Vector(geometry);
+                vertex._sketch = true;
+                control.vertices.push(vertex);
+            } else {
+                var numVert = geometry.components.length;
+                if(geometry.CLASS_NAME == "OpenLayers.Geometry.LinearRing") {
+                    numVert -= 1;
+                }
+                for(i=0; i<numVert; ++i) {
+                    component = geometry.components[i];
+                    if(component.CLASS_NAME == "OpenLayers.Geometry.Point") {
+                        vertex = new OpenLayers.Feature.Vector(component);
+                        vertex._sketch = true;
+                        control.vertices.push(vertex);
+                    } else {
+                        collectComponentVertices(component);
+                    }
+                }
+                // No virtual vertices
+            }
+        }
+        collectComponentVertices.call(this, this.feature.geometry);
+        this.layer.addFeatures(this.vertices, {silent: true});
+    },
+    CLASS_NAME: "olwidget.DeleteFeature"
 });
 
 

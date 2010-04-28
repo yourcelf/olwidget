@@ -26,6 +26,13 @@
 .olControlEditingToolbar .olControlRedoItemInactive {
     background: url("../img/extra_edit_icons.png") no-repeat scroll -144px 0px;
 }
+.olControlEditingToolbar .olwidgetDeleteFeatureItemActive {
+    background: url("../img/extra_edit_icons.png") no-repeat scroll -168px 0px;
+}
+.olControlEditingToolbar .olwidgetDeleteFeatureItemInactive {
+    background: url("../img/extra_edit_icons.png") no-repeat scroll -192px 0px;
+}
+
 .olwidgetEditableLayerSwitcher {
     right: 0;
     cursor: auto;

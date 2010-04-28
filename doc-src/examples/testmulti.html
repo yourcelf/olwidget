@@ -4,6 +4,7 @@
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
         <!-- olwidget includes -->
         <script type='text/javascript' src='http://openlayers.org/api/2.8/OpenLayers.js'></script>
+        <!--<script type='text/javascript' src='file:///home/cfd/Desktop/openlayers/lib/OpenLayers.js'></script>-->
         <script type='text/javascript' src='http://openstreetmap.org/openlayers/OpenStreetMap.js'></script>
         <script type='text/javascript' src='../../js/olwidget.js'></script>
         <link rel="stylesheet" type="text/css" media="all" href="../../css/olwidget.css" />
@@ -13,6 +14,7 @@
         <div id='map'></div>
         <textarea id="mytextarea">POINT(-7 7)</textarea>
         <textarea id="mytextarea2">POLYGON(-4 4,3 3,5 5)</textarea>
+        <textarea id='mytextarea3'></textarea>
         <script type='text/javascript'>//<![CDATA[
             var map = new olwidget.Map('map', [
                     new olwidget.InfoLayer([
@@ -37,8 +39,13 @@
                         geometry: "polygon",
                         name: "poly",
                         hideTextarea: false
+                    }),
+                    new olwidget.EditableLayer("mytextarea3", {
+                        geometry: ["point", "polygon", "linestring"],
+                        isCollection: true,
+                        name: "multi poly point etc.",
+                        hideTextarea: false
                     })
-
                 ], {
                     // global style!
                     overlayStyle: {
