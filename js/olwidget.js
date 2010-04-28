@@ -1409,7 +1409,8 @@ olwidget.Popup = OpenLayers.Class(OpenLayers.Popup.Framed, {
 olwidget.DeleteVertex = OpenLayers.Class(OpenLayers.Control.ModifyFeature, {
     initialize: function(layer, options) {
         options['toggle'] = false;
-        OpenLayers.Control.ModifyFeature.prototype.initialize.apply(this, [layer, options]);
+        OpenLayers.Control.ModifyFeature.prototype.initialize.apply(this, 
+            [layer, options]);
         this.selectControl.onUnselect = this.unselectFeature;
         var control = this;
         this.selectControl.callbacks.clickout = function(feature) {
@@ -1487,7 +1488,7 @@ olwidget.DeleteVertex = OpenLayers.Class(OpenLayers.Control.ModifyFeature, {
         collectComponentVertices.call(this, this.feature.geometry);
         this.layer.addFeatures(this.vertices, {silent: true});
     },
-    CLASS_NAME: "olwidget.DeleteFeature"
+    CLASS_NAME: "olwidget.DeleteVertex"
 });
 
 

@@ -26,10 +26,10 @@
 .olControlEditingToolbar .olControlRedoItemInactive {
     background: url("../img/extra_edit_icons.png") no-repeat scroll -144px 0px;
 }
-.olControlEditingToolbar .olwidgetDeleteFeatureItemActive {
+.olControlEditingToolbar .olwidgetDeleteVertexItemActive {
     background: url("../img/extra_edit_icons.png") no-repeat scroll -168px 0px;
 }
-.olControlEditingToolbar .olwidgetDeleteFeatureItemInactive {
+.olControlEditingToolbar .olwidgetDeleteVertexItemInactive {
     background: url("../img/extra_edit_icons.png") no-repeat scroll -192px 0px;
 }
 
