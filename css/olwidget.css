@@ -11,8 +11,43 @@
 .olControlEditingToolbar .olControlClearFeaturesItemActive {
     background: url("../img/extra_edit_icons.png") no-repeat scroll -0px 0px;
 }
-div.olControlEditingToolbar {
-    width: 210px;
+.olwidgetEditableLayerSwitcher {
+    right: 0;
+}
+.olwidgetEditableLayerSwitcher .maxmin, .olwidgetEditableLayerSwitcher .label {
+    color: white;
+    font-weight: bold;
+    font-size: smaller;
+}
+.olwidgetEditableLayerSwitcher .container {
+    background-color: darkblue;
+}
+.olwidgetEditableLayerSwitcher .maxmin {
+    cursor: pointer;
+    padding: 0.1em;
+    float: left;
+}
+.olwidgetEditableLayerSwitcher .editingControls {
+    float: left;
+}
+.olwidgetEditableLayerSwitcher .olControlEditingToolbar {
+    position: relative !important;
+    float: left;
+    width: auto !important;
+}
+.olwidgetEditableLayerSwitcher .layersDiv {
+    clear: both;
+}
+.olwidgetEditableLayerSwitcher input {
+    padding-left: 0.5em;
+    padding-bottom: 0.5em;
+}
+.olwidgetEditableLayerSwitcher .label {
+    padding-right: 2em;
+}
+/* Move layer switcher out of the way of editableLayerSwitcher */
+.olControlLayerSwitcher {
+    top: 30px !important;
 }
 
 /* Override padding to avoid position computation errors */
