@@ -1,17 +1,14 @@
-olwidget v0.3
-=============
+olwidget v0.4 pre alpha (multi-vector-layer branch)
+===================================================
 
-``olwidget`` is a javascript library and Django application for easily
-incorporating editable and informational maps into web pages.  The javascript
-library, ``olwidget.js``, can be used standalone or in Django via the
-``olwidget`` Django app.
+This branch represents an almost complete rewrite of olwidget, in order to
+allow editing and display of multiple vector layers simultaneously.  The
+documentation hasn't been written yet, but you can find an example that uses
+the new syntax for creating a map and layers in doc/examples/testmulti.html.  
 
- * `Documentation and installation instructions <http://olwidget.org/olwidget/doc/>`_
- * `Example maps <http://olwidget.org/olwidget/doc/examples.html>`_
- * `Bugs <http://github.com/yourcelf/olwidget/issues>`_
- * `Mailing list <http://groups.google.com/group/olwidget>`_
+This branch will be merged with master in the coming weeks.  Please help out by
+testing it!
 
-For more information, please see http://olwidget.org.
 
 About
 -----
