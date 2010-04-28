@@ -870,12 +870,14 @@ olwidget.EditableLayerSwitcher = OpenLayers.Class(OpenLayers.Control.LayerSwitch
         input.type = "radio";
         input.value = name;
         input.checked = checked;
-        if (layer && (!layer.inRange || !layer.visibility)) {
-            input.disabled = true;
-        }
         var span = document.createElement("span");
         OpenLayers.Element.addClass(span, "label");
         span.innerHTML = name;
+
+        if (layer && (!layer.inRange || !layer.visibility)) {
+            input.disabled = true;
+            OpenLayers.Element.addClass(span, "disabled");
+        }
 
         var context = {
             "inputElem": input,

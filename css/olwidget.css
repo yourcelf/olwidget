@@ -45,6 +45,11 @@
 .olwidgetEditableLayerSwitcher .label {
     padding-right: 2em;
 }
+.olwidgetEditableLayerSwitcher .disabled {
+    font-style: italic;
+    color: gray;
+}
+
 /* Move layer switcher out of the way of editableLayerSwitcher */
 .olControlLayerSwitcher {
     top: 30px !important;
