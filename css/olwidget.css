@@ -14,6 +14,18 @@
 .olControlEditingToolbar .olControlClearFeaturesItemActive {
     background: url("../img/extra_edit_icons.png") no-repeat scroll -0px 0px;
 }
+.olControlEditingToolbar .olControlUndoItemActive {
+    background: url("../img/extra_edit_icons.png") no-repeat scroll -72px 0px;
+}
+.olControlEditingToolbar .olControlUndoItemInactive {
+    background: url("../img/extra_edit_icons.png") no-repeat scroll -96px 0px;
+}
+.olControlEditingToolbar .olControlRedoItemActive {
+    background: url("../img/extra_edit_icons.png") no-repeat scroll -120px 0px;
+}
+.olControlEditingToolbar .olControlRedoItemInactive {
+    background: url("../img/extra_edit_icons.png") no-repeat scroll -144px 0px;
+}
 .olwidgetEditableLayerSwitcher {
     right: 0;
     cursor: auto;

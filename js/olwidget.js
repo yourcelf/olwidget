@@ -576,6 +576,10 @@ olwidget.InfoLayer = OpenLayers.Class(olwidget.BaseVectorLayer, {
 
 olwidget.EditableLayer = OpenLayers.Class(olwidget.BaseVectorLayer, {
     editable: true,
+    undoStack: null,
+    undoStackPos: null,
+    undoStackLength: 100,
+
     initialize: function(textareaId, options) {
         this.opts = olwidget.deepJoinOptions({
             editable: true,
@@ -585,7 +589,7 @@ olwidget.EditableLayer = OpenLayers.Class(olwidget.BaseVectorLayer, {
         }, options);
         olwidget.BaseVectorLayer.prototype.initialize.apply(this, 
                                                             [this.opts]);
-
+        this.undoStack = [];
         this.textarea = document.getElementById(textareaId);
         if (this.opts.hideTextarea) {
             this.textarea.style.display = 'none';
@@ -594,7 +598,9 @@ olwidget.EditableLayer = OpenLayers.Class(olwidget.BaseVectorLayer, {
     },
     buildControls: function() {
         var controls = [];
-        var nav = new OpenLayers.Control.Navigation();
+        var nav = new OpenLayers.Control.Navigation({
+            "title": "Move the map"
+        });
         controls.push(nav);
 
         // Drawing control(s)
@@ -604,21 +610,27 @@ olwidget.EditableLayer = OpenLayers.Class(olwidget.BaseVectorLayer, {
         } else {
             geometries = [this.opts.geometry];
         }
+        this.defaultControl = null;
         for (var i = 0; i < geometries.length; i++) {
             var drawControl;
             if (geometries[i] == 'linestring') {
                 drawControl = new OpenLayers.Control.DrawFeature(this, 
                     OpenLayers.Handler.Path, {
                         'displayClass': 'olControlDrawFeaturePath',
+                        'title': "Draw lines"
                     });
             } else if (geometries[i] == 'polygon') {
                 drawControl = new OpenLayers.Control.DrawFeature(this,
-                    OpenLayers.Handler.Polygon,
-                    {'displayClass': 'olControlDrawFeaturePolygon'});
+                    OpenLayers.Handler.Polygon, {
+                        'displayClass': 'olControlDrawFeaturePolygon',
+                        "title": "Draw polygons"
+                    });
             } else if (geometries[i] == 'point') {
                 drawControl = new OpenLayers.Control.DrawFeature(this,
-                    OpenLayers.Handler.Point,
-                    {'displayClass': 'olControlDrawFeaturePoint'});
+                    OpenLayers.Handler.Point, {
+                        'displayClass': 'olControlDrawFeaturePoint',
+                        "title": "Draw points"
+                    });
             }
             controls.push(drawControl);
             var oldActivate = drawControl.activate;
@@ -631,46 +643,126 @@ olwidget.EditableLayer = OpenLayers.Class(olwidget.BaseVectorLayer, {
                 OpenLayers.Control.prototype.deactivate.apply(drawControl, []);
                 drawControl.map.div.style.cursor = "auto";
             };
+            if (!this.defaultControl) {
+                this.defaultControl = drawControl;
+            }
         }
         // Modify feature control
         if (this.opts.geometry != 'point' || this.opts.isCollection) {
-            var mod = new OpenLayers.Control.ModifyFeature(this, 
-               {clickout: true});
+            var mod = new OpenLayers.Control.ModifyFeature(this, {
+                clickout: true,
+                title: "Modify features"
+            });
             controls.push(mod);
         }
 
-        // Clear all control
         var context = this;
-        var del = new OpenLayers.Control.Button({
+        
+        //
+        // Custom controls:
+        //
+
+        // Clear all
+        controls.push(new OpenLayers.Control.Button({
             displayClass: 'olControlClearFeatures', 
             trigger: function() {
                 context.clearFeatures();
-            }
+            },
+            title: "Clear all"
+        }));
+
+        // redo
+        this.redoButton = new OpenLayers.Control.Button({
+            displayClass: 'olControlRedo',
+            trigger: function() {
+                context.redo();
+            },
+            title: "Redo"
         });
-        controls.push(del);
+        controls.push(this.redoButton);
+
+        // undo
+        this.undoButton = new OpenLayers.Control.Button({
+            displayClass: 'olControlUndo',
+            trigger: function() {
+                context.undo();
+            },
+            title: "Undo"
+        });
+        controls.push(this.undoButton);
         this.controls = controls;
-        this.defaultControl = controls[1];
     },
     clearFeatures: function() {
         this.removeFeatures(this.features);
         this.destroyFeatures();
-        this.textarea.value = "";
+        if (this.textarea.value !== "") {
+            this.textarea.value = "";
+            this.addUndoState();
+        }
+    },
+    addUndoState: function() {
+        // Set the textarea value, using the undo stack.
+        var value = this.textarea.value;
+        if (this.undoStack.length > this.undoStackPos) {
+            this.undoStack = this.undoStack.slice(0, this.undoStackPos + 1);    
+        }
+        this.undoStack.push(value);
+        if (this.undoStack.length > this.undoStackLength) {
+            this.undoStack.shift();
+        }
+        this.undoStackPos = this.undoStack.length - 1;
+        this.setUndoButtonStates();
+    },
+    undo: function() {
+        if (this.undoStackPos > 0) {
+            this.undoStackPos--;
+            if (this.undoStackPos < this.undoStack.length) {
+                this.textarea.value = this.undoStack[this.undoStackPos];
+                this.readWKT();
+            }
+        }
+        this.setUndoButtonStates();
+    },
+    redo: function() {
+        if (this.undoStackPos < this.undoStack.length - 1) {
+            this.undoStackPos++;
+            this.textarea.value = this.undoStack[this.undoStackPos];
+            this.readWKT();
+        }
+        this.setUndoButtonStates();
+    },
+    setUndoButtonStates: function() {
+        if (this.undoButton.map) {
+            if (this.undoStackPos > 0) {
+                this.undoButton.activate();
+            } else {
+                this.undoButton.deactivate();
+            }
+            if (this.undoStackPos < this.undoStack.length - 1) {
+                this.redoButton.activate();
+            } else {
+                this.redoButton.deactivate();
+            }
+        }
     },
     afterAdd: function() {
         olwidget.BaseVectorLayer.prototype.afterAdd.apply(this);
+        this.readWKT();
+        // init undo stack
+        this.addUndoState();
+    },
+    readWKT: function() {
         // Read any initial WKT from the text field.  We assume that the
         // WKT uses the projection given in "displayProjection", and ignore
         // any initial SRID.
-
         var wkt = this.textarea.value;
+        if (this.features) {
+            this.removeFeatures(this.features);
+        }
         if (wkt) {
-            // After reading into geometry, immediately write back to 
-            // WKT <textarea> as EWKT (so the SRID is included if it wasn't
-            // before).
             var geom = olwidget.ewktToFeature(wkt);
             geom = olwidget.transformVector(geom, this.map.displayProjection, 
                                             this.map.projection);
-
             var class_name = geom.geometry.CLASS_NAME;
             if (geom.constructor == Array || 
                     class_name === "OpenLayers.Geometry.MultiLineString" ||
@@ -686,12 +778,12 @@ olwidget.EditableLayer = OpenLayers.Class(olwidget.BaseVectorLayer, {
                                 geom.geometry.components[i])
                         );
                     }
-                    this.addFeatures(geoms);
+                    this.addFeatures(geoms, {silent: true});
                 } else {
-                    this.addFeatures(geom);
+                    this.addFeatures(geom, {silent: true});
                 }
             } else {
-                this.addFeatures([geom]);
+                this.addFeatures([geom], {silent: true});
             }
             this.numGeom = this.features.length;
         }
@@ -711,6 +803,7 @@ olwidget.EditableLayer = OpenLayers.Class(olwidget.BaseVectorLayer, {
             }
             this.featureToTextarea(event.feature);
         }
+        this.addUndoState();
     },
     // Callback for openlayers "featuremodified" 
     modifyWKT: function(event) {
@@ -726,6 +819,7 @@ olwidget.EditableLayer = OpenLayers.Class(olwidget.BaseVectorLayer, {
         } else {
             this.featureToTextarea(event.feature);
         }
+        this.addUndoState();
     },
     featureToTextarea: function(feature) {
         if (this.opts.isCollection) {
@@ -822,7 +916,13 @@ olwidget.EditableLayerSwitcher = OpenLayers.Class(OpenLayers.Control.LayerSwitch
         this.panel = new OpenLayers.Control.Panel({
             defaultControl: layer.defaultControl,
             displayClass: 'olControlEditingToolbar'
-        })
+        });
+        // monkey patch to keep undo button states
+        this.panel.onClick = function(ctrl, evt) {
+            OpenLayers.Event.stop(evt ? evt : window.event);
+            this.activateControl(ctrl);
+            layer.setUndoButtonStates();
+        };
         this.panel.addControls(layer.controls);
         this.map.addControl(this.panel);
 
@@ -835,6 +935,7 @@ olwidget.EditableLayerSwitcher = OpenLayers.Class(OpenLayers.Control.LayerSwitch
             "featureadded": layer.addWKT,
             scope: layer
         });
+        layer.setUndoButtonStates();
         if (this.map.selectControl) {
             this.map.selectControl.deactivate();
         }
@@ -999,7 +1100,17 @@ olwidget.EditableLayerSwitcher = OpenLayers.Class(OpenLayers.Control.LayerSwitch
         this.container.appendChild(this.layersDiv);
     },
     maximizeControl: function(e) {
-        this.showControls(false);
+        // Only show control if there's more than one thing to choose
+        if (this.editableLayers.length == 2 &&
+                this.editableLayers[1].layer.visibility) {
+            if (this.currentlyEditing) {
+                this.stopEditing();
+            } else {
+                this.setEditing(this.editableLayers[1].layer);
+            }
+        } else {
+            this.showControls(false);
+        }
         if (e != null) {
             OpenLayers.Event.stop(e);
         }
