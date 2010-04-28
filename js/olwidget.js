@@ -805,10 +805,10 @@ olwidget.EditableLayerSwitcher = OpenLayers.Class(OpenLayers.Control.LayerSwitch
             this.panel.destroy();
             this.panel = null;
         }
+        // TODO: i18n
         this.maximize.innerHTML = "Edit";
         this.minimize.innerHTML = "(-) Edit";
         this.currentlyEditing = null;
-        // TODO: i18n
         if (this.map.selectControl) {
             this.map.selectControl.activate();
         }
@@ -938,7 +938,7 @@ olwidget.EditableLayerSwitcher = OpenLayers.Class(OpenLayers.Control.LayerSwitch
                    layer);
             }
         }
-        if (this.editableLayers.length == 0) {
+        if (this.editableLayers.length == 1) {
             this.div.style.display = "none";
         } else {
             this.div.style.display = "";
