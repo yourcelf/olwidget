@@ -1,6 +1,9 @@
 /*
  * Extra editing icons
  */
+.olControlNoSelect {
+    cursor: auto;
+}
 .olControlEditingToolbar .olControlModifyFeatureItemInactive {
     background: url("../img/extra_edit_icons.png") no-repeat scroll -48px 0px;
 }
@@ -13,6 +16,7 @@
 }
 .olwidgetEditableLayerSwitcher {
     right: 0;
+    cursor: auto;
 }
 .olwidgetEditableLayerSwitcher .maxmin, .olwidgetEditableLayerSwitcher .label {
     color: white;
@@ -24,7 +28,7 @@
 }
 .olwidgetEditableLayerSwitcher .maxmin {
     cursor: pointer;
-    padding: 0.1em;
+    padding: 0.5em;
     float: left;
 }
 .olwidgetEditableLayerSwitcher .editingControls {

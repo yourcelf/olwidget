@@ -608,8 +608,9 @@ olwidget.EditableLayer = OpenLayers.Class(olwidget.BaseVectorLayer, {
             var drawControl;
             if (geometries[i] == 'linestring') {
                 drawControl = new OpenLayers.Control.DrawFeature(this, 
-                    OpenLayers.Handler.Path, 
-                    {'displayClass': 'olControlDrawFeaturePath'});
+                    OpenLayers.Handler.Path, {
+                        'displayClass': 'olControlDrawFeaturePath',
+                    });
             } else if (geometries[i] == 'polygon') {
                 drawControl = new OpenLayers.Control.DrawFeature(this,
                     OpenLayers.Handler.Polygon,
@@ -620,6 +621,16 @@ olwidget.EditableLayer = OpenLayers.Class(olwidget.BaseVectorLayer, {
                     {'displayClass': 'olControlDrawFeaturePoint'});
             }
             controls.push(drawControl);
+            var oldActivate = drawControl.activate;
+            drawControl.activate = function() {
+                OpenLayers.Control.prototype.activate.apply(drawControl, []);
+                drawControl.map.div.style.cursor = "crosshair";
+            };
+            var oldDeactivate = drawControl.deactivate;
+            drawControl.deactivate = function() {
+                OpenLayers.Control.prototype.deactivate.apply(drawControl, []);
+                drawControl.map.div.style.cursor = "auto";
+            };
         }
         // Modify feature control
         if (this.opts.geometry != 'point' || this.opts.isCollection) {
@@ -643,6 +654,7 @@ olwidget.EditableLayer = OpenLayers.Class(olwidget.BaseVectorLayer, {
     clearFeatures: function() {
         this.removeFeatures(this.features);
         this.destroyFeatures();
+        this.textarea.value = "";
     },
     afterAdd: function() {
         olwidget.BaseVectorLayer.prototype.afterAdd.apply(this);
@@ -793,7 +805,7 @@ olwidget.EditableLayerSwitcher = OpenLayers.Class(OpenLayers.Control.LayerSwitch
             this.panel.destroy();
             this.panel = null;
         }
-        this.maximize.innerHTML = "(+) Edit";
+        this.maximize.innerHTML = "Edit";
         this.minimize.innerHTML = "(-) Edit";
         this.currentlyEditing = null;
         // TODO: i18n
@@ -816,7 +828,7 @@ olwidget.EditableLayerSwitcher = OpenLayers.Class(OpenLayers.Control.LayerSwitch
 
         this.currentlyEditing = layer;
         // TODO: i18n
-        this.maximize.innerHTML = "(+) Editing \"" + layer.name + "\"";
+        this.maximize.innerHTML = "Editing \"" + layer.name + "\"";
         this.minimize.innerHTML = "(-) Editing \"" + layer.name + "\"";
         layer.events.on({
             "featuremodified": layer.modifyWKT,
