@@ -763,31 +763,37 @@ olwidget.EditableLayer = OpenLayers.Class(olwidget.BaseVectorLayer, {
             this.removeFeatures(this.features);
         }
         if (wkt) {
+            console.log(wkt);
             var geom = olwidget.ewktToFeature(wkt);
-            geom = olwidget.transformVector(geom, this.map.displayProjection, 
-                this.map.projection);
-            if (geom.constructor == Array || 
-                    geom.geometry.CLASS_NAME.class_name === "OpenLayers.Geometry.MultiLineString" ||
-                    geom.geometry.CLASS_NAME.class_name === "OpenLayers.Geometry.MultiPoint" ||
-                    geom.geometry.CLASS_NAME.class_name === "OpenLayers.Geometry.MultiPolygon") {
-                // extract geometries from MULTI<geom> types into individual
-                // components (keeps the vector layer flat)
-                if (typeof(geom.geometry) !== "undefined") {
-                    var geoms = [];
-                    for (var i = 0; i < geom.geometry.components.length; i++) {
-                        geoms.push(
-                            new OpenLayers.Feature.Vector(
-                                geom.geometry.components[i])
-                        );
+            // filter empty geometry collctions.
+            if (geom && (geom.constructor != Array || geom[0] != undefined)) {
+                geom = olwidget.transformVector(geom, this.map.displayProjection, 
+                    this.map.projection);
+                if (geom.constructor == Array || 
+                        geom.geometry.CLASS_NAME.class_name === "OpenLayers.Geometry.MultiLineString" ||
+                        geom.geometry.CLASS_NAME.class_name === "OpenLayers.Geometry.MultiPoint" ||
+                        geom.geometry.CLASS_NAME.class_name === "OpenLayers.Geometry.MultiPolygon") {
+                    // extract geometries from MULTI<geom> types into individual
+                    // components (keeps the vector layer flat)
+                    if (typeof(geom.geometry) !== "undefined") {
+                        var geoms = [];
+                        for (var i = 0; i < geom.geometry.components.length; i++) {
+                            geoms.push(
+                                new OpenLayers.Feature.Vector(
+                                    geom.geometry.components[i])
+                            );
+                        }
+                        this.addFeatures(geoms, {silent: true});
+                    } else {
+                        this.addFeatures(geom, {silent: true});
                     }
-                    this.addFeatures(geoms, {silent: true});
                 } else {
-                    this.addFeatures(geom, {silent: true});
+                    this.addFeatures([geom], {silent: true});
                 }
+                this.numGeom = this.features.length;
             } else {
-                this.addFeatures([geom], {silent: true});
+                this.numGeom = 0;
             }
-            this.numGeom = this.features.length;
         }
     },
     // Callback for openlayers "featureadded" 
@@ -819,6 +825,7 @@ olwidget.EditableLayer = OpenLayers.Class(olwidget.BaseVectorLayer, {
             }
             this.featureToTextarea(feat);
         } else {
+            console.log(event.feature);
             if (event.feature) {
                 this.featureToTextarea(event.feature);
             } else {
@@ -1428,34 +1435,27 @@ olwidget.DeleteVertex = OpenLayers.Class(OpenLayers.Control.ModifyFeature, {
                 var n = feature.geometry.parent.components.length;
                 feature.geometry.parent.removeComponent(feature.geometry);
                 if (feature.geometry.parent.components.length == n) {
+                    // Delete the feature -- we are at min vertices
                     this.layer.removeFeatures([this.editingFeature]);
                     this.layer.removeFeatures(this.vertices, {silent: true});
                     this.editingFeature = null;
                     this.layer.events.triggerEvent("featuremodified");
-
                 } else {
-                    this.layer.drawFeature(this.editingFeature, 
-                                           this.selectControl.renderIntent);
-                    this.layer.events.triggerEvent("featuremodified",
-                                                   {feature: this.editingFeature});
-                    this.selectControl.unhighlight(this.editingFeature);
+                    // Remove a vertex.
+                    this.layer.events.triggerEvent(
+                        "featuremodified", {feature: this.editingFeature});
+                    this.selectControl.select(this.editingFeature);
                 }
             }
         } else if (!feature.geometry.parent && 
-                   feature.geometry.CLASS_NAME === "OpenLayers.Geometry.Point") {
+               feature.geometry.CLASS_NAME === "OpenLayers.Geometry.Point") {
             this.layer.removeFeatures([feature]);
-
+            this.layer.events.triggerEvent("featuremodified");
+        } else {
+            this.editingFeature = feature;
+            this.feature = feature;
+            this.resetVertices();
         }
-        this.editingFeature = feature;
-        this.feature = feature;
-        this.modified = false;
-        // no drag controller
-        this.resetVertices();
-        //this.collectVertices();
-        this.onModificationStart(this.feature);
-    },
-    unselectFeature: function(feature) {
-        // override; do nothing
     },
     collectVertices: function() {
         this.vertices = [];
@@ -1488,6 +1488,17 @@ olwidget.DeleteVertex = OpenLayers.Class(OpenLayers.Control.ModifyFeature, {
         collectComponentVertices.call(this, this.feature.geometry);
         this.layer.addFeatures(this.vertices, {silent: true});
     },
+    // override to do nothing
+    beforeSelectFeature: function() {},
+    unselectFeature: function() {},
+    dragStart: function() {},
+    dragVertex: function() {},
+    dragComplete: function() {},
+    setFeatureState: function() {},
+    handleKeypress: function() {},
+    collectDragHandle: function() {},
+    collectRadiusHandle: function() {},
+
     CLASS_NAME: "olwidget.DeleteVertex"
 });
 
