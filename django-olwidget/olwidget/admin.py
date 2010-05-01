@@ -42,7 +42,7 @@ from django.core.exceptions import PermissionDenied
 from django.utils.encoding import force_unicode
 from django.utils.translation import ungettext
 
-from olwidget.widgets import EditableMap, InfoMap, DEFAULT_PROJ
+#from olwidget.widgets import EditableMap, InfoMap, DEFAULT_PROJ
 
 class GeoModelAdmin(ModelAdmin):
     options = {}

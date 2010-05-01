@@ -131,24 +131,33 @@ class InfoLayer(forms.Widget):
         }
         return mark_safe(render_to_string(self.template, context))
 
-class EditableLayer(forms.Widget):
+class EditableLayer(object):
     default_template = "olwidget/editable_layer.html"
 
-    def __init__(self, field=None, options=None, template=None):
+    def __init__(self, options=None, template=None):
         self.options = options or {}
         self.template = template or self.default_template
         self.field = field
+        super(EditableLayer, self).__init__()
 
-    def __unicode__(self):
-        if self.geom:
-            wkt = add_srid(get_wkt(self.geom)),
+    def prepare(self, name, value, attrs=None):
+        if not attrs:
+            attrs = {}
+        if attrs.has_key('id'):
+            element_id = attrs['id']
         else:
-            wkt = ""
-        context = {
-            'wkt': "",
-            'options': simplejson.dumps(translate_options(self.options)),
-        }
-        return mark_safe(render_to_string(self.template, context))
+            element_id = "id_%s" % id(self)
+
+        if name and not self.options.has_key('name'):
+            self.options['name'] = name
+        self.wkt = add_srid(get_wkt(value))
+
+        self.textarea = mark_safe(forms.Textarea().render(name, value, attrs))
+        self.layer = mark_safe(render_to_string(self.template, {
+            'id': 
+        })
+
+
 
 ewkt_re = re.compile("^SRID=(?P<srid>\d+);(?P<wkt>.+)$", re.I)
 def get_wkt(value, srid=DEFAULT_PROJ):
@@ -171,9 +180,9 @@ def get_wkt(value, srid=DEFAULT_PROJ):
 
     wkt = ''
     if ogr:
-        # Workaround for Django bug #12312.  GEOSGeometry types don't support 3D wkt;
-        # OGRGeometry types output 3D for linestrings even if they should do 2D, causing
-        # IntegrityError's.
+        # Workaround for Django bug #12312.  GEOSGeometry types don't support
+        # 3D wkt; OGRGeometry types output 3D for linestrings even if they
+        # should do 2D, causing IntegrityError's.
         if ogr.dimension == 2:
             geos = ogr.geos
             geos.transform(srid)
