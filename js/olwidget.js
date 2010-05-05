@@ -268,8 +268,8 @@ olwidget.Map = OpenLayers.Class(OpenLayers.Map, {
             var parts = opts.layers[i].split(".");
             layers.push(olwidget[parts[0]].map(parts[1]));
 
-            // workaround for problems with Microsoft layers and vector layer drift
-            // (see http://openlayers.com/dev/examples/ve-novibrate.html)
+            // workaround for problems with Microsoft layers and vector layer
+            // drift (see http://openlayers.com/dev/examples/ve-novibrate.html)
             if (parts[0] == "ve") {
                 if (opts.mapOptions.panMethod === undefined) {
                     opts.mapOptions.panMethod = OpenLayers.Easing.Linear.easeOut;
@@ -291,14 +291,14 @@ olwidget.Map = OpenLayers.Class(OpenLayers.Map, {
             this.addLayers(layers);
             this.initCenter();
         }
-        this.selectControl = new OpenLayers.Control.SelectFeature(this.vectorLayers, {
-            clickout: true, hover: false, toggle: false, multiple: false, 
-            toggleKey: "ctrlKey", multipleKey: "shiftKey" });
-        this.selectControl.events.register("featurehighlighted", this, 
-            function(evt) { this.featureHighlighted(evt); });
-        this.selectControl.events.register("featureunhighlighted", this,
-            function(evt) { this.featureUnhighlighted(evt); });
-        this.events.register("zoomend", this, function(evt) { this.zoomEnd(evt); });
+        this.selectControl = new OpenLayers.Control.SelectFeature(
+            this.vectorLayers);
+        this.selectControl.events.on({
+            featurehighlighted: this.featureHighlighted, 
+            featureunhighlighted: this.featureUnhighlighted,
+            zoomEnd: this.zoomEnd,
+            scope: this
+        });
         this.addControl(this.selectControl);
         this.selectControl.activate();
         this.addControl(new olwidget.EditableLayerSwitcher());
@@ -324,19 +324,13 @@ olwidget.Map = OpenLayers.Class(OpenLayers.Map, {
         }
     },
     featureHighlighted: function(evt) {
-        if (!this.editing) {
-            this.createPopup(evt);
-        }
+        this.createPopup(evt);
     },
     featureUnhighlighted: function(evt) {
-        if (!this.editing) {
-            this.deleteAllPopups();
-        }
+        this.deleteAllPopups();
     },
     zoomEnd: function(evt) {
-        if (!this.editing) {
-            this.deleteAllPopups();
-        }
+        this.deleteAllPopups();
     },
 
     /**
@@ -357,7 +351,8 @@ olwidget.Map = OpenLayers.Class(OpenLayers.Map, {
             popupDiv.style.zIndex = this.Z_INDEX_BASE.Popup +
                                     this.popups.length;
             this.div.appendChild(popupDiv);
-            // store a reference to this function so we can unregister on removal
+            // store a reference to this function so we can unregister on
+            // removal
             this.popupMoveFunc = function(event) {
                 var px = this.getPixelFromLonLat(popup.lonlat);
                 popup.moveTo(px);
@@ -461,6 +456,7 @@ olwidget.BaseVectorLayer = OpenLayers.Class(OpenLayers.Layer.Vector, {
     },
     setMap: function(map) {
         OpenLayers.Layer.Vector.prototype.setMap.apply(this, [map]);
+        // If we are in an olwidget Map, inherit the olwidget Map's properties.
         if (map.CLASS_NAME == "olwidget.Map") {
 
             this.opts.overlayStyle = olwidget.deepJoinOptions(
@@ -655,8 +651,7 @@ olwidget.EditableLayer = OpenLayers.Class(olwidget.BaseVectorLayer, {
             controls.push(mod);
         }
 
-        var context = this;
-
+        // Delete vertex
         controls.push(new olwidget.DeleteVertex(this, {
             title: "Delete vertices"
         }));
@@ -665,6 +660,8 @@ olwidget.EditableLayer = OpenLayers.Class(olwidget.BaseVectorLayer, {
         // Custom controls:
         //
 
+        var context = this;
+        
         // Clear all
         controls.push(new OpenLayers.Control.Button({
             displayClass: 'olControlClearFeatures', 
@@ -704,7 +701,7 @@ olwidget.EditableLayer = OpenLayers.Class(olwidget.BaseVectorLayer, {
         }
     },
     addUndoState: function() {
-        // Set the textarea value, using the undo stack.
+        // Put the current value of the textarea in the undo stack.
         var value = this.textarea.value;
         if (this.undoStack.length > this.undoStackPos) {
             this.undoStack = this.undoStack.slice(0, this.undoStackPos + 1);    
@@ -717,6 +714,7 @@ olwidget.EditableLayer = OpenLayers.Class(olwidget.BaseVectorLayer, {
         this.setUndoButtonStates();
     },
     undo: function() {
+        // Move to previous undo stack position.
         if (this.undoStackPos > 0) {
             this.undoStackPos--;
             if (this.undoStackPos < this.undoStack.length) {
@@ -727,6 +725,7 @@ olwidget.EditableLayer = OpenLayers.Class(olwidget.BaseVectorLayer, {
         this.setUndoButtonStates();
     },
     redo: function() {
+        // Move to next undo stack position.
         if (this.undoStackPos < this.undoStack.length - 1) {
             this.undoStackPos++;
             this.textarea.value = this.undoStack[this.undoStackPos];
@@ -755,9 +754,9 @@ olwidget.EditableLayer = OpenLayers.Class(olwidget.BaseVectorLayer, {
         this.addUndoState();
     },
     readWKT: function() {
-        // Read any initial WKT from the text field.  We assume that the
-        // WKT uses the projection given in "displayProjection", and ignore
-        // any initial SRID.
+        // Read WKT from the text field.  We assume that the WKT uses the
+        // projection given in "displayProjection", and ignore any initial
+        // SRID.
         var wkt = this.textarea.value;
         if (this.features) {
             this.removeFeatures(this.features);
@@ -767,17 +766,22 @@ olwidget.EditableLayer = OpenLayers.Class(olwidget.BaseVectorLayer, {
             var geom = olwidget.ewktToFeature(wkt);
             // filter empty geometry collctions.
             if (geom && (geom.constructor != Array || geom[0] != undefined)) {
-                geom = olwidget.transformVector(geom, this.map.displayProjection, 
+                geom = olwidget.transformVector(geom, 
+                    this.map.displayProjection, 
                     this.map.projection);
                 if (geom.constructor == Array || 
-                        geom.geometry.CLASS_NAME.class_name === "OpenLayers.Geometry.MultiLineString" ||
-                        geom.geometry.CLASS_NAME.class_name === "OpenLayers.Geometry.MultiPoint" ||
-                        geom.geometry.CLASS_NAME.class_name === "OpenLayers.Geometry.MultiPolygon") {
-                    // extract geometries from MULTI<geom> types into individual
-                    // components (keeps the vector layer flat)
+                        geom.geometry.CLASS_NAME.class_name === 
+                                "OpenLayers.Geometry.MultiLineString" ||
+                        geom.geometry.CLASS_NAME.class_name === 
+                                "OpenLayers.Geometry.MultiPoint" ||
+                        geom.geometry.CLASS_NAME.class_name === 
+                                "OpenLayers.Geometry.MultiPolygon") {
+                    // extract geometries from MULTI<geom> types into
+                    // individual components (keeps the vector layer flat)
                     if (typeof(geom.geometry) !== "undefined") {
                         var geoms = [];
-                        for (var i = 0; i < geom.geometry.components.length; i++) {
+                        var n = geom.geometry.components.length;
+                        for (var i = 0; i < n; i++) {
                             geoms.push(
                                 new OpenLayers.Feature.Vector(
                                     geom.geometry.components[i])
@@ -866,12 +870,13 @@ olwidget.EditableLayer = OpenLayers.Class(olwidget.BaseVectorLayer, {
 olwidget.EditableLayerSwitcher = OpenLayers.Class(OpenLayers.Control.LayerSwitcher, {
     // The layer we are currently editing
     currentlyEditing: null,
-    // A list of all editable layers, including none.  Contains an object:
-    // {
-    //  layer: the layer,
-    //  inputElem: the rado button,
-    //  labelSpan: the name span next to the button
-    // }
+    /** A list of all editable layers, including none.  Contains an object:
+     *  {
+     *   layer: the layer,
+     *   inputElem: the rado button,
+     *   labelSpan: the name span next to the button
+     *  }
+     */
     editableLayers: [],
     // Panel for editing controls
     panel: null,
@@ -1322,7 +1327,7 @@ olwidget.Popup = OpenLayers.Class(OpenLayers.Popup.Framed, {
     createBlocks: function() {
         this.blocks = [];
 
-        //since all positions contain the same number of blocks, we can 
+        // since all positions contain the same number of blocks, we can 
         // just pick the first position and use its blocks array to create
         // our blocks array
         var firstPosition = null;
@@ -1365,7 +1370,7 @@ olwidget.Popup = OpenLayers.Class(OpenLayers.Popup.Framed, {
                 var r = positionBlock.anchor.right;
                 var t = positionBlock.anchor.top;
 
-                //note that we use the isNaN() test here because if the 
+                // note that we use the isNaN() test here because if the 
                 // size object is initialized with a "auto" parameter, the 
                 // size constructor calls parseFloat() on the string, 
                 // which will turn it into NaN
@@ -1449,9 +1454,12 @@ olwidget.DeleteVertex = OpenLayers.Class(OpenLayers.Control.ModifyFeature, {
             }
         } else if (!feature.geometry.parent && 
                feature.geometry.CLASS_NAME === "OpenLayers.Geometry.Point") {
+            // We're just a single point.  Delete it!
             this.layer.removeFeatures([feature]);
             this.layer.events.triggerEvent("featuremodified");
         } else {
+            // We must be selecting a non-point for the first time.  Show
+            // vertices and set this as the figure to be edited.
             this.editingFeature = feature;
             this.feature = feature;
             this.resetVertices();
@@ -1488,6 +1496,7 @@ olwidget.DeleteVertex = OpenLayers.Class(OpenLayers.Control.ModifyFeature, {
         collectComponentVertices.call(this, this.feature.geometry);
         this.layer.addFeatures(this.vertices, {silent: true});
     },
+
     // override to do nothing
     beforeSelectFeature: function() {},
     unselectFeature: function() {},

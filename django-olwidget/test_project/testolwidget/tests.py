@@ -1,19 +1,25 @@
 from django.test import TestCase
 
 from django import forms
-from olwidget.fields import MapField
-from olwidget.widgets import EditableLayer, InfoLayer
+from olwidget.fields import MapField, EditableLayerField, InfoLayerField
 
-print("HEY!!!!!!!!!!!!")
+from django.contrib.gis.geos import Point
 
 class TestForm(TestCase):
     def test_huh(self):
         class MyForm(forms.Form):
             mymap = MapField((
-                EditableLayer(),
-                EditableLayer(),
+                EditableLayerField({'name': 'Fun'}),
+                InfoLayerField([[Point(0, 0, srid=4326), "that"]]),
+                EditableLayerField(),
             ))
 
-        form = MyForm({'mymap': [1, 2]})
-        print(unicode(form))
+        form = MyForm({'mymap_0': 0, 'mymap_2': 1})
 
+        self.assertTrue(form.is_bound)
+        self.assertTrue(form.is_valid())
+
+
+        form = MyForm({'mymap_0': 0})
+        self.assertTrue(form.is_bound)
+        self.assertFalse(form.is_valid())

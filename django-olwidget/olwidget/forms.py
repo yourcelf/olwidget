@@ -2,35 +2,26 @@ from django import forms
 
 from widgets import MapMixin
 
-#class MapFormOptions(object):
-#    def __init__(self, options=None):
-#        self.maps = getattr(options, 'maps', None)
-#
-#def get_maps(bases, attrs):
-#    try:
-#        maps = getattr(attrs['Meta'], 'maps')
-#    except (KeyError, AttributeError):
-#        maps = None
-#
-#    #... do something with fields?  urm....
-#    return maps
-#
-#class MapFormBaseMetaclass(type):
-#    def __new__(cls, name, bases, attrs):
-#        attrs['maps'] = get_maps(bases, attrs)
-#        new_class = super(MapFormBaseMetaClass, cls).__new__(
-#                cls, name, bases, attrs)
-#
-#class MapFormMetaclass(MapFormBaseMetaclass,
-#        forms.forms.DeclarativeFieldMetaclass):
-#    pass
-#
-#class BaseMapForm(forms.BaseForm):
-#    def __init__(self, *args, **kwargs):
-#        super(BaseMapForm, self).__init__(*args, **kwargs)
-#
-#        # ... fields?  Build widgets, etc.?  Alter "repr"?
-#
-#class MapForm(BaseMapForm):
-#    __metaclass__ = MapFormMetaclass
-#    __doc__ = BaseMapForm.__doc__
+class LayerField(forms.fields.CharField):
+    def __init__(self, options=None, **kwargs):
+        self.options = options or {}
+        super(CharField, self).__init__(**kwargs)
+
+class MapField(forms.fields.Field):
+    def __init__(self, fields=None, **kwargs):
+        self.options = kwargs.pop(options, {})
+        super(MapField, self).__init__(*args, **kwargs)
+        self.widget = EditableMap(self.fields, self.options)
+
+    #XXX: Aggregate fields ala MultiValueField?
+
+class EditableMap(forms.widgets.Widget, MapMixin):
+    def __init__(self, fields=None, options=None, template=None):
+        self.set_options(options, template)
+        super(EditableMap, self).__init__(options, template)
+        self.fields = fields
+
+    def render(self, name, value, attrs=None):
+
+
+

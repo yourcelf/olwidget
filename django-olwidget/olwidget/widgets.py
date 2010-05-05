@@ -97,10 +97,11 @@ class Map(forms.widgets.MultiWidget, MapMixin):
 
     def render(self, name, value, attrs=None):
         # value is assumed to be a list.
+        values = value or [None for i in range(len(self.vector_layers))]
         layer_js = []
         layer_html = []
-        for layer, val in zip(self.vector_layers, value):
-            (javascript, html) = layer.prepare(None, val)
+        for i, layer in enumerate(self.vector_layers):
+            (javascript, html) = layer.prepare("%s_%i" % (name, i), values[i])
             layer_js.append(javascript)
             layer_html.append(html)
 
@@ -143,8 +144,9 @@ class InfoLayer(BaseVectorLayer):
         self.info = info or []
         self.options = options or {}
         self.template = template or self.default_template
+        super(InfoLayer, self).__init__()
 
-    def prepare(self):
+    def prepare(self, name, value, attrs=None):
         wkt_array = []
         for geom, attr in self.info:
             wkt = add_srid(get_wkt(geom))
