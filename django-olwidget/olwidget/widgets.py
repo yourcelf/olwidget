@@ -88,18 +88,27 @@ class MapMixin(object):
 # New multi layer types
 #
 
-class Map(forms.Widget, MapMixin):
+class Map(forms.widgets.MultiWidget, MapMixin):
     default_template = 'olwidget/multi_layer_map.html'
     def __init__(self, vector_layers=None, options=None, template=None):
         self.vector_layers = vector_layers or []
         self.set_options(options, template)
-        super(Map, self).__init__()
+        super(Map, self).__init__(widgets=self.vector_layers)
 
     def render(self, name, value, attrs=None):
+        # value is assumed to be a list.
+        layer_js = []
+        layer_html = []
+        for layer, val in zip(self.vector_layers, value):
+            (javascript, html) = layer.prepare(None, val)
+            layer_js.append(javascript)
+            layer_html.append(html)
+
         attrs = attrs or {}
         context = {
             'id': attrs.get('id', "id_%s" % id(self)),
-            'vector_layers': self.vector_layers,
+            'layer_js': layer_js,
+            'layer_html': layer_html,
             'map_opts': simplejson.dumps(translate_options(self.options)),
         }
         return render_to_string(self.template, context)
@@ -107,7 +116,27 @@ class Map(forms.Widget, MapMixin):
     def __unicode__(self):
         return self.render(None, None)
 
-class InfoLayer(forms.Widget):
+class BaseVectorLayer(forms.Widget):
+    def prepare(self, name, value, attrs=None):
+        """
+        Given the name, value and attrs, prepare both html and javascript
+        components to handle this layer.  Should return (javascript, html)
+        tuple.
+        """
+        raise NotImplementedError
+
+    def render(self, name, value, attrs=None):
+        """
+        Returns just the javascript component of this widget.  To also get the
+        HTML component, call ``prepare`` instead.
+        """
+        (javascript, html) = self.prepare(name, value, attrs)
+        return self.javascript
+
+    def __unicode__(self):
+        return self.render(None, None)
+
+class InfoLayer(BaseVectorLayer):
     default_template = 'olwidget/info_layer.html'
 
     def __init__(self, info=None, options=None, template=None):
@@ -115,7 +144,7 @@ class InfoLayer(forms.Widget):
         self.options = options or {}
         self.template = template or self.default_template
 
-    def __unicode__(self):
+    def prepare(self):
         wkt_array = []
         for geom, attr in self.info:
             wkt = add_srid(get_wkt(geom))
@@ -125,39 +154,40 @@ class InfoLayer(forms.Widget):
                 wkt_array.append([wkt, attr])
         info_json = simplejson.dumps(wkt_array)
 
+        if name and not self.options.has_key('name'):
+            self.options['name'] = name
+
         context = {
             'info_array': info_json,
             'options': simplejson.dumps(translate_options(self.options)),
         }
-        return mark_safe(render_to_string(self.template, context))
+        return (mark_safe(render_to_string(self.template, context)), "")
 
-class EditableLayer(object):
+class EditableLayer(BaseVectorLayer):
     default_template = "olwidget/editable_layer.html"
 
     def __init__(self, options=None, template=None):
         self.options = options or {}
         self.template = template or self.default_template
-        self.field = field
         super(EditableLayer, self).__init__()
 
     def prepare(self, name, value, attrs=None):
         if not attrs:
             attrs = {}
-        if attrs.has_key('id'):
-            element_id = attrs['id']
-        else:
-            element_id = "id_%s" % id(self)
+        attrs['id'] = attrs.get('id', "id_%s" % id(self))
 
         if name and not self.options.has_key('name'):
             self.options['name'] = name
+
         self.wkt = add_srid(get_wkt(value))
 
-        self.textarea = mark_safe(forms.Textarea().render(name, value, attrs))
-        self.layer = mark_safe(render_to_string(self.template, {
-            'id': 
-        })
-
-
+        context = {
+            'id': attrs['id'],
+            'options': simplejson.dumps(translate_options(self.options)),
+        }
+        javascript = mark_safe(render_to_string(self.template, context))
+        html = mark_safe(forms.Textarea().render(name, value, attrs))
+        return (javascript, html)
 
 ewkt_re = re.compile("^SRID=(?P<srid>\d+);(?P<wkt>.+)$", re.I)
 def get_wkt(value, srid=DEFAULT_PROJ):

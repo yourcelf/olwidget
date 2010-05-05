@@ -1,7 +1,8 @@
+{{ layer_html|join:"" }}
 <div id="{{ id }}"></div>
 <script type="text/javascript">
     new olwidget.Map("{{ id }}", [
-            {{ vector_layers|join:"," }}
+            {{ layer_js|join:"," }}
         ], 
         {{ map_opts|safe }}
     );
