@@ -1,23 +1,19 @@
-"""
-This file demonstrates two different styles of tests (one doctest and one
-unittest). These will both pass when you run "manage.py test".
-
-Replace these with more appropriate tests for your application.
-"""
-
 from django.test import TestCase
 
-class SimpleTest(TestCase):
-    def test_basic_addition(self):
-        """
-        Tests that 1 + 1 always equals 2.
-        """
-        self.failUnlessEqual(1 + 1, 2)
+from django import forms
+from olwidget.fields import MapField
+from olwidget.widgets import EditableLayer, InfoLayer
 
-__test__ = {"doctest": """
-Another way to test that 1 + 1 is equal to 2.
+print("HEY!!!!!!!!!!!!")
 
->>> 1 + 1 == 2
-True
-"""}
+class TestForm(TestCase):
+    def test_huh(self):
+        class MyForm(forms.Form):
+            mymap = MapField((
+                EditableLayer(),
+                EditableLayer(),
+            ))
+
+        form = MyForm({'mymap': [1, 2]})
+        print(unicode(form))
 
