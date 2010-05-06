@@ -84,10 +84,6 @@ class MapMixin(object):
         return forms.Media(css={'all': (OLWIDGET_CSS,)}, js=js)
     media = property(_media)
 
-#
-# New multi layer types
-#
-
 class Map(forms.widgets.MultiWidget, MapMixin):
     default_template = 'olwidget/multi_layer_map.html'
     def __init__(self, vector_layers=None, options=None, template=None):
@@ -100,6 +96,9 @@ class Map(forms.widgets.MultiWidget, MapMixin):
         values = value or [None for i in range(len(self.vector_layers))]
         layer_js = []
         layer_html = []
+        if name is None:
+            name = "data"
+
         for i, layer in enumerate(self.vector_layers):
             (javascript, html) = layer.prepare("%s_%i" % (name, i), values[i])
             layer_js.append(javascript)
@@ -190,6 +189,20 @@ class EditableLayer(BaseVectorLayer):
         javascript = mark_safe(render_to_string(self.template, context))
         html = mark_safe(forms.Textarea().render(name, value, attrs))
         return (javascript, html)
+
+# Convenience single layer widgets
+
+class EditableMap(Map):
+    def __init__(self, options=None):
+        super(EditableMap, self).__init__([
+            EditableLayer(options), 
+        ], options)
+        
+class InfoMap(Map):
+    def __init__(self, info, options=None):
+        super(InfoMap, self).__init__([
+            InfoLayer(info, options),
+        ], options)
 
 ewkt_re = re.compile("^SRID=(?P<srid>\d+);(?P<wkt>.+)$", re.I)
 def get_wkt(value, srid=DEFAULT_PROJ):

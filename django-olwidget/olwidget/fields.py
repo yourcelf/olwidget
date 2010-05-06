@@ -45,15 +45,12 @@ class EditableLayerField(forms.fields.CharField):
         super(EditableLayerField, self).__init__(**kwargs)
 
 class InfoLayerField(forms.fields.CharField):
+    """
+    Read-only field for displaying vector data on the same map used to edit
+    data in another field.
+    """
     def __init__(self, info, options=None, **kwargs):
         self.widget = _build_widget_class(InfoLayer, 
                 {'info': info, 'options': options})
         kwargs['required'] = False
         super(InfoLayerField, self).__init__(**kwargs)
-
-    def clean(self, value):
-        return None
-
-    def validate(self, value):
-        return True
-
