@@ -13,14 +13,14 @@ class TestForm(TestCase):
                 EditableLayerField({'name': 'Fun'}),
                 InfoLayerField([[Point(0, 0, srid=4326), "that"]]),
                 EditableLayerField(),
-            ))
+                ))
 
         form = MyForm({'mymap_0': 0, 'mymap_2': 1})
+         #print(unicode(form))
 
         self.assertTrue(form.is_bound)
         self.assertTrue(form.is_valid())
 
-        #print(unicode(form))
 
         form = MyForm({'mymap_0': 0})
         self.assertTrue(form.is_bound)
@@ -28,12 +28,21 @@ class TestForm(TestCase):
 
     def test_single(self):
         class MyForm(forms.Form):
-            field = forms.CharField(widget=EditableMap())
+            field = forms.CharField(widget=EditableMap({"name": "Fun times"}))
 
-        form = MyForm()
-        print(unicode(form))
+        form = MyForm({'field': 1})
+        self.assertTrue(form.is_bound)
+        self.assertTrue(form.is_valid())
+        #print(unicode(form))
+        #print(unicode(form.media))
 
-        mymap = InfoMap([[Point(0, 0, srid=4326), "that"]])
-        print(unicode(mymap))
+        form = MyForm({'notafield': 1})
+        self.assertTrue(form.fields['field'].required)
+        self.assertTrue(form.is_bound)
+        self.assertFalse(form.is_valid())
+
+
+        mymap = InfoMap([[Point(0, 0, srid=4326), "that"]], {"name": "frata"})
+        #print(unicode(mymap))
 
       

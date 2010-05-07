@@ -15,11 +15,16 @@ def _build_widget_class(superclass, attributes):
     return _Widget
 
 class MapField(forms.fields.MultiValueField):
+    """
+    Extends MultiValueField for the particular case of map layers.  Allows the
+    addition of non-editable layers which are used in the map, but aren't
+    properly "fields".
+    """
     def __init__(self, fields, options=None, **kwargs):
         # create map widget enclosing vector layers and options
         layers = [field.widget for field in fields]
-        self.widget = _build_widget_class(Map, 
-                {'vector_layers': layers, 'options': options})
+        self.widget = kwargs.get('widget', _build_widget_class(Map, 
+                {'vector_layers': layers, 'options': options}))
         super(MapField, self).__init__(fields, **kwargs)
 
     def compress(self, data_list):
@@ -28,8 +33,8 @@ class MapField(forms.fields.MultiValueField):
 
     def clean(self, value):
         """
-        Set a value for any InfoLayer objects to prevent their presence from
-        invalidating the form.
+        Set an arbitrary value for any InfoLayer objects to prevent their
+        presence from invalidating the form.
         """
         fixed = []
         for i,val in enumerate(value):
@@ -38,6 +43,8 @@ class MapField(forms.fields.MultiValueField):
             else:
                 fixed.append(val)
         return super(MapField, self).clean(fixed)
+
+
 
 class EditableLayerField(forms.fields.CharField):
     def __init__(self, options=None, **kwargs):
