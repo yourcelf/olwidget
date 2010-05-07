@@ -1,3 +1,4 @@
+import django.utils.copycompat as copy
 from django.forms.widgets import Textarea
 from django.template.loader import render_to_string
 from django.utils import simplejson
@@ -35,13 +36,22 @@ OLWIDGET_CSS = utils.url_join(settings.OLWIDGET_MEDIA_URL, "css/olwidget.css")
 # Map widget
 #
 
-class Map(forms.widgets.MultiWidget):
+class Map(forms.Widget):
     """
     ``Map`` is a container widget for layers.  The constructor takes a list of
     vector layer instances, a dictionary of options for the map, and a template
     to customize rendering.
+
+    The implementation is similar in some ways to a MultiWidget, with
+    exceptions:
+     * When there is only one vector layer, it behaves as a single widget (e.g.
+       the data is stored at "name" and not "name_0").
+     * Rendering is rather different, as we need to split up the javascript and
+       HTML components of layers and render them in the appropriate places.
     """
+
     default_template = 'olwidget/multi_layer_map.html'
+
     def __init__(self, vector_layers=None, options=None, template=None):
         self.vector_layers = vector_layers or []
         self.options = options or {}
@@ -49,11 +59,73 @@ class Map(forms.widgets.MultiWidget):
         # set so form.media knows to include osm.
         self.options['layers'] = self.options.get('layers', ['osm.mapnik'])
         self.template = template or self.default_template
-        super(Map, self).__init__(widgets=self.vector_layers)
+        super(Map, self).__init__()
+
+    def render(self, name, value, attrs=None):
+        if name is None:
+            name = "data"
+        if value is None:
+            values = [None for i in range(len(self.vector_layers))]
+        elif not isinstance(value, (list, tuple)):
+            values = [value]
+        else:
+            values = value
+        attrs = attrs or {}
+        # Get an arbitrary unique ID if we weren't handed one (e.g. widget used
+        # outside of a form).
+        map_id = attrs.get('id', "id_%s" % id(self))
+
+        layer_js = []
+        layer_html = []
+        for i, layer in enumerate(self.vector_layers):
+            # Use the container (Map) widget name for the vector layer if there
+            # is only one vector layer.  Otherwise, use a derived name by layer
+            # index.
+            if len(self.vector_layers) == 1:
+                lyr_name = name
+            else:
+                lyr_name = "%s_%i" % (name, i)
+            id_ = "%s_%s" % (map_id, lyr_name)
+            # Use "prepare" rather than "render" to get both js and html
+            (js, html) = layer.prepare(lyr_name, values[i], attrs={'id': id_ })
+            layer_js.append(js)
+            layer_html.append(html)
+
+        attrs = attrs or {}
+        context = {
+            'id': map_id,
+            'layer_js': layer_js,
+            'layer_html': layer_html,
+            'map_opts': simplejson.dumps(utils.translate_options(self.options)),
+        }
+        return render_to_string(self.template, context)
+
+    def id_for_label(self, id_):
+        if id_:
+            # NB: duplicates template naming for map div.
+            return id_ + "_map"
+        return id_
+
+    def value_from_datadict(self, data, files, name):
+        """
+        Single layer maps use the map name.  Otherwise, use mapname_%i.
+        """
+        if len(self.vector_layers) == 1:
+            return data.get(name, None)
+        else:
+            return [vl.value_from_datadict(data, files, name + "_%s" % i) for i,vl in enumerate(self.vector_layers)]
+
+    def _has_changed(self, initial, data):
+        if (initial is None) or (not isinstance(initial, list)):
+            initial = [u'' for x in range(0, len(data))]
+        for widget, initial, data in zip(self.vector_layers, initial, data):
+            if widget._has_changed(initial, data):
+                return True
+        return False
 
     def _media(self):
         js = set()
-        # collect scripts necessary for various layers
+        # collect scripts necessary for various base layers
         for layer in self.options['layers']:
             if layer.startswith("osm."):
                 js.add(settings.OSM_API)
@@ -69,69 +141,13 @@ class Map(forms.widgets.MultiWidget):
         return forms.Media(css={'all': (OLWIDGET_CSS,)}, js=js)
     media = property(_media)
 
-    def render(self, name, value, attrs=None):
-        if name is None:
-            name = "data"
-        if value is None:
-            values = [None for i in range(len(self.vector_layers))]
-        elif not isinstance(value, (list, tuple)):
-            values = [value]
-        else:
-            values = value
-        attrs = attrs or {}
-
-        layer_js = []
-        layer_html = []
-        map_id = attrs.get('id', "id_%s" % id(self))
-        for i, layer in enumerate(self.vector_layers):
-            # Use the container (Map) widget name for the vector layer if there
-            # is only one vector layer.  Otherwise, use a derived name by layer
-            # index.
-            if len(self.vector_layers) == 1:
-                layer_name = name
-            else:
-                layer_name = "%s_%i" % (name, i)
-            id_ ="%s_%s" % (map_id, layer_name)
-            (javascript, html) = layer.prepare(layer_name, values[i], attrs={
-                'id': id_ 
-            })
-            layer_js.append(javascript)
-            layer_html.append(html)
-
-        attrs = attrs or {}
-        context = {
-            'id': map_id,
-            'layer_js': layer_js,
-            'layer_html': layer_html,
-            'map_opts': simplejson.dumps(utils.translate_options(self.options)),
-        }
-        return render_to_string(self.template, context)
-
     def __unicode__(self):
         return self.render(None, None)
 
-    def value_from_datadict(self, data, files, name):
-        # The extra logic here is to allow single-layer types to use the
-        # MultiValueWidget's name to refer to the data held by the layer's
-        # widget.
-        if len(self.vector_layers) == 1:
-            val = data.get(name, None)
-            if val is not None:
-                print(name, val)
-                return val
-            return None
-        else:
-            # returns a list
-            return super(Map, self).value_from_datadict(data, files, name)
-
-    def decompress(self, value):
-        # noop, matching MapField compress
-        return value
-
-    def id_for_label(self, id_):
-        if id_ and len(self.vector_layers) > 1:
-            return id_ + "_0"
-        return id_
+    def __deepcopy__(self, memo):
+        obj = super(Map, self).__deepcopy__(memo)
+        obj.vector_layers = copy.deepcopy(self.vector_layers)
+        return obj
 
 #
 # Layer widgets
@@ -177,7 +193,7 @@ class InfoLayer(BaseVectorLayer):
     def prepare(self, name, value, attrs=None):
         wkt_array = []
         for geom, attr in self.info:
-            wkt = utils.add_srid(utils.get_wkt(geom))
+            wkt = utils.get_ewkt(geom)
             if isinstance(attr, dict):
                 wkt_array.append([wkt, utils.translate_options(attr)])
             else:
@@ -212,7 +228,7 @@ class EditableLayer(BaseVectorLayer):
         if name and not self.options.has_key('name'):
             self.options['name'] = forms.forms.pretty_name(name)
 
-        self.wkt = utils.add_srid(utils.get_wkt(value))
+        self.wkt = utils.get_ewkt(value)
 
         context = {
             'id': attrs['id'],
@@ -261,12 +277,15 @@ class InfoMap(BaseSingleLayerMap):
                 options, **kwargs)
 
 class MapDisplay(EditableMap):
+    """
+    Convenience Map widget for a single display layer, with no info.
+    """
     def __init__(self, fields=None, options=None, **kwargs):
         options = options or {}
         options['editable'] = False
         super(MapDisplay, self).__init__(options, **kwargs)
         if fields:
-            self.wkt = utils.add_srid(utils.collection_wkt(fields))
+            self.wkt = utils.collection_ewkt(fields)
         else:
             self.wkt = ""
 

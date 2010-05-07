@@ -15,22 +15,25 @@ def _build_widget_class(superclass, attributes):
             super(_Widget, self).__init__(**kwargs)
     return _Widget
 
-class MapField(forms.fields.MultiValueField):
+class MapField(forms.fields.Field):
     """
-    Extends MultiValueField for the particular case of map layers.  Allows the
-    addition of non-editable layers which are used in the map, but aren't
-    properly "fields".
+    Container field for map fields.  Similar to MultiValueField, but with
+    greater autonomy of component fields.  Values are never "compressed" or
+    "decompressed", and component fields are consulted for their validation.
+    Example:
+
+        MapField([EditableLayerField(), InfoLayerField()], options={...})
+
     """
     def __init__(self, fields, options=None, **kwargs):
         # create map widget enclosing vector layers and options
         layers = [field.widget for field in fields]
         self.widget = kwargs.get('widget', _build_widget_class(Map, 
                 {'vector_layers': layers, 'options': options}))
-        super(MapField, self).__init__(fields, **kwargs)
+        super(Field, self).__init__(fields, **kwargs)
 
-    def compress(self, data_list):
-        # noop, matching Map widget decompress
-        return data_list
+    def validate(self, value):
+        pass
 
     def clean(self, value):
         """
@@ -38,19 +41,19 @@ class MapField(forms.fields.MultiValueField):
         presence from invalidating the form (they have no data, but it may
         be desirable to include them in a form's map).
         """
-        fixed = []
-        for i,val in enumerate(value):
-            if isinstance(self.fields[i].widget, InfoLayer):
-                fixed.append(1)
-            else:
-                fixed.append(val)
-        return super(MapField, self).clean(fixed)
-
-
+        return [f.clean(v) for v,f in zip(value, self.fields]
 
 class EditableLayerField(forms.fields.CharField):
     """
-    Field whose vector data is editable by the user.
+    Convenience field wrapping an EditableLayer widget.  
+    Usage:
+
+        EditableLayerField(options={...})
+    
+    Equivalent to:
+
+        forms.CharField(widget=EditableLayer(options={...}))
+
     """
     def __init__(self, options=None, **kwargs):
         self.widget = kwargs.get('widget', 
@@ -59,8 +62,15 @@ class EditableLayerField(forms.fields.CharField):
 
 class InfoLayerField(forms.fields.CharField):
     """
-    Read-only field for displaying vector data on the same map used to edit
-    data in another field.
+    Convenience field wrapping an InfoLayer widget.  
+    Usage:
+
+        InfoLayerField(info=[...], options={...})
+    
+    Equivalent to:
+
+        forms.CharField(widget=InfoLayer(info=[...], options={...}))
+
     """
     def __init__(self, info, options=None, **kwargs):
         self.widget = kwargs.get('widget', 

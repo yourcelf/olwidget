@@ -28,8 +28,14 @@ def _separated_lowercase_to_lower_camelcase(input_):
     return re.sub('_\w', lambda match: match.group(0)[-1].upper(), input_)
 
 
+def get_ewkt(value, srid=DEFAULT_PROJ):
+    return _add_srid(_get_wkt(value, srid), srid)
+
+def collection_ewkt(fields, srid=DEFAULT_PROJ):
+    return _add_srid(_collection_wkt(fields, srid), srid)
+
 _ewkt_re = re.compile("^SRID=(?P<srid>\d+);(?P<wkt>.+)$", re.I)
-def get_wkt(value, srid=DEFAULT_PROJ):
+def _get_wkt(value, srid):
     """
     `value` is either a WKT string or a geometry field.  Returns WKT in the
     projection for the given SRID.
@@ -49,31 +55,23 @@ def get_wkt(value, srid=DEFAULT_PROJ):
 
     wkt = ''
     if ogr:
-        # Workaround for Django bug #12312.  GEOSGeometry types don't support
-        # 3D wkt; OGRGeometry types output 3D for linestrings even if they
-        # should do 2D, causing IntegrityError's.
-        if ogr.coord_dim == 2:
-            geos = ogr.geos
-            geos.transform(srid)
-            wkt = geos.wkt
-        else:
-            ogr.transform(srid)
-            wkt = ogr.wkt 
+        ogr.transform(srid)
+        wkt = ogr.wkt 
     return wkt
 
-def collection_wkt(fields):
+def _collection_wkt(fields, srid):
     """ Returns WKT for the given list of geometry fields. """
 
     if not fields:
         return ""
 
     if len(fields) == 1:
-        return get_wkt(fields[0])
+        return get_wkt(fields[0], srid)
 
     return "GEOMETRYCOLLECTION(%s)" % \
-            ",".join(get_wkt(field) for field in fields)
+            ",".join(get_wkt(field, srid) for field in fields)
 
-def add_srid(wkt, srid=DEFAULT_PROJ):
+def _add_srid(wkt, srid):
     """
     Returns EWKT (WKT with a specified SRID) for the given wkt and SRID
     (default 4326). 
