@@ -45,12 +45,10 @@ class Map(forms.widgets.MultiWidget):
     def __init__(self, vector_layers=None, options=None, template=None):
         self.vector_layers = vector_layers or []
         self.options = options or {}
-        # Though this is the olwidget.js default, it must be explicitly set so
-        # form.media knows to include osm.
-        self.options['layers'] = self.options.get('layers',
-                ['osm.mapnik'])
+        # Though this layer is the olwidget.js default, it must be explicitly
+        # set so form.media knows to include osm.
+        self.options['layers'] = self.options.get('layers', ['osm.mapnik'])
         self.template = template or self.default_template
-
         super(Map, self).__init__(widgets=self.vector_layers)
 
     def _media(self):
@@ -82,6 +80,9 @@ class Map(forms.widgets.MultiWidget):
             name = "data"
 
         for i, layer in enumerate(self.vector_layers):
+            # Use the container (Map) widget name for the vector layer if there
+            # is only one vector layer.  Otherwise, use a derived name by layer
+            # index.
             if len(self.vector_layers) == 1:
                 layer_name = name
             else:
