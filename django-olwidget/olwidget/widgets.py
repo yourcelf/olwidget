@@ -70,15 +70,19 @@ class Map(forms.widgets.MultiWidget):
     media = property(_media)
 
     def render(self, name, value, attrs=None):
-        # value is assumed to be a list.  There is no decompression (as there
-        # is no compression in the map form).
-        values = value or [None for i in range(len(self.vector_layers))]
-        layer_js = []
-        layer_html = []
-
         if name is None:
             name = "data"
+        if value is None:
+            values = [None for i in range(len(self.vector_layers))]
+        elif not isinstance(value, (list, tuple)):
+            values = [value]
+        else:
+            values = value
+        attrs = attrs or {}
 
+        layer_js = []
+        layer_html = []
+        map_id = attrs.get('id', "id_%s" % id(self))
         for i, layer in enumerate(self.vector_layers):
             # Use the container (Map) widget name for the vector layer if there
             # is only one vector layer.  Otherwise, use a derived name by layer
@@ -87,7 +91,7 @@ class Map(forms.widgets.MultiWidget):
                 layer_name = name
             else:
                 layer_name = "%s_%i" % (name, i)
-            id_ = "id_%s" % layer_name
+            id_ ="%s_%s" % (map_id, layer_name)
             (javascript, html) = layer.prepare(layer_name, values[i], attrs={
                 'id': id_ 
             })
@@ -96,7 +100,7 @@ class Map(forms.widgets.MultiWidget):
 
         attrs = attrs or {}
         context = {
-            'id': attrs.get('id', "id_%s" % id(self)),
+            'id': map_id,
             'layer_js': layer_js,
             'layer_html': layer_html,
             'map_opts': simplejson.dumps(utils.translate_options(self.options)),
@@ -113,10 +117,16 @@ class Map(forms.widgets.MultiWidget):
         if len(self.vector_layers) == 1:
             val = data.get(name, None)
             if val is not None:
-                return [val]
+                print(name, val)
+                return val
             return None
         else:
+            # returns a list
             return super(Map, self).value_from_datadict(data, files, name)
+
+    def decompress(self, value):
+        # noop, matching MapField compress
+        return value
 
     def id_for_label(self, id_):
         if id_ and len(self.vector_layers) > 1:
@@ -235,20 +245,31 @@ class EditableMap(BaseSingleLayerMap):
     """
     layer_opt_keys = ['name', 'editable', 'geometry', 'hide_textarea',
             'hideTextarea', 'is_collection', 'isCollection']
-    def __init__(self, options=None):
+    def __init__(self, options=None, **kwargs):
         options, layer_opts = self.split_options(options)
-        super(EditableMap, self).__init__([
-            EditableLayer(layer_opts), 
-        ], options)
+        super(EditableMap, self).__init__([EditableLayer(layer_opts)], 
+                options, **kwargs)
         
 class InfoMap(BaseSingleLayerMap):
     """
     Convenience Map widget with a single info layer.
     """
-    layer_opt_keys = ['name']
-    def __init__(self, info, options=None):
+    layer_opt_keys = ['name', 'cluster']
+    def __init__(self, info, options=None, **kwargs):
         options, layer_opts = self.split_options(options)
-        super(InfoMap, self).__init__([
-            InfoLayer(info, options),
-        ], options)
+        super(InfoMap, self).__init__([InfoLayer(info, layer_opts)], 
+                options, **kwargs)
+
+class MapDisplay(EditableMap):
+    def __init__(self, fields=None, options=None, **kwargs):
+        options = options or {}
+        options['editable'] = False
+        super(MapDisplay, self).__init__(options, **kwargs)
+        if fields:
+            self.wkt = utils.add_srid(utils.collection_wkt(fields))
+        else:
+            self.wkt = ""
+
+    def __unicode__(self):
+        return self.render(None, [self.wkt])
 

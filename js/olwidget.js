@@ -304,7 +304,7 @@ olwidget.Map = OpenLayers.Class(OpenLayers.Map, {
         this.addControl(new olwidget.EditableLayerSwitcher());
     },
     initCenter: function() {
-        if (this.opts.zoomToDataExtent && this.vectorLayers.length > 0) {
+        if (this.opts.zoomToDataExtent) {
             var extent = new OpenLayers.Bounds();
             for (var i = 0; i < this.vectorLayers.length; i++) {
                 var vl = this.vectorLayers[i];
@@ -318,10 +318,17 @@ olwidget.Map = OpenLayers.Class(OpenLayers.Map, {
                     extent.extend(vl.getDataExtent());
                 }
             }
-            this.zoomToExtent(extent);
-        } else {
-            this.setCenter(this.opts.default_center, this.opts.defaultZoom);
+            if (!extent.equals(new OpenLayers.Bounds())) {
+                this.zoomToExtent(extent);
+                this.zoomTo(Math.min(this.getZoom(), this.opts.defaultZoom));
+                return;
+            }
         }
+        // zoomToDataExtent == false, or there is no data on any layer
+        this.setCenter(new OpenLayers.LonLat(this.opts.defaultLon, this.opts.defaultLat), 
+                       this.opts.defaultZoom);
+        
+
     },
     featureHighlighted: function(evt) {
         this.createPopup(evt);
@@ -441,9 +448,8 @@ olwidget.BaseVectorLayer = OpenLayers.Class(OpenLayers.Layer.Vector, {
         this.opts = olwidget.deepJoinOptions({
            name: "data"
         }, options);
-        layerOpts = {};
         OpenLayers.Layer.Vector.prototype.initialize.apply(this, 
-               [this.opts.name, layerOpts]);
+               [this.opts.name]);
         if (this.opts.paging === true) {
             if (this.strategies === null) {
                 this.strategies = [];
@@ -539,6 +545,14 @@ olwidget.InfoLayer = OpenLayers.Class(olwidget.BaseVectorLayer, {
         olwidget.BaseVectorLayer.prototype.initialize.apply(this, [options]);
         this.info = info;
     },
+    setMap: function(map) {
+        olwidget.BaseVectorLayer.prototype.setMap.apply(this, arguments);
+        if (map.opts) {
+            if (this.opts.cluster == null) {
+                this.opts.cluster = map.opts.cluster;
+            }
+        }
+    },
     afterAdd: function() {
         olwidget.BaseVectorLayer.prototype.afterAdd.apply(this);
         var features = [];
@@ -571,7 +585,6 @@ olwidget.InfoLayer = OpenLayers.Class(olwidget.BaseVectorLayer, {
 });
 
 olwidget.EditableLayer = OpenLayers.Class(olwidget.BaseVectorLayer, {
-    editable: true,
     undoStack: null,
     undoStackPos: null,
     undoStackLength: 100,
@@ -762,7 +775,6 @@ olwidget.EditableLayer = OpenLayers.Class(olwidget.BaseVectorLayer, {
             this.removeFeatures(this.features);
         }
         if (wkt) {
-            console.log(wkt);
             var geom = olwidget.ewktToFeature(wkt);
             // filter empty geometry collctions.
             if (geom && (geom.constructor != Array || geom[0] != undefined)) {
@@ -829,7 +841,6 @@ olwidget.EditableLayer = OpenLayers.Class(olwidget.BaseVectorLayer, {
             }
             this.featureToTextarea(feat);
         } else {
-            console.log(event.feature);
             if (event.feature) {
                 this.featureToTextarea(event.feature);
             } else {
@@ -1050,7 +1061,7 @@ olwidget.EditableLayerSwitcher = OpenLayers.Class(OpenLayers.Control.LayerSwitch
 
         for (var i = 0; i < this.map.layers.length; i++) {
             var layer = this.map.layers[i];
-            if (layer.editable) {
+            if (layer.opts && layer.opts.editable) {
                 this.buildInput(layer.name, 
                    this.currentlyEditing && 
                        this.currentlyEditing.name == layer.name, 
@@ -1433,8 +1444,33 @@ olwidget.DeleteVertex = OpenLayers.Class(OpenLayers.Control.ModifyFeature, {
             }
         };
         this.editingFeature = null;
+        var control = this;
+        this.handlers.feature = new OpenLayers.Handler.Feature(
+            this, this.layer, {
+                over: this.overVertex,
+                out: this.outVertex
+            }
+        );
+    },
+    overVertex: function(feature) {
+        if (feature.geometry.CLASS_NAME === "OpenLayers.Geometry.Point") {
+            OpenLayers.Element.addClass(this.map.viewPortDiv, this.displayClass + "Over");
+        }
+    },
+    outVertex: function(feature) {
+        OpenLayers.Element.removeClass(this.map.viewPortDiv, this.displayClass + "Over");
+    },
+    activate: function() {
+        this.handlers.feature.map = this.map;
+        this.handlers.feature.activate();
+        return OpenLayers.Control.ModifyFeature.prototype.activate.apply(this, arguments);
+
+    },
+    deactivate: function() {
+        return OpenLayers.Control.ModifyFeature.prototype.deactivate.apply(this, arguments);
     },
     selectFeature: function(feature) {
+        this.outVertex();
         if (this.editingFeature && feature.geometry.parent) {
             if (feature.geometry.parent) {
                 var n = feature.geometry.parent.components.length;
@@ -1510,7 +1546,6 @@ olwidget.DeleteVertex = OpenLayers.Class(OpenLayers.Control.ModifyFeature, {
 
     CLASS_NAME: "olwidget.DeleteVertex"
 });
-
 
 window.olwidget = olwidget;
 })();

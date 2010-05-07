@@ -61,17 +61,17 @@ def get_wkt(value, srid=DEFAULT_PROJ):
             wkt = ogr.wkt 
     return wkt
 
-#def collection_wkt(fields):
-#    """ Returns WKT for the given list of geometry fields. """
-#
-#    if not fields:
-#        return ""
-#
-#    if len(fields) == 1:
-#        return get_wkt(fields[0])
-#
-#    return "GEOMETRYCOLLECTION(%s)" % \
-#            ",".join(get_wkt(field) for field in fields)
+def collection_wkt(fields):
+    """ Returns WKT for the given list of geometry fields. """
+
+    if not fields:
+        return ""
+
+    if len(fields) == 1:
+        return get_wkt(fields[0])
+
+    return "GEOMETRYCOLLECTION(%s)" % \
+            ",".join(get_wkt(field) for field in fields)
 
 def add_srid(wkt, srid=DEFAULT_PROJ):
     """

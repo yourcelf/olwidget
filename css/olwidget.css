@@ -32,6 +32,9 @@
 .olControlEditingToolbar .olwidgetDeleteVertexItemInactive {
     background: url("../img/extra_edit_icons.png") no-repeat scroll -192px 0px;
 }
+.olwidgetDeleteVertexOver {
+    cursor: pointer;
+}
 
 .olwidgetEditableLayerSwitcher {
     right: 0;

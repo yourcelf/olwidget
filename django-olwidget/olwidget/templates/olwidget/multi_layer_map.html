@@ -1,7 +1,7 @@
+<div id="{{ id }}_map"></div>
 {{ layer_html|join:"" }}
-<div id="{{ id }}"></div>
 <script type="text/javascript">
-    new olwidget.Map("{{ id }}", [
+    new olwidget.Map("{{ id }}_map", [
             {{ layer_js|join:"," }}
         ], 
         {{ map_opts|safe }}

@@ -42,7 +42,8 @@ from django.core.exceptions import PermissionDenied
 from django.utils.encoding import force_unicode
 from django.utils.translation import ungettext
 
-#from olwidget.widgets import EditableMap, InfoMap, DEFAULT_PROJ
+from olwidget.widgets import EditableMap, InfoMap
+from olwidget.utils import DEFAULT_PROJ
 
 class GeoModelAdmin(ModelAdmin):
     options = {}
@@ -88,14 +89,13 @@ class GeoModelAdmin(ModelAdmin):
             'isCollection': is_collection,
             'name': db_field.name,
         })
-        class Widget(EditableMap):
+        class _Widget(EditableMap):
             def __init__(self, *args, **kwargs):
                 kwargs['options'] = options
                 # OL rendering bug with floats requires this.
                 kwargs['template'] = "olwidget/admin_olwidget.html"
-                super(Widget, self).__init__(*args, **kwargs)
-
-        return Widget
+                super(_Widget, self).__init__(*args, **kwargs)
+        return _Widget
 
     def get_changelist_map(self, cl):
         """ 
@@ -234,10 +234,10 @@ class GeoModelAdmin(ModelAdmin):
         }
 
         # MODIFICATION
-        map = self.get_changelist_map(cl)
-        if map:
-            context['media'] += map.media
-            context['map'] = map
+        map_ = self.get_changelist_map(cl)
+        if map_:
+            context['media'] += map_.media
+            context['map'] = map_
         # END MODIFICATION
 
         context.update(extra_context or {})

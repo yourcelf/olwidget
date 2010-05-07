@@ -29,7 +29,7 @@ class MapField(forms.fields.MultiValueField):
         super(MapField, self).__init__(fields, **kwargs)
 
     def compress(self, data_list):
-        # no compression; return list
+        # noop, matching Map widget decompress
         return data_list
 
     def clean(self, value):
