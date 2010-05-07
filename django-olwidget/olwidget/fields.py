@@ -5,7 +5,8 @@ from olwidget.widgets import Map, EditableLayer, InfoLayer
 def _build_widget_class(superclass, attributes):
     """ 
     Builds a widget class that can be instantiated with an empty constructor
-    (as fields are wont to do) but which encloses options. 
+    (as fields are wont to do) but which encloses options.  Allows
+    use of options in declaratively constructed fields. 
     """
     class _Widget(superclass):
         _attributes = attributes
@@ -34,7 +35,8 @@ class MapField(forms.fields.MultiValueField):
     def clean(self, value):
         """
         Set an arbitrary value for any InfoLayer objects to prevent their
-        presence from invalidating the form.
+        presence from invalidating the form (they have no data, but it may
+        be desirable to include them in a form's map).
         """
         fixed = []
         for i,val in enumerate(value):
@@ -47,8 +49,12 @@ class MapField(forms.fields.MultiValueField):
 
 
 class EditableLayerField(forms.fields.CharField):
+    """
+    Field whose vector data is editable by the user.
+    """
     def __init__(self, options=None, **kwargs):
-        self.widget = _build_widget_class(EditableLayer, {'options': options})
+        self.widget = kwargs.get('widget', 
+                _build_widget_class(EditableLayer, {'options': options}))
         super(EditableLayerField, self).__init__(**kwargs)
 
 class InfoLayerField(forms.fields.CharField):
@@ -57,7 +63,7 @@ class InfoLayerField(forms.fields.CharField):
     data in another field.
     """
     def __init__(self, info, options=None, **kwargs):
-        self.widget = _build_widget_class(InfoLayer, 
-                {'info': info, 'options': options})
+        self.widget = kwargs.get('widget', 
+            _build_widget_class(InfoLayer, {'info': info, 'options': options}))
         kwargs['required'] = False
         super(InfoLayerField, self).__init__(**kwargs)
