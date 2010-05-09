@@ -1,7 +1,4 @@
 """
-Drop-in replacement for admin, similar to that used in the official
-django.contrib.gis.admin.  
-
 Example to use olwidget for mapping in the django admin site::
 
     from olwidget import admin
@@ -26,76 +23,52 @@ map, just subclass GeoModelAdmin, and define "options", for example::
 
     admin.site.register(SomeGeoModel, CustomGeoAdmin)
 
-A complete list of options is in the olwidget.js documentation.
+A complete list of options is in the olwidget documentation.
 """
 import copy
 
-# Get the parts necessary for the methods we override
+# Get the parts necessary for the methods we override #{{{
 from django.contrib.admin import ModelAdmin
 from django.contrib.gis.db import models
 from django.contrib.gis.geos import GeometryCollection
 from django.shortcuts import render_to_response
 from django import template
-from django.contrib.admin.options import IncorrectLookupParameters
+from django.contrib.admin.options import IncorrectLookupParameters, csrf_protect_m
 from django.http import HttpResponse, HttpResponseRedirect
 from django.core.exceptions import PermissionDenied
-from django.utils.encoding import force_unicode
+from django.utils.translation import ugettext as _
 from django.utils.translation import ungettext
+#}}}
+from django.utils.encoding import force_unicode
 
+from olwidget.forms import apply_maps_to_modelform_fields, fix_map_key_data
 from olwidget.widgets import EditableMap, InfoMap
 from olwidget.utils import DEFAULT_PROJ
 
+__all__ = ('GeoModelAdmin',)
+
 class GeoModelAdmin(ModelAdmin):
     options = {}
+    map_template = "olwidget/admin_olwidget.html"
     list_map = None
     list_map_options = {}
+    maps = None
     change_list_template = "admin/olwidget_change_list.html"
 
-    def formfield_for_dbfield(self, db_field, **kwargs):
-        """
-        Overloaded from ModelAdmin to use our map widget.
-        """
-        if isinstance(db_field, models.GeometryField):
-            request = kwargs.pop('request', None)
-            kwargs['widget'] = self.get_map_widget(db_field)
-            return db_field.formfield(**kwargs)
-        else:
-            return super(GeoModelAdmin, self).formfield_for_dbfield(
-                    db_field, **kwargs)
-
-    def get_map_widget(self, db_field):
-        """
-        Returns an EditableMap subclass with options appropriate for the given
-        field.
-        """
-        is_collection = db_field.geom_type in ('MULTIPOINT', 'MULTILINESTRING', 
-                'MULTIPOLYGON', 'GEOMETRYCOLLECTION')
-        if db_field.geom_type == 'GEOMETRYCOLLECTION':
-            geometry = ['polygon', 'point', 'linestring']
-        else:
-            if db_field.geom_type in ('MULTIPOINT', 'POINT'):
-                geometry = 'point'
-            elif db_field.geom_type in ('POLYGON', 'MULTIPOLYGON'):
-                geometry = 'polygon'
-            elif db_field.geom_type in ('LINESTRING', 'MULTILINESTRING'):
-                geometry = 'linestring'
-            else:
-                # fallback: allow all types.
-                geometry = ['polygon', 'point', 'linestring']
-
-        options = copy.deepcopy(self.options) 
-        options.update({
-            'geometry': geometry, 
-            'isCollection': is_collection,
-            'name': db_field.name,
-        })
-        class _Widget(EditableMap):
+    def get_form(self, *args, **kwargs):
+        # Get the vanilla modelform class
+        ModelForm = super(GeoModelAdmin, self).get_form(*args, **kwargs)
+        # Add our constructor to change initial data
+        class _MapForm(ModelForm):
             def __init__(self, *args, **kwargs):
-                kwargs['options'] = options
-                # OL rendering bug with floats requires this.
-                kwargs['template'] = "olwidget/admin_olwidget.html"
-                super(_Widget, self).__init__(*args, **kwargs)
-        return _Widget
+                super(_MapForm, self).__init__(*args, **kwargs)
+                fix_map_key_data(self.initial, self.initial_data_keymap)
+        # Rearrange base_fields, adding maps, and set initial data keymap for
+        # rearranged fields
+        _MapForm.initial_data_keymap = apply_maps_to_modelform_fields(
+                _MapForm.base_fields, self.maps, self.options, 
+                self.map_template)
+        return _MapForm
 
     def get_changelist_map(self, cl):
         """ 
@@ -125,11 +98,14 @@ class GeoModelAdmin(ModelAdmin):
             return InfoMap(info, options=self.list_map_options)
         return None
 
+    @csrf_protect_m
     def changelist_view(self, request, extra_context=None):
-        # Copied from parent and modified where marked to add map based on
-        # change list and media.
+        #
+        # This implementation is all copied from the parent, and only modified
+        # for a few lines where marked to add a map to the change list.
+        #
         "The 'change list' admin view for this model."
-        from django.contrib.admin.views.main import ChangeList, ERROR_FLAG
+        from django.contrib.admin.views.main import ERROR_FLAG
         opts = self.model._meta
         app_label = opts.app_label
         if not self.has_change_permission(request, None):
@@ -146,6 +122,7 @@ class GeoModelAdmin(ModelAdmin):
             except ValueError:
                 pass
 
+        ChangeList = self.get_changelist(request)
         try:
             cl = ChangeList(request, self.model, list_display, self.list_display_links, self.list_filter,
                 self.date_hierarchy, self.search_fields, self.list_select_related, self.list_per_page, self.list_editable, self)
@@ -160,9 +137,9 @@ class GeoModelAdmin(ModelAdmin):
             return HttpResponseRedirect(request.path + '?' + ERROR_FLAG + '=1')
 
         # If the request was POSTed, this might be a bulk action or a bulk edit.
-        # Try to look up an action first, but if this isn't an action the POST
-        # will fall through to the bulk edit check, below.
-        if actions and request.method == 'POST':
+        # Try to look up an action or confirmation first, but if this isn't an
+        # action the POST will fall through to the bulk edit check, below.
+        if actions and request.method == 'POST' and (helpers.ACTION_CHECKBOX_NAME in request.POST or 'index' in request.POST):
             response = self.response_action(request, queryset=cl.get_query_set())
             if response:
                 return response
@@ -171,7 +148,6 @@ class GeoModelAdmin(ModelAdmin):
         # for the changelist given all the fields to be edited. Then we'll
         # use the formset to validate/process POSTed data.
         formset = cl.formset = None
-
 
         # Handle POSTed bulk-edit data.
         if request.method == "POST" and self.list_editable:
@@ -220,7 +196,13 @@ class GeoModelAdmin(ModelAdmin):
         else:
             action_form = None
 
+        selection_note_all = ungettext('%(total_count)s selected',
+            'All %(total_count)s selected', cl.result_count)
+
         context = {
+            'module_name': force_unicode(opts.verbose_name_plural),
+            'selection_note': _('0 of %(cnt)s selected') % {'cnt': len(cl.result_list)},
+            'selection_note_all': selection_note_all % {'total_count': cl.result_count},
             'title': cl.title,
             'is_popup': cl.is_popup,
             'cl': cl,
@@ -231,8 +213,10 @@ class GeoModelAdmin(ModelAdmin):
             'action_form': action_form,
             'actions_on_top': self.actions_on_top,
             'actions_on_bottom': self.actions_on_bottom,
+            'actions_selection_counter': self.actions_selection_counter,
         }
-
+        context.update(extra_context or {})
+        
         # MODIFICATION
         map_ = self.get_changelist_map(cl)
         if map_:
@@ -240,10 +224,11 @@ class GeoModelAdmin(ModelAdmin):
             context['map'] = map_
         # END MODIFICATION
 
-        context.update(extra_context or {})
+        context_instance = template.RequestContext(request, current_app=self.admin_site.name)
         return render_to_response(self.change_list_template or [
             'admin/%s/%s/change_list.html' % (app_label, opts.object_name.lower()),
             'admin/%s/change_list.html' % app_label,
             'admin/change_list.html'
-        ], context, context_instance=template.RequestContext(request))
+        ], context, context_instance=context_instance)
+
 

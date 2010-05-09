@@ -11,26 +11,29 @@ from olwidget import utils
 # Default settings for paths and API URLs.  These can all be overridden by
 # specifying a value in settings.py
 
+setattr(settings, "OLWIDGET_MEDIA_URL", 
+    getattr(settings, 
+        "OLWIDGET_MEDIA_URL", 
+        utils.url_join(settings.MEDIA_URL, "olwidget")))
+
 api_defaults = {
     'GOOGLE_API_KEY': "",
     'YAHOO_APP_ID': "",
     'CLOUDMADE_API_KEY': "",
-    'OLWIDGET_MEDIA_URL': utils.url_join(settings.MEDIA_URL, "olwidget"),
     'GOOGLE_API': "http://maps.google.com/maps?file=api&v=2",
     'YAHOO_API': "http://api.maps.yahoo.com/ajaxymap?v=3.0",
     'OSM_API': "http://openstreetmap.org/openlayers/OpenStreetMap.js",
     'OL_API': "http://openlayers.org/api/2.8/OpenLayers.js",
     'MS_VE_API' : "http://dev.virtualearth.net/mapcontrol/mapcontrol.ashx?v=6.1",
+    'CLOUDMADE_API': utils.url_join(settings.OLWIDGET_MEDIA_URL, "js/cloudmade.js"),
+    'OLWIDGET_JS': utils.url_join(settings.OLWIDGET_MEDIA_URL, "js/olwidget.js"),
+    'OLWIDGET_CSS': utils.url_join(settings.OLWIDGET_MEDIA_URL, "css/olwidget.css"),
 }
-api_defaults['CLOUDMADE_API'] = utils.url_join(api_defaults['OLWIDGET_MEDIA_URL'], 
-        "js/cloudmade.js")
 
 for key, default in api_defaults.iteritems():
     if not hasattr(settings, key):
         setattr(settings, key, default)
 
-OLWIDGET_JS = utils.url_join(settings.OLWIDGET_MEDIA_URL, "js/olwidget.js")
-OLWIDGET_CSS = utils.url_join(settings.OLWIDGET_MEDIA_URL, "css/olwidget.css")
 
 #
 # Map widget
@@ -39,8 +42,8 @@ OLWIDGET_CSS = utils.url_join(settings.OLWIDGET_MEDIA_URL, "css/olwidget.css")
 class Map(forms.Widget):
     """
     ``Map`` is a container widget for layers.  The constructor takes a list of
-    vector layer instances, a dictionary of options for the map, and a template
-    to customize rendering.
+    vector layer instances, a dictionary of options for the map, a template
+    to customize rendering, and a list of names for the layer fields.
 
     The implementation is similar in some ways to a MultiWidget, with
     exceptions:
@@ -48,12 +51,16 @@ class Map(forms.Widget):
        the data is stored at "name" and not "name_0").
      * Rendering is rather different, as we need to split up the javascript and
        HTML components of layers and render them in the appropriate places.
+     * Custom layer names can be used, making it possible to use this widget
+       to edit multiple ModelForm fields, and still set the right POST data.
     """
 
     default_template = 'olwidget/multi_layer_map.html'
 
-    def __init__(self, vector_layers=None, options=None, template=None):
+    def __init__(self, vector_layers=None, options=None, template=None,
+            layer_names=None):
         self.vector_layers = vector_layers or []
+        self.layer_names = layer_names
         self.options = options or {}
         # Though this layer is the olwidget.js default, it must be explicitly
         # set so form.media knows to include osm.
@@ -73,18 +80,17 @@ class Map(forms.Widget):
         attrs = attrs or {}
         # Get an arbitrary unique ID if we weren't handed one (e.g. widget used
         # outside of a form).
+        n = len(self.vector_layers)
         map_id = attrs.get('id', "id_%s" % id(self))
 
         layer_js = []
         layer_html = []
+        layer_names = self.get_layer_names(name)
         for i, layer in enumerate(self.vector_layers):
             # Use the container (Map) widget name for the vector layer if there
             # is only one vector layer.  Otherwise, use a derived name by layer
             # index.
-            if len(self.vector_layers) == 1:
-                lyr_name = name
-            else:
-                lyr_name = "%s_%i" % (name, i)
+            lyr_name = layer_names[i]
             id_ = "%s_%s" % (map_id, lyr_name)
             # Use "prepare" rather than "render" to get both js and html
             (js, html) = layer.prepare(lyr_name, values[i], attrs={'id': id_ })
@@ -100,6 +106,18 @@ class Map(forms.Widget):
         }
         return render_to_string(self.template, context)
 
+    def get_layer_names(self, name):
+        n = len(self.vector_layers)
+        if self.layer_names and len(self.layer_names) == n:
+            return self.layer_names
+        if n == 1:
+            # If there's only one layer, use it as the name rather than
+            # 'name_0'. 
+            self.layer_names = [name]
+        else:
+            self.layer_names = ["%s_%i" % (name, i) for i in range(n)]
+        return self.layer_names
+
     def id_for_label(self, id_):
         if id_:
             # NB: duplicates template naming for map div.
@@ -107,13 +125,7 @@ class Map(forms.Widget):
         return id_
 
     def value_from_datadict(self, data, files, name):
-        """
-        Single layer maps use the map name.  Otherwise, use mapname_%i.
-        """
-        if len(self.vector_layers) == 1:
-            return data.get(name, None)
-        else:
-            return [vl.value_from_datadict(data, files, name + "_%s" % i) for i,vl in enumerate(self.vector_layers)]
+        return [vl.value_from_datadict(data, files, lyr_name) for vl, lyr_name in zip(self.vector_layers, self.get_layer_names(name))]
 
     def _has_changed(self, initial, data):
         if (initial is None) or (not isinstance(initial, list)):
@@ -137,8 +149,8 @@ class Map(forms.Widget):
                 js.add(settings.MS_VE_API)
             elif layer.startswith("cloudmade."):
                 js.add(settings.CLOUDMADE_API + "#" + settings.CLOUDMADE_API_KEY)
-        js = [settings.OL_API, OLWIDGET_JS] + list(js)
-        return forms.Media(css={'all': (OLWIDGET_CSS,)}, js=js)
+        js = [settings.OL_API, settings.OLWIDGET_JS] + list(js)
+        return forms.Media(css={'all': (settings.OLWIDGET_CSS,)}, js=js)
     media = property(_media)
 
     def __unicode__(self):
@@ -154,9 +166,6 @@ class Map(forms.Widget):
 #
 
 class BaseVectorLayer(forms.Widget):
-    """
-    Base type for common functionality among vector layers.
-    """
     def prepare(self, name, value, attrs=None):
         """
         Given the name, value and attrs, prepare both html and javascript
@@ -224,22 +233,20 @@ class EditableLayer(BaseVectorLayer):
     def prepare(self, name, value, attrs=None):
         if not attrs:
             attrs = {}
-
         if name and not self.options.has_key('name'):
             self.options['name'] = forms.forms.pretty_name(name)
 
-        self.wkt = utils.get_ewkt(value)
-
+        wkt = utils.get_ewkt(value)
         context = {
             'id': attrs['id'],
             'options': simplejson.dumps(utils.translate_options(self.options)),
         }
         javascript = mark_safe(render_to_string(self.template, context))
-        html = mark_safe(forms.Textarea().render(name, value, attrs))
+        html = mark_safe(forms.Textarea().render(name, wkt, attrs))
         return (javascript, html)
 
 #
-# Convenience single layer widgets
+# Convenience single layer widgets for use in non MapField types
 #
 
 class BaseSingleLayerMap(Map):
@@ -254,6 +261,11 @@ class BaseSingleLayerMap(Map):
                 if options.has_key(opt):
                     layer_opts[opt] = options.pop(opt)
         return options, layer_opts
+
+    def value_from_datadict(self, data, files, name):
+        val = super(BaseSingleLayerMap, self).value_from_datadict(
+                data, files, name)
+        return val[0]
 
 class EditableMap(BaseSingleLayerMap):
     """

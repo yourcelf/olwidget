@@ -66,10 +66,10 @@ def _collection_wkt(fields, srid):
         return ""
 
     if len(fields) == 1:
-        return get_wkt(fields[0], srid)
+        return _get_wkt(fields[0], srid)
 
     return "GEOMETRYCOLLECTION(%s)" % \
-            ",".join(get_wkt(field, srid) for field in fields)
+            ",".join(_get_wkt(field, srid) for field in fields)
 
 def _add_srid(wkt, srid):
     """
@@ -80,3 +80,20 @@ def _add_srid(wkt, srid):
         return "SRID=%s;%s" % (srid, wkt)
     return ""
 
+def options_for_field(db_field):
+    is_collection = db_field.geom_type in ('MULTIPOINT', 'MULTILINESTRING', 
+            'MULTIPOLYGON', 'GEOMETRYCOLLECTION')
+    if db_field.geom_type == 'GEOMETRYCOLLECTION':
+        geometry = ['polygon', 'point', 'linestring']
+    else:
+        if db_field.geom_type in ('MULTIPOINT', 'POINT'):
+            geometry = 'point'
+        elif db_field.geom_type in ('POLYGON', 'MULTIPOLYGON'):
+            geometry = 'polygon'
+        elif db_field.geom_type in ('LINESTRING', 'MULTILINESTRING'):
+            geometry = 'linestring'
+        else:
+            # fallback: allow all types.
+            geometry = ['polygon', 'point', 'linestring']
+
+    return { 'geometry': geometry, 'isCollection': is_collection, }
