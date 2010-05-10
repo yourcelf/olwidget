@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block head %}
+{{ map.media }}
+{% endblock %}
+{% block body %}
+
+<h1>{{ map }}</h1>
+
+<br />
+<a href='{{ object.get_edit_url }}'>Edit this model</a>
+
+{% endblock %}

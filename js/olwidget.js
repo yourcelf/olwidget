@@ -782,15 +782,15 @@ olwidget.EditableLayer = OpenLayers.Class(olwidget.BaseVectorLayer, {
                     this.map.displayProjection, 
                     this.map.projection);
                 if (geom.constructor == Array || 
-                        geom.geometry.CLASS_NAME.class_name === 
+                        geom.geometry.CLASS_NAME === 
                                 "OpenLayers.Geometry.MultiLineString" ||
-                        geom.geometry.CLASS_NAME.class_name === 
+                        geom.geometry.CLASS_NAME === 
                                 "OpenLayers.Geometry.MultiPoint" ||
-                        geom.geometry.CLASS_NAME.class_name === 
+                        geom.geometry.CLASS_NAME === 
                                 "OpenLayers.Geometry.MultiPolygon") {
                     // extract geometries from MULTI<geom> types into
                     // individual components (keeps the vector layer flat)
-                    if (typeof(geom.geometry) !== "undefined") {
+                    if (geom.geometry != undefined) {
                         var geoms = [];
                         var n = geom.geometry.components.length;
                         for (var i = 0; i < n; i++) {
@@ -862,6 +862,7 @@ olwidget.EditableLayer = OpenLayers.Class(olwidget.BaseVectorLayer, {
             // arrays to the WKT formatter results in a "GEOMETRYCOLLECTION"
             // type, but if we have only one geometry, we should use a
             // "MULTI<geometry>" type.
+            console.log(feature);
             if (this.opts.geometry.constructor != Array) {
                 var geoms = [];
                 for (var i = 0; i < feature.length; i++) {
