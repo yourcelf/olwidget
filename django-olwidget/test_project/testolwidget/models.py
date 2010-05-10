@@ -1,59 +1,70 @@
 from django.contrib.gis.db import models
 from django.core.urlresolvers import reverse
 
-class GeoModel(models.Model):
-    point = models.PointField()
-    poly = models.PolygonField()
-    linestring = models.LineStringField()
+import testolwidget.forms
 
-    objects = models.GeoManager()
-
+class Default(models.Model):
     def get_absolute_url(self):
-        return reverse("testolwidget-show-geomodel", args=[self.id])
+        return reverse("testolwidget:show_obj",
+                args=[self._meta.object_name.lower(), self.id])
 
     def get_edit_url(self):
-        return reverse("testolwidget-edit-geomodel", args=[self.id])
+        return reverse("testolwidget:edit_obj",
+                args=[self._meta.object_name.lower(), self.id])
 
-class MultiGeoModel(models.Model):
-    point = models.MultiPointField()
-    poly = models.MultiPolygonField()
-    linestring = models.MultiLineStringField()
-    collection = models.GeometryCollectionField()
+    def get_model_form(self):
+        return getattr(testolwidget.forms, 
+                "%sModelForm" % self._meta.object_name)
 
-    objects = models.GeoManager()
+    class Meta:
+        abstract = True
 
-    def get_absolute_url(self):
-        return reverse("testolwidget-show-multigeomodel", args=[self.id])
-
-    def get_edit_url(self):
-        return reverse("testolwidget-edit-multigeomodel", args=[self.id])
-
-class InfoModel(models.Model):
-    geometry = models.GeometryCollectionField()
-    story = models.TextField(help_text="Tell a story about this geometry.")
-
-    objects = models.GeoManager()
-
-    def get_absolute_url(self):
-        return reverse("testolwidget-show-infomodel", args=[self.id])
-
-    def get_edit_url(self):
-        return reverse("testolwidget-edit-infomodel", args=[self.id])
-
-class PointModel(models.Model):
-    name = models.CharField(max_length=15)
-    point = models.PointField()
+class Country(Default):
+    name = models.CharField(max_length=255)
+    boundary = models.MultiPolygonField()
+    about = models.TextField()
 
     objects = models.GeoManager()
 
     def __unicode__(self):
         return self.name
 
-class MultiLinestringModel(models.Model):
-    linestring = models.MultiLineStringField()
+    class Meta:
+        verbose_name_plural = u"Countries"
 
-    def get_absolute_url(self):
-        return reverse("testolwidget-show-multilinestringmodel", args=[self.id])
+class EnergyVortex(Default):
+    name = models.CharField(max_length=255)
+    nexus = models.PointField()
+    lines_of_force = models.MultiLineStringField()
 
-    def get_edit_url(self):
-        return reverse("testolwidget-edit-multilinestringmodel", args=[self.id])
+    objects = models.GeoManager()
+
+    def __unicode__(self):
+        return self.name
+
+    class Meta:
+        verbose_name_plural = u"Energy vortices"
+
+class AlienActivity(Default):
+    incident_name = models.CharField(max_length=255)
+    landings = models.MultiPointField()
+    strange_lights = models.GeometryCollectionField()
+    chemtrails = models.MultiLineStringField()
+
+    objects = models.GeoManager()
+
+    class Meta:
+        verbose_name_plural = u"Alien activities"
+
+    def __unicode__(self):
+        return self.incident_name
+
+class Tree(Default):
+    location = models.PointField()
+    root_spread = models.PolygonField()
+    species = models.CharField(max_length=255)
+
+    objects = models.GeoManager()
+
+    def __unicode__(self):
+        return self.species

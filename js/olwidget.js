@@ -325,10 +325,10 @@ olwidget.Map = OpenLayers.Class(OpenLayers.Map, {
             }
         }
         // zoomToDataExtent == false, or there is no data on any layer
-        this.setCenter(new OpenLayers.LonLat(this.opts.defaultLon, this.opts.defaultLat), 
-                       this.opts.defaultZoom);
-        
-
+        var center = new OpenLayers.LonLat(
+            this.opts.defaultLon, this.opts.defaultLat);
+        center = center.transform(this.displayProjection, this.projection);
+        this.setCenter(center, this.opts.defaultZoom);
     },
     featureHighlighted: function(evt) {
         this.createPopup(evt);
@@ -1091,7 +1091,7 @@ olwidget.EditableLayerSwitcher = OpenLayers.Class(OpenLayers.Control.LayerSwitch
         OpenLayers.Rico.Corner.round(this.div, {
             corners: "bl br",
             bgColor: "transparent",
-            color: this.activeColor,
+            color: this.roundedCornerColor,
             blend: false
         });
         OpenLayers.Rico.Corner.changeOpacity(this.container, 0.75);

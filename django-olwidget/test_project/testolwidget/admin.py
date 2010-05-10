@@ -1,37 +1,77 @@
 from django.contrib import admin
 from olwidget.admin import GeoModelAdmin
 
-from testolwidget.models import GeoModel, MultiGeoModel, InfoModel, PointModel
+from testolwidget.models import Country, EnergyVortex, AlienActivity, Tree
 
-admin.site.register(GeoModel, GeoModelAdmin)
+# Default map
+admin.site.register(Country, GeoModelAdmin)
 
-class MyGeoAdmin(GeoModelAdmin):
+# Custom multi-layer map with a few options.
+class EnergyVortexAdmin(GeoModelAdmin):
     options = {
-        'layers': ['google.streets', 'osm.osmarender', 'yahoo.map'],
+        'layers': ['google.satellite', 'osm.osmarender', 'yahoo.map'],
         'overlay_style': {
-            'fill_color': '#ffff00',
+            'fill_color': '#ff9c00',
+            'stroke_color': '#ff9c00',
             'fill_opacity': 0.7,
-            'stroke_width': 5,
+            'stroke_width': 4,
          },
-         'default_lon': -72,
-         'default_lat': 44,
+         'default_lon': -111.7578,
+         'default_lat': 34.87,
+         'default_zoom': 15,
          'hide_textarea': False,
     }
-    map_fields = ['point']
+    maps = (
+        (('nexus', 'lines_of_force'), None),
+    )
+admin.site.register(EnergyVortex, EnergyVortexAdmin)
 
-admin.site.register(MultiGeoModel, MyGeoAdmin)
-admin.site.register(InfoModel, GeoModelAdmin)
-
-class PointGeoAdmin(GeoModelAdmin):
+# Cluster changelist map
+class TreeAdmin(GeoModelAdmin):
     list_map_options = {
         'cluster': True,
         'cluster_display': 'list',
-        'map_div_style': {
-            'width': '300px',
-            'height': '200px',
-        },
+        'map_div_style': { 'width': '300px', 'height': '200px', },
+        'default_zoom': 15,
     }
-    list_map = ['point']
+    list_map = ['location']
+    maps = (
+        (('location', 'root_spread'), {
+            'default_lon': -71.08717,
+            'default_lat': 42.36088,
+            'default_zoom': 18,
+        }),
+    )
+admin.site.register(Tree, TreeAdmin)
 
-admin.site.register(PointModel, PointGeoAdmin)
+# Mixing default options and per-map options, also using changelist map
+class AlienActivityAdmin(GeoModelAdmin):
+    options = {
+        'default_lon': -104.5185,
+        'default_lat': 33.3944,
+        'default_zoom': 12,
+    }
+    maps = (
+        (('landings',), { 
+            'overlay_style': { 
+                'fill_color': '#00ff00',
+                'stroke_color': '#00ff00',
+            },
+        }),
+        (('strange_lights', 'chemtrails'), { 
+            'overlay_style': {
+                'fill_color': '#ffffff',
+                'stroke_color': '#ccffcc',
+                'stroke_width': 4,
+            }, 
+            'layers': ['google.satellite'],
+        }),
+    )
+    list_map_options = {
+        'cluster': True,
+        'cluster_display': 'list',
+        'map_div_style': { 'width': '300px', 'height': '200px' },
+    }
+    list_map = ['landings']
+admin.site.register(AlienActivity, AlienActivityAdmin)
 

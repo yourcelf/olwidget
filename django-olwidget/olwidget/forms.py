@@ -25,7 +25,13 @@ class BaseMapModelForm(forms.models.BaseModelForm):
     """
     def __init__(self, *args, **kwargs):
         super(BaseMapModelForm, self).__init__(*args, **kwargs)
-        fix_map_key_data(self.initial, self.initial_data_keymap)
+        fix_initial_data(self.initial, self.initial_data_keymap)
+
+    def clean(self):
+        super(BaseMapModelForm, self).clean()
+        fix_cleaned_data(self.cleaned_data,
+            self.initial_data_keymap)
+        return self.cleaned_data
 
 class MapModelFormOptions(forms.models.ModelFormOptions):
     def __init__(self, options=None):
@@ -80,7 +86,7 @@ class MapModelFormMetaclass(type):
 class MapModelForm(BaseMapModelForm):
     __metaclass__ = MapModelFormMetaclass
 
-def fix_map_key_data(initial, initial_data_keymap):
+def fix_initial_data(initial, initial_data_keymap):
     """ 
     Take a dict like this as `initial`:
     { 'key1': 'val1', 'key2': 'val2', 'key3': 'val3'}
@@ -97,6 +103,13 @@ def fix_map_key_data(initial, initial_data_keymap):
             initial[dest] = data
     return initial
 
+def fix_cleaned_data(cleaned_data, initial_data_keymap):
+    for group, keys in initial_data_keymap.iteritems():
+        if cleaned_data.has_key(group):
+            vals = cleaned_data.pop(group)
+            for key, val in zip(keys, vals):
+                cleaned_data[key] = val
+    return cleaned_data
 
 def apply_maps_to_modelform_fields(fields, maps, default_options=None, default_template=None):
     """
@@ -123,7 +136,7 @@ def apply_maps_to_modelform_fields(fields, maps, default_options=None, default_t
         try:
             options = map_definition[1]
         except IndexError:
-            oprions = {}
+            options = {}
         map_name = "map_%i" % i
         layer_fields = []
         names = []

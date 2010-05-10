@@ -102,6 +102,7 @@ class TestForm(TestCase):
         self.assertEqual(form.fields.keys(), 
             ['koan', 'map_0', 'love', 'map_1', 'death']
         )
+        form.save()
         #print(form)
 
     def test_modelform_invalid(self):

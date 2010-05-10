@@ -23,7 +23,7 @@ api_defaults = {
     'GOOGLE_API': "http://maps.google.com/maps?file=api&v=2",
     'YAHOO_API': "http://api.maps.yahoo.com/ajaxymap?v=3.0",
     'OSM_API': "http://openstreetmap.org/openlayers/OpenStreetMap.js",
-    'OL_API': "http://openlayers.org/api/2.8/OpenLayers.js",
+    'OL_API': "http://openlayers.org/api/2.9/OpenLayers.js",
     'MS_VE_API' : "http://dev.virtualearth.net/mapcontrol/mapcontrol.ashx?v=6.1",
     'CLOUDMADE_API': utils.url_join(settings.OLWIDGET_MEDIA_URL, "js/cloudmade.js"),
     'OLWIDGET_JS': utils.url_join(settings.OLWIDGET_MEDIA_URL, "js/olwidget.js"),
@@ -257,10 +257,12 @@ class BaseSingleLayerMap(Map):
     def split_options(self, options=None):
         layer_opts = {}
         if options:
+            print options, "*"
+            new_options = copy.deepcopy(options)
             for opt in self.layer_opt_keys:
-                if options.has_key(opt):
-                    layer_opts[opt] = options.pop(opt)
-        return options, layer_opts
+                if new_options.has_key(opt):
+                    layer_opts[opt] = new_options.pop(opt)
+        return new_options, layer_opts
 
     def value_from_datadict(self, data, files, name):
         val = super(BaseSingleLayerMap, self).value_from_datadict(

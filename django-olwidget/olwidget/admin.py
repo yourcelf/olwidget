@@ -41,17 +41,17 @@ from django.utils.translation import ungettext
 #}}}
 from django.utils.encoding import force_unicode
 
-from olwidget.forms import apply_maps_to_modelform_fields, fix_map_key_data
+from olwidget.forms import apply_maps_to_modelform_fields, fix_initial_data, fix_cleaned_data
 from olwidget.widgets import EditableMap, InfoMap
 from olwidget.utils import DEFAULT_PROJ
 
 __all__ = ('GeoModelAdmin',)
 
 class GeoModelAdmin(ModelAdmin):
-    options = {}
+    options = None
     map_template = "olwidget/admin_olwidget.html"
     list_map = None
-    list_map_options = {}
+    list_map_options = None
     maps = None
     change_list_template = "admin/olwidget_change_list.html"
 
@@ -62,7 +62,14 @@ class GeoModelAdmin(ModelAdmin):
         class _MapForm(ModelForm):
             def __init__(self, *args, **kwargs):
                 super(_MapForm, self).__init__(*args, **kwargs)
-                fix_map_key_data(self.initial, self.initial_data_keymap)
+                fix_initial_data(self.initial, self.initial_data_keymap)
+
+            def clean(self):
+                super(_MapForm, self).clean()
+                fix_cleaned_data(self.cleaned_data, 
+                    self.initial_data_keymap)
+                return self.cleaned_data
+
         # Rearrange base_fields, adding maps, and set initial data keymap for
         # rearranged fields
         _MapForm.initial_data_keymap = apply_maps_to_modelform_fields(
