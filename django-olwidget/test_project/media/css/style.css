@@ -1,0 +1,147 @@
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, font, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  outline: 0;
+  font-weight: inherit;
+  font-style: inherit;
+  font-size: 100%;
+  font-family: inherit;
+  vertical-align: baseline;
+}
+
+*:focus {
+  outline: 0;
+}
+
+body {
+  line-height: 1em;
+  color: black;
+  background: #fff;
+}
+
+ol, ul {
+  list-style: none;
+}
+
+/* tables still need 'cellspacing="0"' in the markup */
+table {
+  border-collapse: separate;
+  border-spacing: 0;
+  vertical-align: middle;
+}
+
+caption, th, td {
+  text-align: left;
+  font-weight: normal;
+  vertical-align: middle;
+}
+
+q, blockquote {
+  quotes: "" "";
+}
+q:before, q:after, blockquote:before, blockquote:after {
+  content: "";
+}
+
+img a {
+  border: none;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: Cambria, Georgia, Times, "Times New Roman", serif;
+}
+
+body {
+  font-family: Cambria, Georgia, Times, "Times New Roman", serif;
+  font-size: 10pt;
+  line-height: 1.5em;
+  margin-left: 2em;
+  background-color: #fffff1;
+  color: #25271e;
+}
+body a {
+  color: #6d0839;
+}
+body a:visited {
+  color: #c25d8e;
+}
+body a:hover {
+  color: #a69a9f;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  margin-left: -0.5em;
+  font-size: 1.8em;
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+  font-weight: bold;
+}
+
+h2 {
+  font-size: 1.4em;
+}
+
+h3 {
+  font-size: 1.2em;
+}
+
+h4 {
+  font-size: 1em;
+}
+
+h5 {
+  font-size: 0.8em;
+}
+
+h6 {
+  font-size: 0.6em;
+}
+
+p {
+  margin-top: 1.5em;
+  margin-bottom: 1.5em;
+}
+
+p, li, pre {
+  width: 533px;
+}
+
+small {
+  font-size: 0.8em;
+}
+
+strong {
+  font-weight: bold;
+}
+
+li {
+  list-style-type: disc;
+  margin-left: 1em;
+  margin-bottom: 0.2em;
+}
+
+ul {
+  margin-bottom: 0.5em;
+}
+
+tt, pre {
+  font-family: monospace;
+  font-size: 0.8em;
+}
+
+pre {
+  margin-left: 1em;
+  border-left: 4px solid;
+}
+
+td {
+  padding: 0.5em;
+}

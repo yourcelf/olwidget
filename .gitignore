@@ -3,3 +3,4 @@ doc/.buildinfo
 doc/.doctrees/*
 *.pyc
 *.swp
+.sass-cache

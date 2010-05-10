@@ -1,25 +1,7 @@
 from django.contrib.gis.db import models
 from django.core.urlresolvers import reverse
 
-import testolwidget.forms
-
-class Default(models.Model):
-    def get_absolute_url(self):
-        return reverse("testolwidget:show_obj",
-                args=[self._meta.object_name.lower(), self.id])
-
-    def get_edit_url(self):
-        return reverse("testolwidget:edit_obj",
-                args=[self._meta.object_name.lower(), self.id])
-
-    def get_model_form(self):
-        return getattr(testolwidget.forms, 
-                "%sModelForm" % self._meta.object_name)
-
-    class Meta:
-        abstract = True
-
-class Country(Default):
+class Country(models.Model):
     name = models.CharField(max_length=255)
     boundary = models.MultiPolygonField()
     about = models.TextField()
@@ -32,7 +14,7 @@ class Country(Default):
     class Meta:
         verbose_name_plural = u"Countries"
 
-class EnergyVortex(Default):
+class EnergyVortex(models.Model):
     name = models.CharField(max_length=255)
     nexus = models.PointField()
     lines_of_force = models.MultiLineStringField()
@@ -45,7 +27,7 @@ class EnergyVortex(Default):
     class Meta:
         verbose_name_plural = u"Energy vortices"
 
-class AlienActivity(Default):
+class AlienActivity(models.Model):
     incident_name = models.CharField(max_length=255)
     landings = models.MultiPointField()
     strange_lights = models.GeometryCollectionField()
@@ -59,7 +41,7 @@ class AlienActivity(Default):
     def __unicode__(self):
         return self.incident_name
 
-class Tree(Default):
+class Tree(models.Model):
     location = models.PointField()
     root_spread = models.PolygonField()
     species = models.CharField(max_length=255)

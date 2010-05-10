@@ -1,0 +1,1 @@
+compass -c config.rb

@@ -1,12 +1,35 @@
 {% extends "base.html" %}
+{% block head %}
+{{ map.media }}
+{% endblock %}
 
 {% block body %}
+<h1>OLWidget Example App</h1>
+<p>This application demonstrates several of the features of olwidget in Django.  For complete documentation, visit <a href='http://olwidget.org'>http://olwidget.org</a>.</p>
+<h2>Basic map features</h2>
+<p>The map supports multiple geometry types, undo and redo, deletion of vertices, and multiple providers.  Click "edit" to begin.</p>
+{{ map }}
+<h2>In admin</h2>
+<p>Using olwidget in <a href='/admin/'>admin</a> gives you support for features
+like customized overlay styles, undo/redo support, and multiple tile providers,
+and editing multiple geometry fields on a single map, and maps in the
+changelist.  See the file <tt>testolwidget/admin.py</tt> for the following
+examples:</p>
 <ul>
-    <li><a href='/admin/'>olwidget in admin</a>.  Map in <a href='/admin/testolwidget/pointmodel/'>changelist</a>.</li>
-    <li>Editable maps: <a href='/test/model/edit'>single geometries</a>, <a href='/test/multi/edit'>collections</a></li>
-    <li>Display maps: <a href='/test/model/1'>single geometry</a>, <a href='/test/multi/1'>collection</a></li>
-    <li>Info maps: <a href='/test/info/1'>an example</a>, <a href='/test/styleinfo/'>Per-geometry styles</a></li>
-   
+    <li><a href='/admin/testolwidget/country/1/'>Basic editing</a></li>
+    <li><a href='/admin/testolwidget/tree/1/'>Multiple geometry fields in one map</a></li>
+    <li><a href='/admin/testolwidget/tree/'>Changelist map</a></li>
+    <li><a href='/admin/testolwidget/energyvortex/4/'>Google layer provider, custom overlay style, multiple geometry fields in one map</a></li>
+    <li><a href='/admin/testolwidget/alienactivity/4/'>Different styles and providers per geometry field</a></li>
+</ul>
+<h2>In userland</h2>
+<p>OLWidget can be used with custom forms, ModelForm's, as a standalone widget (as above), and for display maps with clickable popup info boxes.
+</p>
+<ul>
+    <li><a href='{% url edit_alienactivity 4 %}'>Custom forms</a></li>
+    <li>Model forms -- <a href='{% url edit_tree 1 %}'>basic</a> and <a href='{% url edit_tree_custom 1 %}'>customized</a>.</li>
+    <li><a href='{% url show_countries %}'>Info maps</a></li>
+    <li><a href='{% url edit_capitals %}'>Mixed editable and info maps</a></li>
 </ul>
 {% endblock %}
 

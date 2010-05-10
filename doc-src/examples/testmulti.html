@@ -15,43 +15,36 @@
         <textarea id="mytextarea">POINT(-7 7)</textarea>
         <textarea id="mytextarea2">POLYGON(-4 4,3 3,5 5)</textarea>
         <textarea id='mytextarea3'></textarea>
-        <textarea id='mytextarea4' rows=50 cols=50>SRID=4326;MULTILINESTRING((1.5820312499368 8.2332371109481,5.4492187497824 2.5479878713697,-4.658203124814 2.9869273932157))</textarea>
         <script type='text/javascript'>//<![CDATA[
             var map = new olwidget.Map('map', [
-//                    new olwidget.InfoLayer([
-//                        ["POLYGON(-10 -10, -5 -5, -10 -5)", "Right on, bro"],
-//                        ["POLYGON(-11 -11, -15 -15, -11 -15)", "Left on, bro"]
-//                    ], {name: "polygon"}),
-//
-//                    new olwidget.InfoLayer([
-//                        ["POINT (0 0)", "Fun <b>times!</b>"],
-//                        ["POINT (1 1)", "Clusterific"]
-//                    ], {name: "clustertastic", cluster: true }),
-//
-//                    new olwidget.InfoLayer([["Point (-10 10)", "Indeed!"]], {
-//                        name: "greeny",
-//                        overlayStyle: { fillColor: "#00FF00" }
-//                    }),
-//
-//                    new olwidget.EditableLayer("mytextarea", {
-//                        hideTextarea: false         
-//                    }),
-//                    new olwidget.EditableLayer("mytextarea2", {
-//                        geometry: "polygon",
-//                        name: "poly",
-//                        hideTextarea: false
-//                        })
-//                    ,
-//                    new olwidget.EditableLayer("mytextarea3", {
-//                        geometry: ["point", "polygon", "linestring"],
-//                        isCollection: true,
-//                        name: "multi poly point etc.",
-//                        hideTextarea: false
-//                    })
-                    new olwidget.EditableLayer("mytextarea4", {
-                        geometry: "linestring",
+                    new olwidget.InfoLayer([
+                        ["POLYGON(-10 -10, -5 -5, -10 -5)", "Right on, bro"],
+                        ["POLYGON(-11 -11, -15 -15, -11 -15)", "Left on, bro"]
+                    ], {name: "polygon"}),
+
+                    new olwidget.InfoLayer([
+                        ["POINT (0 0)", "Fun <b>times!</b>"],
+                        ["POINT (1 1)", "Clusterific"]
+                    ], {name: "clustertastic", cluster: true }),
+
+                    new olwidget.InfoLayer([["Point (-10 10)", "Indeed!"]], {
+                        name: "greeny",
+                        overlayStyle: { fillColor: "#00FF00" }
+                    }),
+
+                    new olwidget.EditableLayer("mytextarea", {
+                        hideTextarea: false         
+                    }),
+                    new olwidget.EditableLayer("mytextarea2", {
+                        geometry: "polygon",
+                        name: "poly",
+                        hideTextarea: false
+                        })
+                    ,
+                    new olwidget.EditableLayer("mytextarea3", {
+                        geometry: ["point", "polygon", "linestring"],
                         isCollection: true,
-                        name: "multi line",
+                        name: "multi poly point etc.",
                         hideTextarea: false
                     })
                 ], {

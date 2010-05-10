@@ -12,9 +12,11 @@ class MapField(forms.fields.Field):
         MapField([EditableLayerField(), InfoLayerField()], options={...})
 
     """
-    def __init__(self, fields, options=None, layer_names=None, 
+    def __init__(self, fields=None, options=None, layer_names=None, 
             template=None, **kwargs):
         # create map widget enclosing vector layers and options
+        if not fields:
+            fields = [EditableLayerField()]
         layers = [field.widget for field in fields]
         self.fields = fields
         kwargs['widget'] = kwargs.get('widget', 
@@ -46,7 +48,7 @@ class EditableLayerField(forms.fields.CharField):
     """
     def __init__(self, options=None, **kwargs):
         kwargs['widget'] = kwargs.get('widget', 
-                EditableLayer({'options': options}))
+                EditableLayer(options))
         super(EditableLayerField, self).__init__(**kwargs)
 
 class InfoLayerField(forms.fields.CharField):

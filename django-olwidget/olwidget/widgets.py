@@ -256,6 +256,7 @@ class BaseSingleLayerMap(Map):
     layer_opt_keys = []
     def split_options(self, options=None):
         layer_opts = {}
+        new_options = None
         if options:
             print options, "*"
             new_options = copy.deepcopy(options)

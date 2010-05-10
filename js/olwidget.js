@@ -320,7 +320,7 @@ olwidget.Map = OpenLayers.Class(OpenLayers.Map, {
             }
             if (!extent.equals(new OpenLayers.Bounds())) {
                 this.zoomToExtent(extent);
-                this.zoomTo(Math.min(this.getZoom(), this.opts.defaultZoom));
+                //this.zoomTo(Math.min(this.getZoom(), this.opts.defaultZoom));
                 return;
             }
         }
@@ -862,7 +862,6 @@ olwidget.EditableLayer = OpenLayers.Class(olwidget.BaseVectorLayer, {
             // arrays to the WKT formatter results in a "GEOMETRYCOLLECTION"
             // type, but if we have only one geometry, we should use a
             // "MULTI<geometry>" type.
-            console.log(feature);
             if (this.opts.geometry.constructor != Array) {
                 var geoms = [];
                 for (var i = 0; i < feature.length; i++) {
@@ -1472,28 +1471,29 @@ olwidget.DeleteVertex = OpenLayers.Class(OpenLayers.Control.ModifyFeature, {
     },
     selectFeature: function(feature) {
         this.outVertex();
-        if (this.editingFeature && feature.geometry.parent) {
-            if (feature.geometry.parent) {
-                var n = feature.geometry.parent.components.length;
-                feature.geometry.parent.removeComponent(feature.geometry);
-                if (feature.geometry.parent.components.length == n) {
-                    // Delete the feature -- we are at min vertices
-                    this.layer.removeFeatures([this.editingFeature]);
-                    this.layer.removeFeatures(this.vertices, {silent: true});
-                    this.editingFeature = null;
-                    this.layer.events.triggerEvent("featuremodified");
-                } else {
-                    // Remove a vertex.
-                    this.layer.events.triggerEvent(
-                        "featuremodified", {feature: this.editingFeature});
-                    this.selectControl.select(this.editingFeature);
+        if (feature.geometry.CLASS_NAME === "OpenLayers.Geometry.Point") {
+            if (this.editingFeature && feature.geometry.parent) {
+                if (feature.geometry.parent) {
+                    var n = feature.geometry.parent.components.length;
+                    feature.geometry.parent.removeComponent(feature.geometry);
+                    if (feature.geometry.parent.components.length == n) {
+                        // Delete the feature -- we are at min vertices
+                        this.layer.removeFeatures([this.editingFeature], {silent: true});
+                        this.layer.removeFeatures(this.vertices, {silent: true});
+                        this.editingFeature = null;
+                        this.layer.events.triggerEvent("featuremodified");
+                    } else {
+                        // Remove a vertex.
+                        this.layer.events.triggerEvent(
+                            "featuremodified", {feature: this.editingFeature});
+                        this.selectControl.select(this.editingFeature);
+                    }
                 }
+            } else {
+                // We're just a single point.  Delete it!
+                this.layer.removeFeatures([feature], {silent: true});
+                this.layer.events.triggerEvent("featuremodified");
             }
-        } else if (!feature.geometry.parent && 
-               feature.geometry.CLASS_NAME === "OpenLayers.Geometry.Point") {
-            // We're just a single point.  Delete it!
-            this.layer.removeFeatures([feature]);
-            this.layer.events.triggerEvent("featuremodified");
         } else {
             // We must be selecting a non-point for the first time.  Show
             // vertices and set this as the figure to be edited.
