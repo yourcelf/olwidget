@@ -44,15 +44,6 @@ class Map(forms.Widget):
     ``Map`` is a container widget for layers.  The constructor takes a list of
     vector layer instances, a dictionary of options for the map, a template
     to customize rendering, and a list of names for the layer fields.
-
-    The implementation is similar in some ways to a MultiWidget, with
-    exceptions:
-     * When there is only one vector layer, it behaves as a single widget (e.g.
-       the data is stored at "name" and not "name_0").
-     * Rendering is rather different, as we need to split up the javascript and
-       HTML components of layers and render them in the appropriate places.
-     * Custom layer names can be used, making it possible to use this widget
-       to edit multiple ModelForm fields, and still set the right POST data.
     """
 
     default_template = 'olwidget/multi_layer_map.html'
@@ -63,14 +54,12 @@ class Map(forms.Widget):
         self.layer_names = layer_names
         self.options = options or {}
         # Though this layer is the olwidget.js default, it must be explicitly
-        # set so form.media knows to include osm.
+        # set so {{ form.media }} knows to include osm.
         self.options['layers'] = self.options.get('layers', ['osm.mapnik'])
         self.template = template or self.default_template
         super(Map, self).__init__()
 
     def render(self, name, value, attrs=None):
-        if name is None:
-            name = "data"
         if value is None:
             values = [None for i in range(len(self.vector_layers))]
         elif not isinstance(value, (list, tuple)):
@@ -85,11 +74,8 @@ class Map(forms.Widget):
 
         layer_js = []
         layer_html = []
-        layer_names = self.get_layer_names(name)
+        layer_names = self._get_layer_names(name)
         for i, layer in enumerate(self.vector_layers):
-            # Use the container (Map) widget name for the vector layer if there
-            # is only one vector layer.  Otherwise, use a derived name by layer
-            # index.
             lyr_name = layer_names[i]
             id_ = "%s_%s" % (map_id, lyr_name)
             # Use "prepare" rather than "render" to get both js and html
@@ -106,10 +92,20 @@ class Map(forms.Widget):
         }
         return render_to_string(self.template, context)
 
-    def get_layer_names(self, name):
+    def value_from_datadict(self, data, files, name):
+        """ Return an array of all layers' values. """
+        return [vl.value_from_datadict(data, files, lyr_name) for vl, lyr_name in zip(self.vector_layers, self._get_layer_names(name))]
+
+    def _get_layer_names(self, name):
+        """ 
+        If the user gave us a layer_names parameter, use that.  Otherwise,
+        construct names based on ``name``. 
+        """
         n = len(self.vector_layers)
         if self.layer_names and len(self.layer_names) == n:
             return self.layer_names
+
+        name = name or "data"
         if n == 1:
             # If there's only one layer, use it as the name rather than
             # 'name_0'. 
@@ -118,17 +114,8 @@ class Map(forms.Widget):
             self.layer_names = ["%s_%i" % (name, i) for i in range(n)]
         return self.layer_names
 
-    def id_for_label(self, id_):
-        if id_:
-            # NB: duplicates template naming for map div.
-            return id_ + "_map"
-        return id_
-
-    def value_from_datadict(self, data, files, name):
-        return [vl.value_from_datadict(data, files, lyr_name) for vl, lyr_name in zip(self.vector_layers, self.get_layer_names(name))]
-
     def _has_changed(self, initial, data):
-        if (initial is None) or (not isinstance(initial, list)):
+        if (initial is None) or (not isinstance(initial, (tuple, list))):
             initial = [u'' for x in range(0, len(data))]
         for widget, initial, data in zip(self.vector_layers, initial, data):
             if widget._has_changed(initial, data):
@@ -176,8 +163,8 @@ class BaseVectorLayer(forms.Widget):
 
     def render(self, name, value, attrs=None):
         """
-        Returns just the javascript component of this widget.  To also get the
-        HTML component, call ``prepare`` instead.
+        Return just the javascript component of this widget.  To also get the
+        HTML component, call ``prepare``.
         """
         (javascript, html) = self.prepare(name, value, attrs)
         return self.javascript
@@ -187,9 +174,10 @@ class BaseVectorLayer(forms.Widget):
 
 class InfoLayer(BaseVectorLayer):
     """
-    A wrapper for the javscript olwidget.InfoLayer() type.  It is constructed
-    with an array [geometry, html] pairs, where the html will be the contents
-    of a popup displayed over the geometry, and an optional options dict.
+    A wrapper for the javscript olwidget.InfoLayer() type.  Takes an an array
+    [geometry, html] pairs, where the html will be the contents of a popup
+    displayed over the geometry, and an optional options dict.  Intended for
+    use as a sub-widget for a ``Map`` widget.
     """
     default_template = 'olwidget/info_layer.html'
 
@@ -216,12 +204,14 @@ class InfoLayer(BaseVectorLayer):
             'info_array': info_json,
             'options': simplejson.dumps(utils.translate_options(self.options)),
         }
-        return (mark_safe(render_to_string(self.template, context)), "")
+        js = mark_safe(render_to_string(self.template, context))
+        html = ""
+        return (js, html)
 
 class EditableLayer(BaseVectorLayer):
     """
-    A wrapper for the javascript olwidget.EditableLayer() type.  It is
-    constructed with an optional options dict.
+    A wrapper for the javascript olwidget.EditableLayer() type.  Intended for
+    use as a sub-widget for the Map widget.
     """
     default_template = "olwidget/editable_layer.html"
 
@@ -235,36 +225,26 @@ class EditableLayer(BaseVectorLayer):
             attrs = {}
         if name and not self.options.has_key('name'):
             self.options['name'] = forms.forms.pretty_name(name)
+        attrs['id'] = attrs.get('id', "id_%s" % id(self))
 
         wkt = utils.get_ewkt(value)
         context = {
             'id': attrs['id'],
             'options': simplejson.dumps(utils.translate_options(self.options)),
         }
-        javascript = mark_safe(render_to_string(self.template, context))
+        js = mark_safe(render_to_string(self.template, context))
         html = mark_safe(forms.Textarea().render(name, wkt, attrs))
-        return (javascript, html)
+        return (js, html)
 
 #
-# Convenience single layer widgets for use in non MapField types
+# Convenience single layer widgets for use in non-MapField fields.
 #
 
 class BaseSingleLayerMap(Map):
     """
-    Base type for convenience and backwards compatibility single-layer types.
+    Base type for single-layer maps, for convenience and backwards
+    compatibility.
     """
-    layer_opt_keys = []
-    def split_options(self, options=None):
-        layer_opts = {}
-        new_options = None
-        if options:
-            print options, "*"
-            new_options = copy.deepcopy(options)
-            for opt in self.layer_opt_keys:
-                if new_options.has_key(opt):
-                    layer_opts[opt] = new_options.pop(opt)
-        return new_options, layer_opts
-
     def value_from_datadict(self, data, files, name):
         val = super(BaseSingleLayerMap, self).value_from_datadict(
                 data, files, name)
@@ -272,28 +252,24 @@ class BaseSingleLayerMap(Map):
 
 class EditableMap(BaseSingleLayerMap):
     """
-    Convenience Map widget with a single editable layer.
+    Convenience Map widget with a single editable layer.  Usage:
+
+        forms.CharField(widget=EditableMap(options={}))
+
     """
-    layer_opt_keys = ['name', 'editable', 'geometry', 'hide_textarea',
-            'hideTextarea', 'is_collection', 'isCollection']
     def __init__(self, options=None, **kwargs):
-        options, layer_opts = self.split_options(options)
-        super(EditableMap, self).__init__([EditableLayer(layer_opts)], 
-                options, **kwargs)
+        super(EditableMap, self).__init__([EditableLayer()], options, **kwargs)
         
 class InfoMap(BaseSingleLayerMap):
     """
     Convenience Map widget with a single info layer.
     """
-    layer_opt_keys = ['name', 'cluster']
     def __init__(self, info, options=None, **kwargs):
-        options, layer_opts = self.split_options(options)
-        super(InfoMap, self).__init__([InfoLayer(info, layer_opts)], 
-                options, **kwargs)
+        super(InfoMap, self).__init__([InfoLayer(info)], options, **kwargs)
 
 class MapDisplay(EditableMap):
     """
-    Convenience Map widget for a single display layer, with no info.
+    Convenience Map widget for a single non-editable layer, with no popups.
     """
     def __init__(self, fields=None, options=None, **kwargs):
         options = options or {}

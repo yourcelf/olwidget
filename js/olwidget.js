@@ -308,7 +308,7 @@ olwidget.Map = OpenLayers.Class(OpenLayers.Map, {
             var extent = new OpenLayers.Bounds();
             for (var i = 0; i < this.vectorLayers.length; i++) {
                 var vl = this.vectorLayers[i];
-                if (vl.opts.cluster || this.opts.cluster) {
+                if (vl.opts.cluster) {
                     for (var j = 0; j < vl.features.length; j++) {
                         for (var k = 0; k < vl.features[j].cluster.length; k++) {
                             extent.extend(vl.features[j].cluster[k].geometry.getBounds());
@@ -445,11 +445,29 @@ olwidget.Map = OpenLayers.Class(OpenLayers.Map, {
 
 olwidget.BaseVectorLayer = OpenLayers.Class(OpenLayers.Layer.Vector, {
     initialize: function(options) {
-        this.opts = olwidget.deepJoinOptions({
-           name: "data"
-        }, options);
-        OpenLayers.Layer.Vector.prototype.initialize.apply(this, 
-               [this.opts.name]);
+        if (!options) {
+            options = {};
+        }
+        this.opts = options;
+        OpenLayers.Layer.Vector.prototype.initialize.apply(this);
+    },
+    setMap: function(map) {
+        OpenLayers.Layer.Vector.prototype.setMap.apply(this, [map]);
+        // If we are in an olwidget Map, inherit the olwidget Map's properties.
+        if (map.CLASS_NAME == "olwidget.Map") {
+
+            this.opts = olwidget.deepJoinOptions({
+                name: "data"
+            }, map.opts, this.opts);
+            this.name = this.opts.name;
+
+            this.styleMap = new OpenLayers.StyleMap({
+                "default": new OpenLayers.Style(this.opts.overlayStyle, 
+                    {context: this.opts.overlayStyleContext}),
+                "select": new OpenLayers.Style(this.opts.selectOverlayStyle, 
+                   {context: this.opts.overlayStyleContext})
+            });
+        }
         if (this.opts.paging === true) {
             if (this.strategies === null) {
                 this.strategies = [];
@@ -460,47 +478,17 @@ olwidget.BaseVectorLayer = OpenLayers.Class(OpenLayers.Layer.Vector, {
             paging.activate();
         }
     },
-    setMap: function(map) {
-        OpenLayers.Layer.Vector.prototype.setMap.apply(this, [map]);
-        // If we are in an olwidget Map, inherit the olwidget Map's properties.
-        if (map.CLASS_NAME == "olwidget.Map") {
-
-            this.opts.overlayStyle = olwidget.deepJoinOptions(
-                {}, map.opts.overlayStyle, this.opts.overlayStyle);
-            this.opts.selectOverlayStyle = olwidget.deepJoinOptions(
-                {}, 
-                map.opts.selectOverlayStyle, 
-                this.opts.selectOverlayStyle);
-            this.opts.overlayStyleContext = olwidget.deepJoinOptions(
-                {}, 
-                map.opts.overlayStyleContext, 
-                this.opts.overlayStyleContext);
-
-            this.styleMap = new OpenLayers.StyleMap({
-                "default": new OpenLayers.Style(this.opts.overlayStyle, 
-                    {context: this.opts.overlayStyleContext}),
-                "select": new OpenLayers.Style(this.opts.selectOverlayStyle, 
-                   {context: this.opts.overlayStyleContext})
-            });
-            if (this.opts.cluster === true || map.opts.cluster === true) {
-                if (this.strategies === null) {
-                    this.strategies = [];
-                }
-                var cluster = new OpenLayers.Strategy.Cluster();
-                cluster.setLayer(this);
-                this.strategies.push(cluster);
-            }
-        }
-    },
     CLASS_NAME: "olwidget.BaseVectorLayer"
 });
 
 olwidget.InfoLayer = OpenLayers.Class(olwidget.BaseVectorLayer, {
     initialize: function(info, options) {
-        if (options === undefined) {
-            options = {};
-        }
-        if (options.cluster) {
+        olwidget.BaseVectorLayer.prototype.initialize.apply(this, [options]);
+        this.info = info;
+    },
+    setMap: function(map) {
+        if (this.opts.cluster || map.opts.cluster) {
+            // Use a different default style if we are clustering.
             var clusterStyle = {
                 pointRadius: "${radius}",
                 strokeWidth: "${width}",
@@ -510,11 +498,11 @@ olwidget.InfoLayer = OpenLayers.Class(olwidget.BaseVectorLayer, {
                 fontFamily: "Helvetica, sans-serif",
                 fontColor: "#ffffff"
             };
-            options.overlayStyle = olwidget.deepJoinOptions(
-                {}, clusterStyle, options.overlayStyle)
-            options.selectOverlayStyle = olwidget.deepJoinOptions(
-                {}, clusterStyle, options.selectOverlayStyle);
-            options.overlayStyleContext = olwidget.deepJoinOptions({
+            this.opts.overlayStyle = olwidget.deepJoinOptions(
+                {}, clusterStyle, this.opts.overlayStyle)
+            this.opts.selectOverlayStyle = olwidget.deepJoinOptions(
+                {}, clusterStyle, this.opts.selectOverlayStyle);
+            this.opts.overlayStyleContext = olwidget.deepJoinOptions({
                     width: function(feature) {
                         return (feature.cluster) ? 2 : 1;
                     },
@@ -540,17 +528,20 @@ olwidget.InfoLayer = OpenLayers.Class(olwidget.BaseVectorLayer, {
                         }
                         return '';
                     }
-                }, options.overlayStyleContext);
+                }, this.opts.overlayStyleContext);
         }
-        olwidget.BaseVectorLayer.prototype.initialize.apply(this, [options]);
-        this.info = info;
-    },
-    setMap: function(map) {
+        // Merge our options with the map's.
         olwidget.BaseVectorLayer.prototype.setMap.apply(this, arguments);
-        if (map.opts) {
-            if (this.opts.cluster == null) {
-                this.opts.cluster = map.opts.cluster;
+
+        // Add cluster strategy.
+        if (this.opts.cluster === true) {
+            if (!this.strategies) {
+                this.strategies = [];
             }
+            var cluster = new OpenLayers.Strategy.Cluster();
+            cluster.setLayer(this);
+            this.strategies.push(cluster);
+            cluster.activate();
         }
     },
     afterAdd: function() {
@@ -594,7 +585,8 @@ olwidget.EditableLayer = OpenLayers.Class(olwidget.BaseVectorLayer, {
             editable: true,
             geometry: 'point',
             hideTextarea: true,
-            isCollection: false
+            isCollection: false,
+            cluster: false
         }, options);
         olwidget.BaseVectorLayer.prototype.initialize.apply(this, 
                                                             [this.opts]);
@@ -655,19 +647,21 @@ olwidget.EditableLayer = OpenLayers.Class(olwidget.BaseVectorLayer, {
                 this.defaultControl = drawControl;
             }
         }
-        // Modify feature control
+
+        // don't add duplicate functionality from single point maps.
         if (this.opts.geometry != 'point' || this.opts.isCollection) {
+            // Modify feature control
             var mod = new OpenLayers.Control.ModifyFeature(this, {
                 clickout: true,
                 title: "Modify features"
             });
             controls.push(mod);
-        }
 
-        // Delete vertex
-        controls.push(new olwidget.DeleteVertex(this, {
-            title: "Delete vertices"
-        }));
+            // Delete vertex
+            controls.push(new olwidget.DeleteVertex(this, {
+                title: "Delete vertices"
+            }));
+        }
         
         //
         // Custom controls:
@@ -876,6 +870,33 @@ olwidget.EditableLayer = OpenLayers.Class(olwidget.BaseVectorLayer, {
     },
     CLASS_NAME: "olwidget.EditableLayer"
 });
+
+/**
+ * Convenience and backwards-compatibility single-layer EditableMap.
+ */
+olwidget.EditableMap = OpenLayers.Class(olwidget.Map, {
+    initialize: function(textareaId, options) {
+        // Create div element.
+        var textarea = document.getElementById(textareaId);
+        var div = document.createElement("div");
+        div.setAttribute('id', textareaId + "_map");
+        textarea.parentNode.insertBefore(div, textarea);
+        olwidget.Map.prototype.initialize.apply(this, [
+            div.id, [new olwidget.EditableLayer(textareaId)], options
+        ]);
+    }
+};
+
+/**
+ * Convenience and backwards-compatibility single-layer InfoMap.
+ */
+olwidget.InfoMap = OpenLayers.Class(olwidget.Map, {
+    initialize: function(divId, info, options) {
+        olwidget.Map.prototype.initialize.apply(this, [
+            divId, [new olwidget.InfoLayer(info)], options
+        ]);
+    }
+};
 
 
 olwidget.EditableLayerSwitcher = OpenLayers.Class(OpenLayers.Control.LayerSwitcher, {

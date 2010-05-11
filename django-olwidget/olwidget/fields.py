@@ -28,41 +28,26 @@ class MapField(forms.fields.Field):
 
     def clean(self, value):
         """
-        Set an arbitrary value for any InfoLayer objects to prevent their
-        presence from invalidating the form (they have no data, but it may
-        be desirable to include them in a form's map).
+        Return an array with the value from each layer.
         """
         return [f.clean(v) for v,f in zip(value, self.fields)]
 
 class EditableLayerField(forms.fields.CharField):
     """
-    Convenience field wrapping an EditableLayer widget.  
-    Usage:
-
-        EditableLayerField(options={...})
-    
     Equivalent to:
 
-        forms.CharField(widget=EditableLayer(options={...}))
-
+    forms.CharField(widget=EditableLayer(options={...}))
     """
     def __init__(self, options=None, **kwargs):
-        kwargs['widget'] = kwargs.get('widget', 
-                EditableLayer(options))
+        kwargs['widget'] = kwargs.get('widget', EditableLayer(options))
         super(EditableLayerField, self).__init__(**kwargs)
 
 class InfoLayerField(forms.fields.CharField):
     """
-    Convenience field wrapping an InfoLayer widget.  
-    Usage:
-
-        InfoLayerField(info=[...], options={...})
-    
     Equivalent to:
 
-        forms.CharField(widget=InfoLayer(info=[...], options={...}),
-                        required=False)
-
+    forms.CharField(widget=InfoLayer(info=[...], options={...}), 
+            required=False)
     """
     def __init__(self, info, options=None, **kwargs):
         kwargs['widget'] = kwargs.get('widget', InfoLayer(info, options))

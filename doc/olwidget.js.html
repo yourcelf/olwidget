@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '',
+        URL_ROOT:    '#',
         VERSION:     '0.3',
         COLLAPSE_MODINDEX: false,
         FILE_SUFFIX: '.html',
@@ -73,14 +73,14 @@ example:</p>
         <span class="c">&lt;!-- a map with an editable overlay --&gt;</span>
         <span class="nt">&lt;textarea</span> <span class="na">id=</span><span class="s">&#39;my_point&#39;</span><span class="nt">&gt;</span>SRID=4326;POINT(0 0)<span class="nt">&lt;/textarea&gt;</span>
         <span class="nt">&lt;script </span><span class="na">type=</span><span class="s">&#39;text/javascript&#39;</span><span class="nt">&gt;</span>
-            <span class="k">new</span> <span class="nx">olwidget</span><span class="p">.</span><span class="nx">EditableMap</span><span class="p">(</span><span class="s1">&#39;my_point&#39;</span><span class="o">,</span> <span class="p">{</span><span class="nx">name</span><span class="o">:</span> <span class="s1">&#39;My Point&#39;</span><span class="p">});</span>
+            <span class="k">new</span> <span class="nx">olwidget</span><span class="p">.</span><span class="nx">EditableMap</span><span class="p">(</span><span class="s1">&#39;my_point&#39;</span><span class="p">,</span> <span class="p">{</span><span class="nx">name</span><span class="o">:</span> <span class="s1">&#39;My Point&#39;</span><span class="p">});</span>
         <span class="nt">&lt;/script&gt;</span>
 
         <span class="c">&lt;!-- a map displaying an info popup over a geometry --&gt;</span>
         <span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">&#39;map&#39;</span><span class="nt">&gt;&lt;/div&gt;</span>
         <span class="nt">&lt;script </span><span class="na">type=</span><span class="s">&#39;text/javascript&#39;</span><span class="nt">&gt;</span>
-            <span class="k">new</span> <span class="nx">olwidget</span><span class="p">.</span><span class="nx">InfoMap</span><span class="p">(</span><span class="s1">&#39;map&#39;</span><span class="o">,</span> <span class="p">[</span>
-                <span class="p">[</span><span class="s1">&#39;SRID=4326;POINT(0 0)&#39;</span><span class="o">,</span> <span class="s2">&quot;&lt;p&gt;Here at the zero point!&lt;/p&gt;&quot;</span><span class="p">]</span>
+            <span class="k">new</span> <span class="nx">olwidget</span><span class="p">.</span><span class="nx">InfoMap</span><span class="p">(</span><span class="s1">&#39;map&#39;</span><span class="p">,</span> <span class="p">[</span>
+                <span class="p">[</span><span class="s1">&#39;SRID=4326;POINT(0 0)&#39;</span><span class="p">,</span> <span class="s2">&quot;&lt;p&gt;Here at the zero point!&lt;/p&gt;&quot;</span><span class="p">]</span>
             <span class="p">]);</span>
         <span class="nt">&lt;/script&gt;</span>
     <span class="nt">&lt;/body&gt;</span>
@@ -102,7 +102,7 @@ into your website&#8217;s path.  The three directories should share a parent.</p
 <div class="section" id="olwidget-editablemap-constructor">
 <h3>olwidget.EditableMap constructor<a class="headerlink" href="#olwidget-editablemap-constructor" title="Permalink to this headline">¶</a></h3>
 <p>Format:</p>
-<div class="highlight-javascript"><div class="highlight"><pre><span class="k">new</span> <span class="nx">olwidget</span><span class="p">.</span><span class="nx">EditableMap</span><span class="p">(</span><span class="o">&lt;</span><span class="nx">textareaId</span><span class="o">&gt;,</span> <span class="p">[</span><span class="nx">options</span><span class="p">]);</span>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="k">new</span> <span class="nx">olwidget</span><span class="p">.</span><span class="nx">EditableMap</span><span class="p">(</span><span class="o">&lt;</span><span class="nx">textareaId</span><span class="o">&gt;</span><span class="p">,</span> <span class="p">[</span><span class="nx">options</span><span class="p">]);</span>
 </pre></div>
 </div>
 <ul class="simple">
@@ -128,7 +128,7 @@ array such as <tt class="docutils literal"><span class="pre">['point',</span> <s
 <div class="section" id="olwidget-infomap-constructor">
 <h3>olwidget.InfoMap constructor<a class="headerlink" href="#olwidget-infomap-constructor" title="Permalink to this headline">¶</a></h3>
 <p>Format:</p>
-<div class="highlight-javascript"><div class="highlight"><pre><span class="k">new</span> <span class="nx">olwidget</span><span class="p">.</span><span class="nx">InfoMap</span><span class="p">(</span><span class="o">&lt;</span><span class="nx">mapDivId</span><span class="o">&gt;,</span> <span class="o">&lt;</span><span class="nx">infoArray</span><span class="o">&gt;,</span> <span class="p">[</span><span class="nx">options</span><span class="p">]);</span>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="k">new</span> <span class="nx">olwidget</span><span class="p">.</span><span class="nx">InfoMap</span><span class="p">(</span><span class="o">&lt;</span><span class="nx">mapDivId</span><span class="o">&gt;</span><span class="p">,</span> <span class="o">&lt;</span><span class="nx">infoArray</span><span class="o">&gt;</span><span class="p">,</span> <span class="p">[</span><span class="nx">options</span><span class="p">]);</span>
 </pre></div>
 </div>
 <ul>
@@ -136,8 +136,8 @@ array such as <tt class="docutils literal"><span class="pre">['point',</span> <s
 </li>
 <li><p class="first"><tt class="docutils literal"><span class="pre">infoArray</span></tt>: an Array of (E)WKT geometries and content HTML for popups, such as:</p>
 <div class="highlight-javascript"><div class="highlight"><pre><span class="p">[</span>
-    <span class="p">[</span><span class="s2">&quot;SRID=4326;POINT(0 0)&quot;</span><span class="o">,</span> <span class="s2">&quot;&lt;p&gt;This is the zero point.&lt;/p&gt;&quot;</span><span class="p">]</span><span class="o">,</span>
-    <span class="p">[</span><span class="s2">&quot;SRID=4326;POINT(10 10)&quot;</span><span class="o">,</span> <span class="s2">&quot;&lt;p&gt;This is longitude 10 and latitude 10.&lt;/p&gt;&quot;</span><span class="p">]</span><span class="o">,</span>
+    <span class="p">[</span><span class="s2">&quot;SRID=4326;POINT(0 0)&quot;</span><span class="p">,</span> <span class="s2">&quot;&lt;p&gt;This is the zero point.&lt;/p&gt;&quot;</span><span class="p">],</span>
+    <span class="p">[</span><span class="s2">&quot;SRID=4326;POINT(10 10)&quot;</span><span class="p">,</span> <span class="s2">&quot;&lt;p&gt;This is longitude 10 and latitude 10.&lt;/p&gt;&quot;</span><span class="p">],</span>
     <span class="p">...</span>
 <span class="p">]</span>
 </pre></div>
@@ -145,12 +145,12 @@ array such as <tt class="docutils literal"><span class="pre">['point',</span> <s
 <p>Geometries can be displayed with individual styles by passing an object
 containing <tt class="docutils literal"><span class="pre">html</span></tt> and <tt class="docutils literal"><span class="pre">style</span></tt> keys instead of an HTML string:</p>
 <div class="highlight-javascript"><div class="highlight"><pre><span class="p">[</span>
-    <span class="p">[</span><span class="s2">&quot;SRID=4326;POINT(10 10)&quot;</span><span class="o">,</span> <span class="p">{</span>
-        <span class="nx">html</span><span class="o">:</span> <span class="s2">&quot;&lt;p&gt;A good looking point&lt;/p&gt;&quot;</span><span class="o">,</span>
+    <span class="p">[</span><span class="s2">&quot;SRID=4326;POINT(10 10)&quot;</span><span class="p">,</span> <span class="p">{</span>
+        <span class="nx">html</span><span class="o">:</span> <span class="s2">&quot;&lt;p&gt;A good looking point&lt;/p&gt;&quot;</span><span class="p">,</span>
         <span class="nx">style</span><span class="o">:</span> <span class="p">{</span>
             <span class="nx">fillColor</span><span class="o">:</span> <span class="s1">&#39;#00FF00&#39;</span>
         <span class="p">}</span>
-    <span class="p">}]</span><span class="o">,</span>
+    <span class="p">}],</span>
     <span class="p">...</span>
 <span class="p">]</span>
 </pre></div>
@@ -277,9 +277,9 @@ the SRID present in any initial WKT data, and uses the projection specified in
 <p>To change the projection used for WKT, define the
 <tt class="docutils literal"><span class="pre">mapOptions.displayProjection</span></tt>.  For example, the following will use
 <tt class="docutils literal"><span class="pre">EPSG:900913</span></tt> for all WKT data in addition to map display:</p>
-<div class="highlight-javascript"><div class="highlight"><pre><span class="k">new</span> <span class="nx">olwidget</span><span class="p">.</span><span class="nx">EditableMap</span><span class="p">(</span><span class="s1">&#39;textareaId&#39;</span><span class="o">,</span> <span class="p">{</span>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="k">new</span> <span class="nx">olwidget</span><span class="p">.</span><span class="nx">EditableMap</span><span class="p">(</span><span class="s1">&#39;textareaId&#39;</span><span class="p">,</span> <span class="p">{</span>
     <span class="nx">mapOptions</span><span class="o">:</span> <span class="p">{</span>
-        <span class="nx">projection</span><span class="o">:</span> <span class="s2">&quot;EPSG:900913&quot;</span><span class="o">,</span>
+        <span class="nx">projection</span><span class="o">:</span> <span class="s2">&quot;EPSG:900913&quot;</span><span class="p">,</span>
         <span class="nx">displayProjection</span><span class="o">:</span> <span class="s2">&quot;EPSG:900913&quot;</span>
     <span class="p">}</span>
 <span class="p">});</span>
@@ -297,7 +297,7 @@ the SRID present in any initial WKT data, and uses the projection specified in
         <div class="sphinxsidebarwrapper">
             <h3><a href="index.html">Table Of Contents</a></h3>
             <ul>
-<li><a class="reference external" href="">olwidget.js documentation</a><ul>
+<li><a class="reference external" href="#">olwidget.js documentation</a><ul>
 <li><a class="reference external" href="#introduction">Introduction</a></li>
 <li><a class="reference external" href="#installation">Installation</a></li>
 <li><a class="reference external" href="#examples">Examples</a></li>
@@ -349,7 +349,7 @@ the SRID present in any initial WKT data, and uses the projection specified in
     </div>
     <div class="footer">
       &copy; Copyright 2010, Charlie DeTar.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.6.2.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.6.4.
     </div>
   </body>
 </html>

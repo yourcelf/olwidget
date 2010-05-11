@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '',
+        URL_ROOT:    '#',
         VERSION:     '0.3',
         COLLAPSE_MODINDEX: false,
         FILE_SUFFIX: '.html',
@@ -73,20 +73,183 @@ in your settings file.  <tt class="docutils literal"><span class="pre">olwidget<
 default, which requires no key.</p>
 </li>
 </ol>
+<p>OLWidget includes a test project demonstrating some of the <tt class="docutils literal"><span class="pre">olwidget</span></tt> app&#8217;s
+functionality; this can be found in the <tt class="docutils literal"><span class="pre">django-olwidget/test_project</span></tt>
+directory.  To use it, modify the <tt class="docutils literal"><span class="pre">settings.py</span></tt> directory to reflect your
+database settings.  For convenience, a shell script, <tt class="docutils literal"><span class="pre">reset_testolwidget.sh</span></tt>,
+is included to set up the database using <tt class="docutils literal"><span class="pre">postgres</span></tt>, <tt class="docutils literal"><span class="pre">template_postgis</span></tt>,and the database user and password specified in the script.</p>
 </div>
-<div class="section" id="map-widgets">
-<h2>Map widgets<a class="headerlink" href="#map-widgets" title="Permalink to this headline">¶</a></h2>
-<p><tt class="docutils literal"><span class="pre">olwidget</span></tt> defines 3 widget types that can be used to display maps:</p>
+<div class="section" id="getting-started">
+<h2>Getting started<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h2>
+<p>A quick guide to the <tt class="docutils literal"><span class="pre">olwidget</span></tt> module contents:</p>
+<dl class="docutils">
+<dt>For multi-layer map editing in forms &#8211; <tt class="docutils literal"><span class="pre">fields</span></tt></dt>
+<dd><a class="reference internal" href="#mapfield">MapField</a>, <a class="reference internal" href="#editablelayerfield">EditableLayerField</a>, and <a class="reference internal" href="#infolayerfield">InfoLayerField</a></dd>
+<dt>For display outside forms, or to make custom fields &#8211; <tt class="docutils literal"><span class="pre">widgets</span></tt></dt>
+<dd><dl class="first last docutils">
+<dt>Single layer:</dt>
+<dd><a class="reference internal" href="#editablemap">EditableMap</a>
+<a class="reference internal" href="#infomap">InfoMap</a></dd>
+<dt>Multi layer:</dt>
+<dd><a class="reference internal" href="#map-editablelayer-and-infolayer">Map, EditableLayer, and InfoLayer</a></dd>
+</dl>
+</dd>
+<dt>For ModelForm convenience with multi- or single-layer maps &#8211; <tt class="docutils literal"><span class="pre">forms</span></tt></dt>
+<dd><a class="reference internal" href="#mapmodelform">MapModelForm</a></dd>
+<dt><tt class="docutils literal"><span class="pre">olwidget</span></tt> looks great in <tt class="docutils literal"><span class="pre">admin</span></tt></dt>
+<dd><a class="reference internal" href="#geomodeladmin">GeoModelAdmin</a></dd>
+</dl>
+<p>And of course, customization of all types: <a class="reference internal" href="#options">options</a></p>
+</div>
+<div class="section" id="fields">
+<h2>Fields<a class="headerlink" href="#fields" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="mapfield-editablelayerfield-infolayerfield">
+<h3>MapField, EditableLayerField, InfoLayerField<a class="headerlink" href="#mapfield-editablelayerfield-infolayerfield" title="Permalink to this headline">¶</a></h3>
+<p>Multi-layer maps are possible using the <tt class="docutils literal"><span class="pre">MapField</span></tt> type, which is a container
+field for any number of layer fields.  The layer fields are
+<tt class="docutils literal"><span class="pre">EditableLayerField</span></tt> or <tt class="docutils literal"><span class="pre">InfoLayerField</span></tt> types, which allow editing or
+display of vector data on the map.</p>
+<p id="mapfield"><strong>MapField</strong> constructor:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">olwidget</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">MapField</span><span class="p">(</span><span class="n">fields</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">layer_names</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">template</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="docutils">
+<dt><tt class="docutils literal"><span class="pre">fields</span></tt></dt>
+<dd>An array of layer fields (either <tt class="docutils literal"><span class="pre">EditableLayerField</span></tt> or
+<tt class="docutils literal"><span class="pre">InfoLayerField</span></tt>) which should appear on the map.</dd>
+<dt><tt class="docutils literal"><span class="pre">options</span></tt></dt>
+<dd>A dict of <a class="reference internal" href="#options">options</a> for the map.</dd>
+<dt><tt class="docutils literal"><span class="pre">layer_names</span></tt></dt>
+<dd>If provided, these will be used as the names for textareas in editable
+fields and raw POST data.  However, <tt class="docutils literal"><span class="pre">form.cleaned_data</span></tt> will not use
+these names, and will instead contain a list of the values in each layer
+using the MapField&#8217;s declared name.</dd>
+<dt><tt class="docutils literal"><span class="pre">template</span></tt></dt>
+<dd><p class="first">The name of a custom template to render the map.  It will receive the context:</p>
+<div class="last highlight-python"><pre>{'id': html id for the map,
+ 'layer_js': an array of javascript invocations from each layer,
+ 'layer_html': an array of html data from each layer,
+ 'map_opts': a JSON string of options for the map.
+}</pre>
+</div>
+</dd>
+</dl>
+<p id="editablelayerfield"><strong>EditableLayerField</strong> constructor:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">olwidget</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">EditableLayerField</span><span class="p">(</span><span class="n">options</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="docutils">
+<dt><tt class="docutils literal"><span class="pre">options</span></tt></dt>
+<dd>A dict of <a class="reference internal" href="#options">options</a> for this layer, which override the containing <tt class="docutils literal"><span class="pre">Map</span></tt> defaults.</dd>
+</dl>
+<p id="infolayerfield"><strong>InfoLayerField</strong> constructor:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">olwidget</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">InfoLayerField</span><span class="p">(</span><span class="n">options</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="docutils">
+<dt><tt class="docutils literal"><span class="pre">options</span></tt></dt>
+<dd>A dict of <a class="reference internal" href="#options">options</a> for this layer, which override the containing <tt class="docutils literal"><span class="pre">Map</span></tt> defaults.</dd>
+</dl>
+<div class="section" id="example">
+<h4>Example<a class="headerlink" href="#example" title="Permalink to this headline">¶</a></h4>
+<p>The following is an example that constructs a map widget with 3 fields, two of
+them editable.  It uses both layer-specific options and global map options:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django</span> <span class="kn">import</span> <span class="n">forms</span>
+<span class="kn">from</span> <span class="nn">olwidget.fields</span> <span class="kn">import</span> <span class="n">MapField</span><span class="p">,</span> <span class="n">EditableLayerField</span><span class="p">,</span> <span class="n">InfoLayerField</span>
+
+<span class="k">class</span> <span class="nc">MyForm</span><span class="p">(</span><span class="n">forms</span><span class="o">.</span><span class="n">Form</span><span class="p">):</span>
+    <span class="n">country</span> <span class="o">=</span> <span class="n">MapField</span><span class="p">([</span>
+            <span class="n">EditableLayerField</span><span class="p">({</span><span class="s">&#39;geometry&#39;</span><span class="p">:</span> <span class="s">&#39;polygon&#39;</span><span class="p">,</span> <span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">&#39;boundary&#39;</span><span class="p">}),</span>
+            <span class="n">EditableLayerField</span><span class="p">({</span><span class="s">&#39;geometry&#39;</span><span class="p">:</span> <span class="s">&#39;point&#39;</span><span class="p">,</span> <span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">&#39;capital&#39;</span><span class="p">}),</span>
+            <span class="n">InfoLayerField</span><span class="p">([[</span><span class="s">&quot;Point (0 0)&quot;</span><span class="p">,</span> <span class="s">&quot;Of interest&quot;</span><span class="p">]],</span> <span class="p">{</span><span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">&quot;Points of interest&quot;</span><span class="p">}),</span>
+        <span class="p">],</span> <span class="p">{</span>
+            <span class="s">&#39;overlay_style&#39;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s">&#39;fill_color&#39;</span><span class="p">:</span> <span class="s">&#39;#00ff00&#39;</span><span class="p">,</span>
+            <span class="p">},</span>
+        <span class="p">})</span>
+</pre></div>
+</div>
+<p>In a template:</p>
+<div class="highlight-django"><div class="highlight"><pre><span class="x">&lt;head&gt;... </span><span class="cp">{{</span> <span class="nv">form.media</span> <span class="cp">}}</span><span class="x"> ...&lt;/head&gt;</span>
+<span class="x">&lt;body&gt;...    </span><span class="cp">{{</span> <span class="nv">form</span> <span class="cp">}}</span><span class="x">    ...&lt;/body&gt;</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="modelforms">
+<span id="mapmodelform"></span><h2>ModelForms<a class="headerlink" href="#modelforms" title="Permalink to this headline">¶</a></h2>
+<p><tt class="docutils literal"><span class="pre">MapModelForm</span></tt> is an extension of the built-in <a class="reference external" href="http://docs.djangoproject.com/en/dev/topics/forms/modelforms/">ModelForm</a> type which
+adds
+support for maps.  <tt class="docutils literal"><span class="pre">MapModelForm</span></tt> subclasses can possess two extra parameters
+in their inner <tt class="docutils literal"><span class="pre">Meta</span></tt> class &#8211; an optional <tt class="docutils literal"><span class="pre">maps</span></tt> parameter which specifies
+which fields to use with which maps, and an <tt class="docutils literal"><span class="pre">options</span></tt> parameter that specifies
+global map <a class="reference internal" href="#options">options</a>.</p>
+<p>The following is a simple example using a separate map for each field, and the
+same appearance for all maps:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># models.py</span>
+<span class="k">class</span> <span class="nc">MyModel</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">geom1</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">PointField</span><span class="p">()</span>
+    <span class="n">geom2</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">LineStringField</span><span class="p">()</span>
+    <span class="n">geom3</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">GeometryCollectionField</span><span class="p">()</span>
+
+
+<span class="c"># forms.py</span>
+<span class="kn">from</span> <span class="nn">olwidget.forms</span> <span class="kn">import</span> <span class="n">MapModelForm</span>
+<span class="kn">from</span> <span class="nn">models</span> <span class="kn">import</span> <span class="n">MyModel</span>
+
+<span class="k">class</span> <span class="nc">MyForm</span><span class="p">(</span><span class="n">MapModelForm</span><span class="p">):</span>
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="n">MyModel</span>
+        <span class="n">options</span> <span class="o">=</span> <span class="p">{</span> <span class="s">&#39;layers&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s">&#39;google.streets&#39;</span><span class="p">]</span> <span class="p">}</span>
+</pre></div>
+</div>
+<p>To edit multiple fields in a single map, specify the <tt class="docutils literal"><span class="pre">maps</span></tt> parameter.  The
+following will construct a form with 2 maps, the first editing <tt class="docutils literal"><span class="pre">geom1</span></tt> and
+<tt class="docutils literal"><span class="pre">geom2</span></tt> fields and using Google Streets as a base layer, and the second
+editing <tt class="docutils literal"><span class="pre">geom3</span></tt> and using default options:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">MyForm</span><span class="p">(</span><span class="n">MapModelForm</span><span class="p">):</span>
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="n">MyModel</span>
+        <span class="n">maps</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="p">((</span><span class="s">&#39;geom1&#39;</span><span class="p">,</span> <span class="s">&#39;geom2&#39;</span><span class="p">),</span> <span class="p">{</span> <span class="s">&#39;layers&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s">&#39;google.streets&#39;</span><span class="p">]</span> <span class="p">}),</span>
+            <span class="p">((</span><span class="s">&#39;geom3&#39;</span><span class="p">,</span> <span class="p">),</span> <span class="bp">None</span><span class="p">),</span>
+        <span class="p">)</span>
+</pre></div>
+</div>
+<p>To define options for particular fields, override the field definition.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">olwidget.forms</span> <span class="kn">import</span> <span class="n">MapModelForm</span>
+<span class="kn">from</span> <span class="nn">olwidget.fields</span> <span class="kn">import</span> <span class="n">EditableLayerField</span>
+
+<span class="k">class</span> <span class="nc">MyForm</span><span class="p">(</span><span class="n">MapModelForm</span><span class="p">):</span>
+    <span class="n">geom1</span> <span class="o">=</span> <span class="n">EditableLayerField</span><span class="p">({</span><span class="s">&#39;overlay_style&#39;</span><span class="p">:</span> <span class="p">{</span> <span class="s">&#39;fill_color&#39;</span><span class="p">:</span> <span class="s">&quot;#ff0000&quot;</span> <span class="p">}})</span>
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="n">MyModel</span>
+</pre></div>
+</div>
+<p>Using the form in a template is the same as before.</p>
+<div class="highlight-django"><div class="highlight"><pre><span class="x">&lt;head&gt; </span><span class="cp">{{</span> <span class="nv">form.media</span> <span class="cp">}}</span><span class="x"> &lt;/head&gt;</span>
+<span class="x">&lt;body&gt;     </span><span class="cp">{{</span> <span class="nv">form</span> <span class="cp">}}</span><span class="x">   &lt;/body&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="widgets">
+<h2>Widgets<a class="headerlink" href="#widgets" title="Permalink to this headline">¶</a></h2>
+<p><tt class="docutils literal"><span class="pre">olwidget</span></tt> defines several widget types.  If all you need is a single-layer
+map, or if you want to display maps outside of the context of a form, this is
+what you want.  <a class="reference internal" href="#editablemap">EditableMap</a> and <a class="reference internal" href="#infomap">InfoMap</a> are single-layer widgets for
+editing or displaying map data.  <a class="reference internal" href="#map-editablelayer-and-infolayer">Map, EditableLayer, and InfoLayer</a>
+are the widget counterparts to the fields above which make display of
+multi-layer maps outside of forms possible.</p>
 <div class="section" id="editablemap">
 <h3>EditableMap<a class="headerlink" href="#editablemap" title="Permalink to this headline">¶</a></h3>
-<p><tt class="docutils literal"><span class="pre">EditableMap</span></tt> is a widget type for use in forms to allows editing of
-geometries.  Constructor:</p>
+<p><tt class="docutils literal"><span class="pre">EditableMap</span></tt> is a widget type for editing single layers.  Constructor:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="n">olwidget</span><span class="o">.</span><span class="n">widgets</span><span class="o">.</span><span class="n">EditableMap</span><span class="p">(</span><span class="n">options</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">template</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
 </pre></div>
 </div>
 <dl class="docutils">
 <dt><tt class="docutils literal"><span class="pre">options</span></tt></dt>
-<dd>A dict of options for map display.  See <a class="reference internal" href="#options">Options</a> below.</dd>
+<dd>A dict of <a class="reference internal" href="#options">options</a> for map display.</dd>
 <dt><tt class="docutils literal"><span class="pre">template</span></tt></dt>
 <dd>A template to use for rendering the map.</dd>
 </dl>
@@ -104,38 +267,11 @@ geometries.  Constructor:</p>
 </pre></div>
 </div>
 </div>
-<div class="section" id="mapdisplay">
-<h3>MapDisplay<a class="headerlink" href="#mapdisplay" title="Permalink to this headline">¶</a></h3>
-<p><tt class="docutils literal"><span class="pre">MapDisplay</span></tt> is used for displaying geometries on read-only maps.
-Constructor:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">olwidget</span><span class="o">.</span><span class="n">widgets</span><span class="o">.</span><span class="n">MapDisplay</span><span class="p">(</span><span class="n">fields</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">template</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
-</pre></div>
-</div>
-<dl class="docutils">
-<dt><tt class="docutils literal"><span class="pre">fields</span></tt></dt>
-<dd>A list of geometries to display on the map, either valid geometry
-strings or geometry fields.</dd>
-<dt><tt class="docutils literal"><span class="pre">options</span></tt></dt>
-<dd>A dict of options for map display.  See <a class="reference internal" href="#options">Options</a> below.</dd>
-<dt><tt class="docutils literal"><span class="pre">template</span></tt></dt>
-<dd>A template to use for rendering the map.</dd>
-</dl>
-<p>An example simple read-only display map:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">olwidget.widgets</span> <span class="kn">import</span> <span class="n">MapDisplay</span>
-
-<span class="nb">map</span> <span class="o">=</span> <span class="n">MapDisplay</span><span class="p">(</span><span class="n">fields</span><span class="o">=</span><span class="p">[</span><span class="n">mymodel</span><span class="o">.</span><span class="n">start_point</span><span class="p">,</span> <span class="n">mymodel</span><span class="o">.</span><span class="n">destination</span><span class="p">])</span>
-</pre></div>
-</div>
-<p>In a template:</p>
-<div class="highlight-django"><div class="highlight"><pre><span class="x">&lt;head&gt; </span><span class="cp">{{</span> <span class="nv">map.media</span> <span class="cp">}}</span><span class="x"> &lt;/head&gt;</span>
-<span class="x">&lt;body&gt;... </span><span class="cp">{{</span> <span class="nv">map</span> <span class="cp">}}</span><span class="x"> ...&lt;/body&gt;</span>
-</pre></div>
-</div>
-</div>
 <div class="section" id="infomap">
 <h3>InfoMap<a class="headerlink" href="#infomap" title="Permalink to this headline">¶</a></h3>
-<p><tt class="docutils literal"><span class="pre">InfoMap</span></tt> is used for displaying read-only maps with clickable information
-popups over geometries.  Constructor:</p>
+<p><tt class="docutils literal"><span class="pre">InfoMap</span></tt> is used for displaying read-only single-layer maps with clickable
+information popups over geometries.  Unlike the other types, you probably want
+to use this widget without a Form.  Constructor:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="n">olwidget</span><span class="o">.</span><span class="n">widgets</span><span class="o">.</span><span class="n">InfoMap</span><span class="p">(</span><span class="n">info</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">template</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -145,7 +281,7 @@ popups over geometries.  Constructor:</p>
 containing html, or a dict containing <tt class="docutils literal"><span class="pre">html</span></tt> and <tt class="docutils literal"><span class="pre">style</span></tt> keys.  The
 html is displayed when the geometry is clicked.</dd>
 <dt><tt class="docutils literal"><span class="pre">options</span></tt></dt>
-<dd>A dict of options for map display.  See <a class="reference internal" href="#options">Options</a> below.</dd>
+<dd>A dict of <a class="reference internal" href="#options">options</a> for map display.</dd>
 <dt><tt class="docutils literal"><span class="pre">template</span></tt></dt>
 <dd>A template to use for rendering the map.</dd>
 </dl>
@@ -169,12 +305,70 @@ html is displayed when the geometry is clicked.</dd>
 </pre></div>
 </div>
 </div>
+<div class="section" id="map-editablelayer-and-infolayer">
+<span id="multiwidget"></span><h3>Map, EditableLayer, and InfoLayer<a class="headerlink" href="#map-editablelayer-and-infolayer" title="Permalink to this headline">¶</a></h3>
+<p>Use these widgets together to display multi-layer maps outside of forms.</p>
+<p><strong>Map</strong> constructor:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">olwidget</span><span class="o">.</span><span class="n">widgets</span><span class="o">.</span><span class="n">Map</span><span class="p">(</span><span class="n">vector_layers</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">template</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">layer_names</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="docutils">
+<dt><tt class="docutils literal"><span class="pre">vector_layers</span></tt></dt>
+<dd>A list or tuple of layer instances (<tt class="docutils literal"><span class="pre">EditableLayer</span></tt> or <tt class="docutils literal"><span class="pre">InfoLayer</span></tt>) to
+display on the map.</dd>
+<dt><tt class="docutils literal"><span class="pre">options</span></tt></dt>
+<dd>Optional global <a class="reference internal" href="#options">options</a> for the map.</dd>
+<dt><tt class="docutils literal"><span class="pre">template</span></tt></dt>
+<dd>An optional template to use to render the map.</dd>
+<dt><tt class="docutils literal"><span class="pre">layer_names</span></tt></dt>
+<dd>An optional list of names to use for the layers&#8217; POST data.</dd>
+</dl>
+<p><tt class="docutils literal"><span class="pre">EditableLayer</span></tt> constructor:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">olwidget</span><span class="o">.</span><span class="n">widgets</span><span class="o">.</span><span class="n">EditableLayer</span><span class="p">(</span><span class="n">options</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">template</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="docutils">
+<dt><tt class="docutils literal"><span class="pre">options</span></tt></dt>
+<dd>Optional <a class="reference internal" href="#options">options</a> for the layer.</dd>
+<dt><tt class="docutils literal"><span class="pre">template</span></tt></dt>
+<dd>An optional template to use to render this layer&#8217;s javascript.</dd>
+</dl>
+<p><tt class="docutils literal"><span class="pre">InfoLayer</span></tt> constructor:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">olwidget</span><span class="o">.</span><span class="n">widgets</span><span class="o">.</span><span class="n">InfoLayer</span><span class="p">(</span><span class="n">info</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">template</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="docutils">
+<dt><tt class="docutils literal"><span class="pre">info</span></tt></dt>
+<dd>An list of [<tt class="docutils literal"><span class="pre">geometry</span></tt>, <tt class="docutils literal"><span class="pre">html</span></tt>] pairs which specify geometries and the
+html contents of popups when those geometries are clicked.  <tt class="docutils literal"><span class="pre">html</span></tt> can
+also be a dict such as <tt class="docutils literal"><span class="pre">{</span> <span class="pre">html:</span> <span class="pre">&quot;...&quot;,</span> <span class="pre">style:</span> <span class="pre">{}}</span></tt>.  The <tt class="docutils literal"><span class="pre">style</span></tt>
+parameter is used for individual styling of the geometry within the layer.</dd>
+<dt><tt class="docutils literal"><span class="pre">options</span></tt></dt>
+<dd>Optional <a class="reference internal" href="#options">options</a> for the layer</dd>
+</dl>
+<div class="section" id="examples">
+<h4>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h4>
+<p>An example of a widget with two info layers:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">mymap</span> <span class="o">=</span> <span class="n">Map</span><span class="p">([</span>
+        <span class="n">InfoLayer</span><span class="p">([[</span><span class="s">&quot;POINT (0 0)&quot;</span><span class="p">,</span> <span class="s">&quot;the origin&quot;</span><span class="p">]],</span> <span class="p">{</span><span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">&#39;origin&#39;</span><span class="p">}),</span>
+        <span class="n">InfoLayer</span><span class="p">([[</span><span class="s">&quot;POINT (1 0)&quot;</span><span class="p">,</span> <span class="s">&quot;one degree off&quot;</span><span class="p">]],</span> <span class="p">{</span><span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">&#39;a bit off&#39;</span><span class="p">}),</span>
+    <span class="p">],</span> <span class="p">{</span> <span class="n">overlay_style</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;fill_color&#39;</span><span class="p">:</span> <span class="s">&#39;#ffffff&#39;</span><span class="p">}</span> <span class="p">})</span>
+</pre></div>
+</div>
+<p>In a template (for both examples):</p>
+<div class="highlight-django"><div class="highlight"><pre><span class="x">&lt;head&gt; ... </span><span class="cp">{{</span> <span class="nv">mymap.media</span> <span class="cp">}}</span><span class="x"> ... &lt;/head&gt;</span>
+<span class="x">&lt;body&gt; ...    </span><span class="cp">{{</span> <span class="nv">mymap</span> <span class="cp">}}</span><span class="x">    ... &lt;/body&gt;</span>
+</pre></div>
+</div>
+</div>
+</div>
 </div>
 <div class="section" id="inside-admin">
-<h2>Inside Admin<a class="headerlink" href="#inside-admin" title="Permalink to this headline">¶</a></h2>
+<span id="geomodeladmin"></span><h2>Inside Admin<a class="headerlink" href="#inside-admin" title="Permalink to this headline">¶</a></h2>
 <p><tt class="docutils literal"><span class="pre">olwidget</span></tt> has several advantages over the built-in geodjango admin map
 implementation, including greater map customization, support for more geometry
-types, and the option to include a map in admin changelist pages.</p>
+types, the ability to edit multiple fields using one map, and the option to
+include a map in admin changelist pages.</p>
 <p>To use <tt class="docutils literal"><span class="pre">olwidget</span></tt> for admin, simply use <tt class="docutils literal"><span class="pre">olwidget.admin.GeoModelAdmin</span></tt> or a
 subclass of it as the ModelAdmin type for your model.</p>
 <p>Example using <tt class="docutils literal"><span class="pre">olwidget</span></tt> in admin:</p>
@@ -191,16 +385,39 @@ subclass of it as the ModelAdmin type for your model.</p>
 <span class="k">class</span> <span class="nc">MyGeoAdmin</span><span class="p">(</span><span class="n">GeoModelAdmin</span><span class="p">):</span>
     <span class="n">options</span> <span class="o">=</span> <span class="p">{</span>
         <span class="s">&#39;layers&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s">&#39;google.streets&#39;</span><span class="p">],</span>
-        <span class="s">&#39;default_lat&#39;</span><span class="p">:</span> <span class="mf">44</span><span class="p">,</span>
-        <span class="s">&#39;default_lon&#39;</span><span class="p">:</span> <span class="o">-</span><span class="mf">72</span><span class="p">,</span>
+        <span class="s">&#39;default_lat&#39;</span><span class="p">:</span> <span class="mi">44</span><span class="p">,</span>
+        <span class="s">&#39;default_lon&#39;</span><span class="p">:</span> <span class="o">-</span><span class="mi">72</span><span class="p">,</span>
     <span class="p">}</span>
 
 <span class="n">admin</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">Owner</span><span class="p">,</span> <span class="n">MyGeoAdmin</span><span class="p">)</span>
 </pre></div>
 </div>
-<p><tt class="docutils literal"><span class="pre">olwidget.admin.GeoModelAdmin</span></tt> uses the <tt class="docutils literal"><span class="pre">olwidget.widgets.EditableMap</span></tt> for
-display, so all the map display options listed below in <a class="reference internal" href="#options">Options</a> for editable
-map types  can be used with maps in admin.</p>
+<p>To edit multiple fields using a single map, specify a <tt class="docutils literal"><span class="pre">maps</span></tt> parameter (with
+the same syntax as that used in <a class="reference internal" href="#mapmodelform">MapModelForm</a>) with a list of all geometry
+fields and which maps they should use and the options those maps should use,
+like so:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># model:</span>
+<span class="k">class</span> <span class="nc">Country</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">capital</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">PointField</span><span class="p">()</span>
+    <span class="n">perimiter</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">PolygonField</span><span class="p">()</span>
+    <span class="n">biggest_river</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">LineStringField</span><span class="p">()</span>
+
+<span class="c"># admin.py</span>
+<span class="k">class</span> <span class="nc">CountryAdmin</span><span class="p">(</span><span class="n">GeoModelAdmin</span><span class="p">):</span>
+    <span class="n">options</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="n">default_lat</span><span class="p">:</span> <span class="o">-</span><span class="mi">72</span><span class="p">,</span>
+        <span class="n">default_lon</span><span class="p">:</span> <span class="mi">43</span><span class="p">,</span>
+    <span class="p">}</span>
+    <span class="n">maps</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="p">((</span><span class="s">&#39;capital&#39;</span><span class="p">,</span> <span class="s">&#39;perimiter&#39;</span><span class="p">),</span> <span class="p">{</span> <span class="s">&#39;layers&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s">&#39;google.streets&#39;</span><span class="p">]</span> <span class="p">}),</span>
+        <span class="p">((</span><span class="s">&#39;biggest_river&#39;</span><span class="p">,),</span> <span class="p">{</span><span class="s">&#39;overlay_style&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;fill_color&#39;</span><span class="p">:</span> <span class="s">&quot;#0000ff&quot;</span><span class="p">}}),</span>
+    <span class="p">)</span>
+</pre></div>
+</div>
+<p>This will tell GeoModelAdmin to construct 2 maps, the first editing <tt class="docutils literal"><span class="pre">capital</span></tt>
+and <tt class="docutils literal"><span class="pre">perimiter</span></tt> fields, and the second editing <tt class="docutils literal"><span class="pre">biggest_river</span></tt>, with
+specific options for each map.  Both maps will share the global <tt class="docutils literal"><span class="pre">options</span></tt>
+parameter, but can override it by specifying options.</p>
 <div class="section" id="changelist-maps">
 <h3>Changelist maps<a class="headerlink" href="#changelist-maps" title="Permalink to this headline">¶</a></h3>
 <p>To show a clickable map on the admin changelist page, use the <tt class="docutils literal"><span class="pre">list_map</span></tt>
@@ -233,48 +450,121 @@ property:</p>
     <span class="p">}</span>
 </pre></div>
 </div>
-<p>Changelist maps use the <tt class="docutils literal"><span class="pre">olwidget.widgets.InfoMap</span></tt> type for display, so all
-the options listed below in <a class="reference internal" href="#options">Options</a> for InfoMap types can be used for
-<tt class="docutils literal"><span class="pre">list_map_options</span></tt>.</p>
 </div>
 </div>
 <div class="section" id="options">
 <span id="id1"></span><h2>Options<a class="headerlink" href="#options" title="Permalink to this headline">¶</a></h2>
-<p>All of the <tt class="docutils literal"><span class="pre">olwidget</span></tt> map types can be passed an <tt class="docutils literal"><span class="pre">options</span></tt> dictionary
-that controls the look and feel of the map.  An example:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">olwidget.widgets</span> <span class="kn">import</span> <span class="n">MapDisplay</span>
-
-<span class="nb">map</span> <span class="o">=</span> <span class="n">MapDisplay</span><span class="p">(</span><span class="n">options</span><span class="o">=</span><span class="p">{</span>
-    <span class="s">&#39;layers&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s">&#39;osm.mapnik&#39;</span><span class="p">,</span> <span class="s">&#39;google.hybrid&#39;</span><span class="p">,</span> <span class="s">&#39;yahoo&#39;</span><span class="p">],</span>
-    <span class="s">&#39;default_lat&#39;</span><span class="p">:</span> <span class="mf">44</span><span class="p">,</span>
-    <span class="s">&#39;default_lon&#39;</span><span class="p">:</span> <span class="o">-</span><span class="mf">72</span><span class="p">,</span>
-<span class="p">})</span>
-</pre></div>
+<p>Maps are both important user interface elements, and powerful persuasive data
+displays.  Consequently, it is necessary to support a high degree of
+customization around the appearance of a map.  OLWidget does this primarily
+through the use of OpenLayers&#8217; style framework.  All of OLWidget&#8217;s types accept
+an optional <tt class="docutils literal"><span class="pre">options</span></tt> dict which controls the appearance of the map and
+layers.</p>
+<p>Layers inherit their styles from both their default parameters, and from those
+specified for a map:</p>
+<div class="highlight-python"><pre>default layer options &lt; map options &lt; layer options</pre>
 </div>
-<div class="section" id="common-options">
-<h3>Common options<a class="headerlink" href="#common-options" title="Permalink to this headline">¶</a></h3>
-<p>The following options are shared by all <tt class="docutils literal"><span class="pre">olwidget</span></tt> map types:</p>
+<p>By contrast, maps only inherit from their default options, and not from
+layers:</p>
+<div class="highlight-python"><pre>default map options &lt; map options</pre>
+</div>
+<p>This allows the map to hold defaults for all layers, but let the layers
+override them.  The following is a list of all available options.  Some are
+specific to map display, and others specific to layer display.</p>
+<div class="section" id="general-map-display">
+<h3>General map display<a class="headerlink" href="#general-map-display" title="Permalink to this headline">¶</a></h3>
 <dl class="docutils">
-<dt><tt class="docutils literal"><span class="pre">name</span></tt> (string; defaults to <tt class="docutils literal"><span class="pre">&quot;data&quot;</span></tt>)</dt>
-<dd>The name of the overlay layer for the map (shown in the layer switcher).</dd>
 <dt><tt class="docutils literal"><span class="pre">layers</span></tt> (list; default <tt class="docutils literal"><span class="pre">['osm.mapnik']</span></tt>)</dt>
-<dd>A list of map base layers to include.  Choices include <tt class="docutils literal"><span class="pre">'osm.mapnik'</span></tt>,
-<tt class="docutils literal"><span class="pre">'osm.osmarender'</span></tt>, <tt class="docutils literal"><span class="pre">'google.streets'</span></tt>, <tt class="docutils literal"><span class="pre">'google.physical'</span></tt>,
-<tt class="docutils literal"><span class="pre">'google.satellite'</span></tt>, <tt class="docutils literal"><span class="pre">'google.hybrid'</span></tt>, <tt class="docutils literal"><span class="pre">'ve.road'</span></tt>,
-<tt class="docutils literal"><span class="pre">'ve.shaded'</span></tt>, <tt class="docutils literal"><span class="pre">'ve.aerial'</span></tt>, <tt class="docutils literal"><span class="pre">'ve.hybrid'</span></tt>, <tt class="docutils literal"><span class="pre">'wms.map'</span></tt>,
-<tt class="docutils literal"><span class="pre">'wms.nasa'</span></tt>, <tt class="docutils literal"><span class="pre">'yahoo.map'</span></tt>, and <tt class="docutils literal"><span class="pre">'cloudmade.&lt;num&gt;'</span></tt> (where <tt class="docutils literal"><span class="pre">&lt;num&gt;</span></tt>
-is the number for a cloudmade style).  A blank map can be obtained using
-<tt class="docutils literal"><span class="pre">'wms.blank'</span></tt>.</dd>
+<dd><p class="first">A list of map base layers to include.  Choices include:</p>
+<dl class="docutils">
+<dt>Open Street Maps</dt>
+<dd><tt class="docutils literal"><span class="pre">'osm.mapnik'</span></tt>, <tt class="docutils literal"><span class="pre">'osm.osmarender'</span></tt></dd>
+<dt>Google</dt>
+<dd><tt class="docutils literal"><span class="pre">'google.streets'</span></tt>, <tt class="docutils literal"><span class="pre">'google.physical'</span></tt>, <tt class="docutils literal"><span class="pre">'google.satellite'</span></tt>, <tt class="docutils literal"><span class="pre">'google.hybrid'</span></tt>,</dd>
+<dt>Microsoft VirtualEarth</dt>
+<dd><tt class="docutils literal"><span class="pre">'ve.road'</span></tt>, <tt class="docutils literal"><span class="pre">'ve.shaded'</span></tt>, <tt class="docutils literal"><span class="pre">'ve.aerial'</span></tt>, <tt class="docutils literal"><span class="pre">'ve.hybrid'</span></tt>,</dd>
+<dt>WMS</dt>
+<dd><tt class="docutils literal"><span class="pre">'wms.map'</span></tt>, <tt class="docutils literal"><span class="pre">'wms.nasa'</span></tt>, <tt class="docutils literal"><span class="pre">'wms.blank'</span></tt> (blank map)</dd>
+<dt>Yahoo</dt>
+<dd><tt class="docutils literal"><span class="pre">'yahoo.map'</span></tt></dd>
+<dt>CloudMade</dt>
+<dd><tt class="docutils literal"><span class="pre">'cloudmade.&lt;num&gt;'</span></tt> (where <tt class="docutils literal"><span class="pre">&lt;num&gt;</span></tt> is the number for a cloudmade
+style).</dd>
+</dl>
+<p class="last">Remember to include <tt class="docutils literal"><span class="pre">GOOGLE_API_KEY</span></tt>, <tt class="docutils literal"><span class="pre">YAHOO_APP_ID</span></tt>, or
+<tt class="docutils literal"><span class="pre">CLOUDMADE_API_KEY</span></tt> in your <tt class="docutils literal"><span class="pre">settings.py</span></tt> if you use any of those
+layers.</p>
+</dd>
 <dt><tt class="docutils literal"><span class="pre">default_lat</span></tt> (float; default 0)</dt>
 <dd>Latitude for the center point of the map.</dd>
 <dt><tt class="docutils literal"><span class="pre">default_lon</span></tt> (float; default 0)</dt>
 <dd>Longitude for the center point of the map.</dd>
 <dt><tt class="docutils literal"><span class="pre">default_zoom</span></tt> (int; default <tt class="docutils literal"><span class="pre">4</span></tt>)</dt>
-<dd>The zoom level to use on the map.</dd>
+<dd>The starting zoom level to use on the map.</dd>
 <dt><tt class="docutils literal"><span class="pre">zoom_to_data_extent</span></tt> (<tt class="xref docutils literal"><span class="pre">True</span></tt>/<tt class="xref docutils literal"><span class="pre">False</span></tt>; default <tt class="xref docutils literal"><span class="pre">True</span></tt>)</dt>
 <dd>If <tt class="xref docutils literal"><span class="pre">True</span></tt>, the map will zoom to the extent of its vector data instead of
 <tt class="docutils literal"><span class="pre">default_zoom</span></tt>, <tt class="docutils literal"><span class="pre">default_lat</span></tt>, and <tt class="docutils literal"><span class="pre">default_lon</span></tt>.  If no vector data
 is present, the map will use the defaults.</dd>
+<dt><tt class="docutils literal"><span class="pre">map_div_class</span></tt> (string; default <tt class="docutils literal"><span class="pre">''</span></tt>)</dt>
+<dd>A CSS class name to add to the div which is created to contain the map.</dd>
+<dt><tt class="docutils literal"><span class="pre">map_div_style</span></tt> (dict, default <tt class="docutils literal"><span class="pre">{width:</span> <span class="pre">'600px',</span> <span class="pre">height:</span> <span class="pre">'400px'}</span></tt>)</dt>
+<dd>A set of CSS style definitions to apply to the div which is created to
+contain the map.</dd>
+<dt><tt class="docutils literal"><span class="pre">map_options</span></tt> (dict)</dt>
+<dd><p class="first">A dict containing options for the OpenLayers Map constructor.
+Properties may include:</p>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">units</span></tt>: (string) default <tt class="docutils literal"><span class="pre">'m'</span></tt> (meters)</li>
+<li><tt class="docutils literal"><span class="pre">projection</span></tt>: (string) default <tt class="docutils literal"><span class="pre">&quot;EPSG:900913&quot;</span></tt> (the projection used
+by Google, OSM, Yahoo, and VirtualEarth).</li>
+<li><tt class="docutils literal"><span class="pre">display_projection</span></tt>: (string) default <tt class="docutils literal"><span class="pre">&quot;EPSG:4326&quot;</span></tt> (the latitude
+and longitude we&#8217;re all familiar with).</li>
+<li><tt class="docutils literal"><span class="pre">max_resolution</span></tt>: (float) default <tt class="docutils literal"><span class="pre">156543.0339</span></tt>.  Value should be
+expressed in the projection specified in <tt class="docutils literal"><span class="pre">projection</span></tt>.</li>
+<li><tt class="docutils literal"><span class="pre">max_extent</span></tt>: default <tt class="docutils literal"><span class="pre">[-20037508.34,</span> <span class="pre">-20037508.34,</span> <span class="pre">20037508.34,</span>
+<span class="pre">20037508.34]</span></tt>.  Values should be expressed in the projection specified
+in <tt class="docutils literal"><span class="pre">projection</span></tt>.</li>
+<li><tt class="docutils literal"><span class="pre">controls</span></tt>: (array of strings) default <tt class="docutils literal"><span class="pre">['LayerSwitcher',</span>
+<span class="pre">'Navigation',</span> <span class="pre">'PanZoom',</span> <span class="pre">'Attribution']</span></tt>
+The strings should be <a class="reference external" href="http://dev.openlayers.org/releases/OpenLayers-2.8/doc/apidocs/files/OpenLayers/Control-js.html">class names for map controls</a>,
+which will be instantiated without arguments.</li>
+</ul>
+<p class="last">Any additional parameters available to the <a class="reference external" href="http://dev.openlayers.org/docs/files/OpenLayers/Map-js.html#OpenLayers.Map.Constructor">OpenLayers.Map.Constructor</a>
+may be included, and will be passed directly.</p>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">popups_outside</span></tt> (boolean; default <tt class="docutils literal"><span class="pre">false</span></tt>)</dt>
+<dd>If false, popups are contained within the map&#8217;s viewport.  If true, popups
+may expand outside the map&#8217;s viewport.</dd>
+<dt><tt class="docutils literal"><span class="pre">popup_direction</span></tt> (string; default <tt class="docutils literal"><span class="pre">auto</span></tt>)</dt>
+<dd><p class="first">The direction from the clicked geometry that a popup will extend.  This may
+be one of:</p>
+<ul class="last simple">
+<li><tt class="docutils literal"><span class="pre">tr</span></tt> &#8211; top right</li>
+<li><tt class="docutils literal"><span class="pre">tl</span></tt> &#8211; top left</li>
+<li><tt class="docutils literal"><span class="pre">br</span></tt> &#8211; bottom right</li>
+<li><tt class="docutils literal"><span class="pre">bl</span></tt> &#8211; bottom left</li>
+<li><tt class="docutils literal"><span class="pre">auto</span></tt> &#8211; automatically choose direction.</li>
+</ul>
+</dd>
+</dl>
+<dl class="docutils" id="cluster-display">
+<dt><tt class="docutils literal"><span class="pre">cluster_display</span></tt> (string; default <tt class="docutils literal"><span class="pre">'paginate'</span></tt>)</dt>
+<dd><p class="first">The way HTML from clustered points is handled (see <a class="reference internal" href="#cluster">cluster</a>):</p>
+<ul class="last simple">
+<li><tt class="docutils literal"><span class="pre">'list'</span></tt> &#8211; constructs an unordered list of contents</li>
+<li><tt class="docutils literal"><span class="pre">'paginate'</span></tt> &#8211; adds a pagination control to the popup to click through
+the different points&#8217; HTML.</li>
+</ul>
+</dd>
+</dl>
+</div>
+<div class="section" id="layer-options">
+<h3>Layer options<a class="headerlink" href="#layer-options" title="Permalink to this headline">¶</a></h3>
+<p>Layer options can also be specified at the map level.  Any options passed to a
+layer override the corresponding options from the map.</p>
+<dl class="docutils">
+<dt><tt class="docutils literal"><span class="pre">name</span></tt> (string; defaults to <tt class="docutils literal"><span class="pre">&quot;data&quot;</span></tt>)</dt>
+<dd>The name of the overlay layer for the map (shown in the layer switcher).</dd>
 <dt><tt class="docutils literal"><span class="pre">overlay_style</span></tt> (dict)</dt>
 <dd><p class="first">A dict of style definitions for the geometry overlays.  For more on overlay
 styling, consult the OpenLayers <a class="reference external" href="http://docs.openlayers.org/library/feature_styling.html">styling documentation</a>.  Options
@@ -308,77 +598,20 @@ rendering.</li>
 <dd>A dict containing javascript functions which expand symbolizers in
 <tt class="docutils literal"><span class="pre">overlay_style</span></tt>.  See
 <a class="reference external" href="examples/info_cluster_per_point_style.html">this example</a> for a
-javascript usage example.</dd>
-<dt><tt class="docutils literal"><span class="pre">map_div_class</span></tt> (string; default <tt class="docutils literal"><span class="pre">''</span></tt>)</dt>
-<dd>A CSS class name to add to the div which is created to contain the map.</dd>
-<dt><tt class="docutils literal"><span class="pre">map_div_style</span></tt> (dict, default <tt class="docutils literal"><span class="pre">{width:</span> <span class="pre">'600px',</span> <span class="pre">height:</span> <span class="pre">'400px'}</span></tt>)</dt>
-<dd>A set of CSS style definitions to apply to the div which is created to
-contain the map.</dd>
-<dt><tt class="docutils literal"><span class="pre">map_options</span></tt> (dict)</dt>
-<dd><p class="first">A dict containing options for the OpenLayers Map constructor.
-Properties may include:</p>
-<ul class="simple">
-<li><tt class="docutils literal"><span class="pre">units</span></tt>: (string) default <tt class="docutils literal"><span class="pre">'m'</span></tt> (meters)</li>
-<li><tt class="docutils literal"><span class="pre">projection</span></tt>: (string) default <tt class="docutils literal"><span class="pre">&quot;EPSG:900913&quot;</span></tt> (the projection used
-by Google, OSM, Yahoo, and VirtualEarth).</li>
-<li><tt class="docutils literal"><span class="pre">display_projection</span></tt>: (string) default <tt class="docutils literal"><span class="pre">&quot;EPSG:4326&quot;</span></tt> (the latitude
-and longitude we&#8217;re all familiar with).</li>
-<li><tt class="docutils literal"><span class="pre">max_resolution</span></tt>: (float) default <tt class="docutils literal"><span class="pre">156543.0339</span></tt>.  Value should be
-expressed in the projection specified in <tt class="docutils literal"><span class="pre">projection</span></tt>.</li>
-<li><tt class="docutils literal"><span class="pre">max_extent</span></tt>: default <tt class="docutils literal"><span class="pre">[-20037508.34,</span> <span class="pre">-20037508.34,</span> <span class="pre">20037508.34,</span>
-<span class="pre">20037508.34]</span></tt>.  Values should be expressed in the projection specified
-in <tt class="docutils literal"><span class="pre">projection</span></tt>.</li>
-<li><tt class="docutils literal"><span class="pre">controls</span></tt>: (array of strings) default <tt class="docutils literal"><span class="pre">['LayerSwitcher',</span>
-<span class="pre">'Navigation',</span> <span class="pre">'PanZoom',</span> <span class="pre">'Attribution']</span></tt>
-The strings should be <a class="reference external" href="http://dev.openlayers.org/releases/OpenLayers-2.8/doc/apidocs/files/OpenLayers/Control-js.html">class names for map controls</a>,
-which will be instantiated without arguments.</li>
-</ul>
-<p class="last">Any additional parameters available to the <a class="reference external" href="http://dev.openlayers.org/docs/files/OpenLayers/Map-js.html#OpenLayers.Map.Constructor">OpenLayers.Map.Constructor</a>
-may be included, and will be passed directly.</p>
-</dd>
-</dl>
-</div>
-<div class="section" id="additional-options-for-editablemap-and-mapdisplay-types">
-<h3>Additional options for <tt class="docutils literal"><span class="pre">EditableMap</span></tt> and <tt class="docutils literal"><span class="pre">MapDisplay</span></tt> types<a class="headerlink" href="#additional-options-for-editablemap-and-mapdisplay-types" title="Permalink to this headline">¶</a></h3>
-<p>In addition to the common options listed above, <tt class="docutils literal"><span class="pre">EditableMap</span></tt> and
-<tt class="docutils literal"><span class="pre">MapDisplay</span></tt>, and <tt class="docutils literal"><span class="pre">GeoModelAdmin</span></tt> accept the following options:</p>
-<dl class="docutils">
+javascript usage example.  Note that javascript functions can&#8217;t be
+specified directly from python in an <tt class="docutils literal"><span class="pre">options</span></tt> dict, as the serializer
+will interpret them as strings.  Instead, they must be specified manually
+in a template.</dd>
 <dt><tt class="docutils literal"><span class="pre">hide_textarea</span></tt> (boolean; default <tt class="docutils literal"><span class="pre">true</span></tt>)</dt>
-<dd>Hides the textarea if true.</dd>
+<dd>Hides the textarea if true.  Ignored if the layer does not have an
+associated textarea.</dd>
 <dt><tt class="docutils literal"><span class="pre">editable</span></tt> (boolean, default <tt class="docutils literal"><span class="pre">true</span></tt>)</dt>
-<dd>If true, allows editing of geometries.</dd>
+<dd>If true, allows editing of geometries.  Ignored by <tt class="docutils literal"><span class="pre">InfoLayer</span></tt> types.</dd>
 </dl>
-</div>
-<div class="section" id="additional-options-for-infomap">
-<h3>Additional options for <tt class="docutils literal"><span class="pre">InfoMap</span></tt><a class="headerlink" href="#additional-options-for-infomap" title="Permalink to this headline">¶</a></h3>
-<p>In addition to the common options listed above, <tt class="docutils literal"><span class="pre">InfoMap</span></tt> accepts the
-following options:</p>
-<dl class="docutils">
-<dt><tt class="docutils literal"><span class="pre">popups_outside</span></tt> (boolean; default <tt class="docutils literal"><span class="pre">false</span></tt>)</dt>
-<dd>If false, popups are contained within the map&#8217;s viewport.  If true, popups
-may expand outside the map&#8217;s viewport.</dd>
-<dt><tt class="docutils literal"><span class="pre">popup_direction</span></tt> (string; default <tt class="docutils literal"><span class="pre">auto</span></tt>)</dt>
-<dd><p class="first">The direction from the clicked geometry that a popup will extend.  This may
-be one of:</p>
-<ul class="last simple">
-<li><tt class="docutils literal"><span class="pre">tr</span></tt> &#8211; top right</li>
-<li><tt class="docutils literal"><span class="pre">tl</span></tt> &#8211; top left</li>
-<li><tt class="docutils literal"><span class="pre">br</span></tt> &#8211; bottom right</li>
-<li><tt class="docutils literal"><span class="pre">bl</span></tt> &#8211; bottom left</li>
-<li><tt class="docutils literal"><span class="pre">auto</span></tt> &#8211; automatically choose direction.</li>
-</ul>
-</dd>
+<dl class="docutils" id="cluster">
 <dt><tt class="docutils literal"><span class="pre">cluster</span></tt> (boolean; default <tt class="docutils literal"><span class="pre">false</span></tt>)</dt>
 <dd>If true, points will be clustered using the <a class="reference external" href="http://dev.openlayers.org/releases/OpenLayers-2.7/doc/apidocs/files/OpenLayers/Strategy/Cluster-js.html">OpenLayers.Strategy.ClusterStrategy</a>.
-(see <a class="reference external" href="examples/info_cluster.html">this cluster example</a>).</dd>
-<dt><tt class="docutils literal"><span class="pre">cluster_display</span></tt> (string; default <tt class="docutils literal"><span class="pre">'paginate'</span></tt>)</dt>
-<dd><p class="first">The way HTML from clustered points is handled:</p>
-<ul class="last simple">
-<li><tt class="docutils literal"><span class="pre">'list'</span></tt> &#8211; constructs an unordered list of contents</li>
-<li><tt class="docutils literal"><span class="pre">'paginate'</span></tt> &#8211; adds a pagination control to the popup to click through
-the different points&#8217; HTML.</li>
-</ul>
-</dd>
+(see <a class="reference external" href="examples/info_cluster.html">this cluster example</a>).  See also <a class="reference internal" href="#cluster-display">cluster display</a>.</dd>
 <dt><tt class="docutils literal"><span class="pre">cluster_style</span></tt> (dict)</dt>
 <dd><p class="first">The default style is:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="p">{</span>
@@ -408,12 +641,24 @@ this programatic replacement.</p>
         <div class="sphinxsidebarwrapper">
             <h3><a href="index.html">Table Of Contents</a></h3>
             <ul>
-<li><a class="reference external" href="">django-olwidget documentation</a><ul>
+<li><a class="reference external" href="#">django-olwidget documentation</a><ul>
 <li><a class="reference external" href="#installation">Installation</a></li>
-<li><a class="reference external" href="#map-widgets">Map widgets</a><ul>
+<li><a class="reference external" href="#getting-started">Getting started</a></li>
+<li><a class="reference external" href="#fields">Fields</a><ul>
+<li><a class="reference external" href="#mapfield-editablelayerfield-infolayerfield">MapField, EditableLayerField, InfoLayerField</a><ul>
+<li><a class="reference external" href="#example">Example</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference external" href="#modelforms">ModelForms</a></li>
+<li><a class="reference external" href="#widgets">Widgets</a><ul>
 <li><a class="reference external" href="#editablemap">EditableMap</a></li>
-<li><a class="reference external" href="#mapdisplay">MapDisplay</a></li>
 <li><a class="reference external" href="#infomap">InfoMap</a></li>
+<li><a class="reference external" href="#map-editablelayer-and-infolayer">Map, EditableLayer, and InfoLayer</a><ul>
+<li><a class="reference external" href="#examples">Examples</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li><a class="reference external" href="#inside-admin">Inside Admin</a><ul>
@@ -421,9 +666,8 @@ this programatic replacement.</p>
 </ul>
 </li>
 <li><a class="reference external" href="#options">Options</a><ul>
-<li><a class="reference external" href="#common-options">Common options</a></li>
-<li><a class="reference external" href="#additional-options-for-editablemap-and-mapdisplay-types">Additional options for <tt class="docutils literal"><span class="pre">EditableMap</span></tt> and <tt class="docutils literal"><span class="pre">MapDisplay</span></tt> types</a></li>
-<li><a class="reference external" href="#additional-options-for-infomap">Additional options for <tt class="docutils literal"><span class="pre">InfoMap</span></tt></a></li>
+<li><a class="reference external" href="#general-map-display">General map display</a></li>
+<li><a class="reference external" href="#layer-options">Layer options</a></li>
 </ul>
 </li>
 </ul>
@@ -467,7 +711,7 @@ this programatic replacement.</p>
     </div>
     <div class="footer">
       &copy; Copyright 2010, Charlie DeTar.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.6.2.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.6.4.
     </div>
   </body>
 </html>

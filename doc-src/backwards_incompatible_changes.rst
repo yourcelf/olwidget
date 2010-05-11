@@ -1,7 +1,32 @@
 .. _backwards-incompatible:
 
-Backwards incompatible changes introduced in v0.3
-=================================================
+Backwards incompatible changes
+==============================
+
+In version 0.4
+~~~~~~~~~~~~~~
+Version 0.4 represents a complete overhaul of olwidget to build in support for
+multiple vector layers.  As such, chances are high that v0.4 will break any
+custom extensions that make use of undocumented implementation details.
+However, the public, documented API from v0.3 is compatible with v0.4.  The
+following are notable changes that have a higher probability of breaking your
+app if you did customization.
+
+django-olwidget changes
+-----------------------
+* The template format and context variables used in the templates have 
+  changed, which will break custom map rendering templates.
+* The ID's used for form elements have changed, which will break custom
+  javascript that accesses form elements directly.
+
+olwidget.js changes
+-------------------
+* ``map.vector_layer`` no longer exists; it has been replaced with an array,
+  ``map.vector_layers``.
+
+In version 0.3
+~~~~~~~~~~~~~~
+
 django-olwidget changes
 -----------------------
 * 2009-04-13: Changed the media for the olwidget app to live in
@@ -13,8 +38,36 @@ django-olwidget changes
   this good idea).  This doesn't change any URLs, but it has the potential to
   break symlink paths from previous installations.
 
-Backwards incompatible changes introduced in v0.2
-=================================================
+In version 0.2
+~~~~~~~~~~~~~~
+
+django-olwidget changes
+-----------------------
+
+* ``olwidget.widgets.OLWidget`` has been renamed ``olwidget.widgets.EditableMap``
+* The ``"olwidget/olwidget.html"`` template has been renamed
+  ``"olwidget/editable_map.html"``
+* The ``admin.custom_geo_admin`` method has been removed.  Instead, just
+  subclass ``olwidget.admin.GeoModelAdmin``.
+* ``olwidget.admin`` No longer inherits from ``django.contrib.admin``.  The old
+  way:
+
+  .. code-block:: python
+
+        from olwidget import admin
+
+        # no longer works
+        admin.site.register(MyModel, admin.GeoModelAdmin)
+
+  Instead, import admin from ``django.contrib`` as normal, and import
+  ``GeoModelAdmin`` from ``olwidget``, like this:
+
+  .. code-block:: python
+        
+        from django.contrib import admin
+        from olwidget.admin import GeoModelAdmin
+
+        admin.site.register(MyModel, GeoModelAdmin)
 
 olwidget.js changes
 -------------------
@@ -54,30 +107,3 @@ olwidget.js changes
         mymap.zoomTo(4);
 
 
-Django app changes
-------------------
-
-* ``olwidget.widgets.OLWidget`` has been renamed ``olwidget.widgets.EditableMap``
-* The ``"olwidget/olwidget.html"`` template has been renamed
-  ``"olwidget/editable_map.html"``
-* The ``admin.custom_geo_admin`` method has been removed.  Instead, just
-  subclass ``olwidget.admin.GeoModelAdmin``.
-* ``olwidget.admin`` No longer inherits from ``django.contrib.admin``.  The old
-  way:
-
-  .. code-block:: python
-
-        from olwidget import admin
-
-        # no longer works
-        admin.site.register(MyModel, admin.GeoModelAdmin)
-
-  Instead, import admin from ``django.contrib`` as normal, and import
-  ``GeoModelAdmin`` from ``olwidget``, like this:
-
-  .. code-block:: python
-        
-        from django.contrib import admin
-        from olwidget.admin import GeoModelAdmin
-
-        admin.site.register(MyModel, GeoModelAdmin)
