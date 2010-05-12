@@ -5,13 +5,13 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Backwards incompatible changes &mdash; olwidget v0.3 documentation</title>
+    <title>Backwards incompatible changes &mdash; olwidget v0.4 alpha documentation</title>
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '#',
-        VERSION:     '0.3',
+        VERSION:     '0.4 alpha',
         COLLAPSE_MODINDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -19,7 +19,7 @@
     </script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="olwidget v0.3 documentation" href="index.html" />
+    <link rel="top" title="olwidget v0.4 alpha documentation" href="index.html" />
     <link rel="prev" title="Examples" href="examples.html" /> 
   </head>
   <body>
@@ -29,7 +29,7 @@
         <li class="right" style="margin-right: 10px">
           <a href="examples.html" title="Examples"
              accesskey="P">previous</a></li>
-        <li><a href="index.html">olwidget v0.3 documentation</a> &raquo;</li> 
+        <li><a href="index.html">olwidget v0.4 alpha documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -44,7 +44,7 @@
 <h2>In version 0.4<a class="headerlink" href="#in-version-0-4" title="Permalink to this headline">¶</a></h2>
 <p>Version 0.4 represents a complete overhaul of olwidget to build in support for
 multiple vector layers.  As such, chances are high that v0.4 will break any
-custom extensions that make use of internal, undocumented functionality.
+custom extensions that make use of undocumented implementation details.
 However, the public, documented API from v0.3 is compatible with v0.4.  The
 following are notable changes that have a higher probability of breaking your
 app if you did customization.</p>
@@ -62,6 +62,9 @@ javascript that accesses form elements directly.</li>
 <ul class="simple">
 <li><tt class="docutils literal"><span class="pre">map.vector_layer</span></tt> no longer exists; it has been replaced with an array,
 <tt class="docutils literal"><span class="pre">map.vector_layers</span></tt>.</li>
+<li><tt class="docutils literal"><span class="pre">olwidget.js</span></tt> now uses version 2.9 of the OpenLayers API.  Django users
+should get this change automatically, but <tt class="docutils literal"><span class="pre">olwidget.js</span></tt> users will have to
+change their script tags for the OpenLayers import.</li>
 </ul>
 </div>
 </div>
@@ -203,7 +206,7 @@ customizations that access the base map type.</p>
         <li class="right" style="margin-right: 10px">
           <a href="examples.html" title="Examples"
              >previous</a></li>
-        <li><a href="index.html">olwidget v0.3 documentation</a> &raquo;</li> 
+        <li><a href="index.html">olwidget v0.4 alpha documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">

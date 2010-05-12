@@ -7,7 +7,7 @@ In version 0.4
 ~~~~~~~~~~~~~~
 Version 0.4 represents a complete overhaul of olwidget to build in support for
 multiple vector layers.  As such, chances are high that v0.4 will break any
-custom extensions that make use of internal, undocumented functionality.
+custom extensions that make use of undocumented implementation details.
 However, the public, documented API from v0.3 is compatible with v0.4.  The
 following are notable changes that have a higher probability of breaking your
 app if you did customization.
@@ -23,6 +23,9 @@ olwidget.js changes
 -------------------
 * ``map.vector_layer`` no longer exists; it has been replaced with an array,
   ``map.vector_layers``.
+* ``olwidget.js`` now uses version 2.9 of the OpenLayers API.  Django users
+  should get this change automatically, but ``olwidget.js`` users will have to
+  change their script tags for the OpenLayers import.
 
 In version 0.3
 ~~~~~~~~~~~~~~

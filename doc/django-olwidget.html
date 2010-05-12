@@ -5,13 +5,13 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>django-olwidget documentation &mdash; olwidget v0.3 documentation</title>
+    <title>django-olwidget documentation &mdash; olwidget v0.4 alpha documentation</title>
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '#',
-        VERSION:     '0.3',
+        VERSION:     '0.4 alpha',
         COLLAPSE_MODINDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -19,7 +19,7 @@
     </script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="olwidget v0.3 documentation" href="index.html" />
+    <link rel="top" title="olwidget v0.4 alpha documentation" href="index.html" />
     <link rel="next" title="olwidget.js documentation" href="olwidget.js.html" />
     <link rel="prev" title="Welcome to olwidget’s documentation!" href="index.html" /> 
   </head>
@@ -33,7 +33,7 @@
         <li class="right" >
           <a href="index.html" title="Welcome to olwidget’s documentation!"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">olwidget v0.3 documentation</a> &raquo;</li> 
+        <li><a href="index.html">olwidget v0.4 alpha documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -73,7 +73,7 @@ in your settings file.  <tt class="docutils literal"><span class="pre">olwidget<
 default, which requires no key.</p>
 </li>
 </ol>
-<p>OLWidget includes a test project demonstrating some of the <tt class="docutils literal"><span class="pre">olwidget</span></tt> app&#8217;s
+<p><tt class="docutils literal"><span class="pre">olwidget</span></tt> includes a test project demonstrating some of the <tt class="docutils literal"><span class="pre">olwidget</span></tt> app&#8217;s
 functionality; this can be found in the <tt class="docutils literal"><span class="pre">django-olwidget/test_project</span></tt>
 directory.  To use it, modify the <tt class="docutils literal"><span class="pre">settings.py</span></tt> directory to reflect your
 database settings.  For convenience, a shell script, <tt class="docutils literal"><span class="pre">reset_testolwidget.sh</span></tt>,
@@ -83,9 +83,9 @@ is included to set up the database using <tt class="docutils literal"><span clas
 <h2>Getting started<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h2>
 <p>A quick guide to the <tt class="docutils literal"><span class="pre">olwidget</span></tt> module contents:</p>
 <dl class="docutils">
-<dt>For multi-layer map editing in forms &#8211; <tt class="docutils literal"><span class="pre">fields</span></tt></dt>
+<dt>Fields: for multi-layer map editing in forms:</dt>
 <dd><a class="reference internal" href="#mapfield">MapField</a>, <a class="reference internal" href="#editablelayerfield">EditableLayerField</a>, and <a class="reference internal" href="#infolayerfield">InfoLayerField</a></dd>
-<dt>For display outside forms, or to make custom fields &#8211; <tt class="docutils literal"><span class="pre">widgets</span></tt></dt>
+<dt>Widgets: for display outside forms, or to make custom fields:</dt>
 <dd><dl class="first last docutils">
 <dt>Single layer:</dt>
 <dd><a class="reference internal" href="#editablemap">EditableMap</a>
@@ -94,9 +94,9 @@ is included to set up the database using <tt class="docutils literal"><span clas
 <dd><a class="reference internal" href="#map-editablelayer-and-infolayer">Map, EditableLayer, and InfoLayer</a></dd>
 </dl>
 </dd>
-<dt>For ModelForm convenience with multi- or single-layer maps &#8211; <tt class="docutils literal"><span class="pre">forms</span></tt></dt>
+<dt>Forms: for ModelForm convenience with multi- or single-layer maps:</dt>
 <dd><a class="reference internal" href="#mapmodelform">MapModelForm</a></dd>
-<dt><tt class="docutils literal"><span class="pre">olwidget</span></tt> looks great in <tt class="docutils literal"><span class="pre">admin</span></tt></dt>
+<dt>olwidget looks great in admin:</dt>
 <dd><a class="reference internal" href="#geomodeladmin">GeoModelAdmin</a></dd>
 </dl>
 <p>And of course, customization of all types: <a class="reference internal" href="#options">options</a></p>
@@ -323,7 +323,7 @@ display on the map.</dd>
 <dt><tt class="docutils literal"><span class="pre">layer_names</span></tt></dt>
 <dd>An optional list of names to use for the layers&#8217; POST data.</dd>
 </dl>
-<p><tt class="docutils literal"><span class="pre">EditableLayer</span></tt> constructor:</p>
+<p><strong>EditableLayer</strong> constructor:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="n">olwidget</span><span class="o">.</span><span class="n">widgets</span><span class="o">.</span><span class="n">EditableLayer</span><span class="p">(</span><span class="n">options</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">template</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -333,7 +333,7 @@ display on the map.</dd>
 <dt><tt class="docutils literal"><span class="pre">template</span></tt></dt>
 <dd>An optional template to use to render this layer&#8217;s javascript.</dd>
 </dl>
-<p><tt class="docutils literal"><span class="pre">InfoLayer</span></tt> constructor:</p>
+<p><strong>InfoLayer</strong> constructor:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="n">olwidget</span><span class="o">.</span><span class="n">widgets</span><span class="o">.</span><span class="n">InfoLayer</span><span class="p">(</span><span class="n">info</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">template</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -355,7 +355,7 @@ parameter is used for individual styling of the geometry within the layer.</dd>
     <span class="p">],</span> <span class="p">{</span> <span class="n">overlay_style</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;fill_color&#39;</span><span class="p">:</span> <span class="s">&#39;#ffffff&#39;</span><span class="p">}</span> <span class="p">})</span>
 </pre></div>
 </div>
-<p>In a template (for both examples):</p>
+<p>In a template:</p>
 <div class="highlight-django"><div class="highlight"><pre><span class="x">&lt;head&gt; ... </span><span class="cp">{{</span> <span class="nv">mymap.media</span> <span class="cp">}}</span><span class="x"> ... &lt;/head&gt;</span>
 <span class="x">&lt;body&gt; ...    </span><span class="cp">{{</span> <span class="nv">mymap</span> <span class="cp">}}</span><span class="x">    ... &lt;/body&gt;</span>
 </pre></div>
@@ -368,7 +368,8 @@ parameter is used for individual styling of the geometry within the layer.</dd>
 <p><tt class="docutils literal"><span class="pre">olwidget</span></tt> has several advantages over the built-in geodjango admin map
 implementation, including greater map customization, support for more geometry
 types, the ability to edit multiple fields using one map, and the option to
-include a map in admin changelist pages.</p>
+include a map in admin changelist pages, on top of basic usability like
+undo/redo and the ability to delete individual vertices.</p>
 <p>To use <tt class="docutils literal"><span class="pre">olwidget</span></tt> for admin, simply use <tt class="docutils literal"><span class="pre">olwidget.admin.GeoModelAdmin</span></tt> or a
 subclass of it as the ModelAdmin type for your model.</p>
 <p>Example using <tt class="docutils literal"><span class="pre">olwidget</span></tt> in admin:</p>
@@ -456,8 +457,8 @@ property:</p>
 <span id="id1"></span><h2>Options<a class="headerlink" href="#options" title="Permalink to this headline">¶</a></h2>
 <p>Maps are both important user interface elements, and powerful persuasive data
 displays.  Consequently, it is necessary to support a high degree of
-customization around the appearance of a map.  OLWidget does this primarily
-through the use of OpenLayers&#8217; style framework.  All of OLWidget&#8217;s types accept
+customization around the appearance of a map.  <tt class="docutils literal"><span class="pre">olwidget</span></tt> does this primarily
+through the use of OpenLayers&#8217; style framework.  All of <tt class="docutils literal"><span class="pre">olwidget</span></tt>&#8216;s types accept
 an optional <tt class="docutils literal"><span class="pre">options</span></tt> dict which controls the appearance of the map and
 layers.</p>
 <p>Layers inherit their styles from both their default parameters, and from those
@@ -610,24 +611,10 @@ associated textarea.</dd>
 </dl>
 <dl class="docutils" id="cluster">
 <dt><tt class="docutils literal"><span class="pre">cluster</span></tt> (boolean; default <tt class="docutils literal"><span class="pre">false</span></tt>)</dt>
-<dd>If true, points will be clustered using the <a class="reference external" href="http://dev.openlayers.org/releases/OpenLayers-2.7/doc/apidocs/files/OpenLayers/Strategy/Cluster-js.html">OpenLayers.Strategy.ClusterStrategy</a>.
-(see <a class="reference external" href="examples/info_cluster.html">this cluster example</a>).  See also <a class="reference internal" href="#cluster-display">cluster display</a>.</dd>
-<dt><tt class="docutils literal"><span class="pre">cluster_style</span></tt> (dict)</dt>
-<dd><p class="first">The default style is:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="p">{</span>
-    <span class="n">point_radius</span><span class="p">:</span> <span class="s">&quot;${radius}&quot;</span><span class="p">,</span>
-    <span class="n">stroke_width</span><span class="p">:</span> <span class="s">&quot;${width}&quot;</span><span class="p">,</span>
-    <span class="n">label</span><span class="p">:</span> <span class="s">&quot;${label}&quot;</span><span class="p">,</span>
-    <span class="n">font_size</span><span class="p">:</span> <span class="s">&quot;11px&quot;</span><span class="p">,</span>
-    <span class="n">font_family</span><span class="p">:</span> <span class="s">&quot;Helvetica, sans-serif&quot;</span><span class="p">,</span>
-    <span class="n">font_color</span><span class="p">:</span> <span class="s">&quot;#ffffff&quot;</span>
-<span class="p">}</span>
-</pre></div>
-</div>
-<p class="last">The arguments expressed with <tt class="docutils literal"><span class="pre">${}</span></tt> are programmatically replaced with
-values based on the cluster.  Setting them to specific values will prevent
-this programatic replacement.</p>
-</dd>
+<dd>If true, points will be clustered using the
+<a class="reference external" href="http://dev.openlayers.org/releases/OpenLayers-2.7/doc/apidocs/files/OpenLayers/Strategy/Cluster-js.html">OpenLayers.Strategy.ClusterStrategy</a>.
+(see <a class="reference external" href="examples/info_cluster.html">this cluster example</a>).  See also
+<a class="reference internal" href="#cluster-display">cluster display</a>.</dd>
 </dl>
 </div>
 </div>
@@ -706,7 +693,7 @@ this programatic replacement.</p>
         <li class="right" >
           <a href="index.html" title="Welcome to olwidget’s documentation!"
              >previous</a> |</li>
-        <li><a href="index.html">olwidget v0.3 documentation</a> &raquo;</li> 
+        <li><a href="index.html">olwidget v0.4 alpha documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">

@@ -5,13 +5,13 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>olwidget.js documentation &mdash; olwidget v0.3 documentation</title>
+    <title>olwidget.js documentation &mdash; olwidget v0.4 alpha documentation</title>
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '#',
-        VERSION:     '0.3',
+        VERSION:     '0.4 alpha',
         COLLAPSE_MODINDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -19,7 +19,7 @@
     </script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="olwidget v0.3 documentation" href="index.html" />
+    <link rel="top" title="olwidget v0.4 alpha documentation" href="index.html" />
     <link rel="next" title="Examples" href="examples.html" />
     <link rel="prev" title="django-olwidget documentation" href="django-olwidget.html" /> 
   </head>
@@ -33,7 +33,7 @@
         <li class="right" >
           <a href="django-olwidget.html" title="django-olwidget documentation"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">olwidget v0.3 documentation</a> &raquo;</li> 
+        <li><a href="index.html">olwidget v0.4 alpha documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -46,21 +46,49 @@
 <span id="olwidget-js"></span><h1>olwidget.js documentation<a class="headerlink" href="#olwidget-js-documentation" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="introduction">
 <h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
-<p><tt class="docutils literal"><span class="pre">olwidget</span></tt> is a javascript library to make editing and displaying geometries
-and information on OpenLayers maps easier.  It defines two primary types:</p>
+<p><tt class="docutils literal"><span class="pre">olwidget.js</span></tt> is a standalone javascript library to make editing and
+displaying geometries and information on OpenLayers maps easier.  The library
+defines two main types of objects &#8211; map types and vector layer types.  Maps
+may contain one or more vector layer, which may be editable, or may contain
+features which produce popup bubbles when clicked.</p>
+</div>
+<div class="section" id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<p>Copy or link the olwidget media directory (which contains <tt class="docutils literal"><span class="pre">js/</span></tt>, <tt class="docutils literal"><span class="pre">css/</span></tt>,
+and <tt class="docutils literal"><span class="pre">img/</span></tt> directories into your website&#8217;s path.  The three directories
+should share a parent.</p>
+</div>
+<div class="section" id="documentation">
+<h2>Documentation<a class="headerlink" href="#documentation" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="map-types">
+<h3>Map types<a class="headerlink" href="#map-types" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
-<li><tt class="docutils literal"><span class="pre">olwidget.EditableMap</span></tt> is a map class that turns a textarea containing <a class="reference external" href="http://en.wikipedia.org/wiki/Well-known_text">WKT</a> geometry into an editable
-map.  The map writes EWKT geometry (WKT with explicit SRID) to the textarea
-for later processing in forms.  This is useful for anywhere you need a form
-to enter or edit precise geographic geometries for storage in a GIS database
-such as <a class="reference external" href="http://postgis.refractions.net/">PostGIS</a>.</li>
-<li><tt class="docutils literal"><span class="pre">olwidget.InfoMap</span></tt> is a map class that displays popup info-windows over
+<li><a class="reference internal" href="#olwidget-map">olwidget.Map</a> is the primary map class.  It extends <a class="reference external" href="http://dev.openlayers.org/docs/files/OpenLayers/Map-js.html">OpenLayers.Map</a>, and provides
+the infrastructure for handling <a class="reference internal" href="#olwidget-editablelayer">olwidget.EditableLayer</a> and
+<a class="reference internal" href="#olwidget-infolayer">olwidget.InfoLayer</a> layer types.</li>
+<li><a class="reference internal" href="#olwidget-editablemap">olwidget.EditableMap</a> is a convenience class that defines a map with a single
+<a class="reference internal" href="#olwidget-editablelayer">olwidget.EditableLayer</a> layer.</li>
+<li><a class="reference internal" href="#olwidget-infomap">olwidget.InfoMap</a> is a convenience class that defines a map with a single
+<a class="reference internal" href="#olwidget-infolayer">olwidget.InfoLayer</a> layer.</li>
+</ul>
+</div>
+<div class="section" id="layer-types">
+<h3>Layer types<a class="headerlink" href="#layer-types" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><a class="reference internal" href="#olwidget-editablelayer">olwidget.EditableLayer</a> is a layer class that turns a textarea containing
+<a class="reference external" href="http://en.wikipedia.org/wiki/Well-known_text">WKT</a> geometry into vector
+data for a map, and provides controls for editing the geometries.  The layer
+writes EWKT geometry (WKT with explicit SRID) to the textarea for later
+processing in forms.  This is useful for anywhere you need a form to enter or
+edit precise geographic geometries for storage in a GIS database such as
+<a class="reference external" href="http://postgis.refractions.net/">PostGIS</a>.</li>
+<li><a class="reference internal" href="#olwidget-infolayer">olwidget.InfoLayer</a> is a layer class that displays popup info-windows over
 geometries when clicked.  The popups are stylable using CSS, work with
-clustered as well as non-clustered points, and can be shown both inside
-and outside the Map&#8217;s &#8220;viewport&#8221;.</li>
+clustered as well as non-clustered points, and can be shown both inside and
+outside the Map&#8217;s &#8220;viewport&#8221;.</li>
 </ul>
 <p><tt class="docutils literal"><span class="pre">olwidget</span></tt> supports multiple geometry types, any number of maps per page,
-multiple map providers, and much more (see <a class="reference internal" href="#common-options">Common options</a> below).  A simple
+multiple map providers, and much more (see <a class="reference internal" href="#options">options</a> below).  A simple
 example:</p>
 <div class="highlight-html"><div class="highlight"><pre><span class="nt">&lt;html&gt;</span>
     <span class="nt">&lt;head&gt;</span>
@@ -88,115 +116,204 @@ example:</p>
 </pre></div>
 </div>
 </div>
-<div class="section" id="installation">
-<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
-<p>Copy or link the olwidget/js/, olwidget/css/, and olwidget/img/ directories
-into your website&#8217;s path.  The three directories should share a parent.</p>
 </div>
 <div class="section" id="examples">
 <h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
 <p>See <a class="reference external" href="examples.html#examples"><em>Examples</em></a> for several examples of olwidget in action.</p>
 </div>
-<div class="section" id="documentation">
-<h2>Documentation<a class="headerlink" href="#documentation" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="olwidget-editablemap-constructor">
-<h3>olwidget.EditableMap constructor<a class="headerlink" href="#olwidget-editablemap-constructor" title="Permalink to this headline">¶</a></h3>
-<p>Format:</p>
-<div class="highlight-javascript"><div class="highlight"><pre><span class="k">new</span> <span class="nx">olwidget</span><span class="p">.</span><span class="nx">EditableMap</span><span class="p">(</span><span class="o">&lt;</span><span class="nx">textareaId</span><span class="o">&gt;</span><span class="p">,</span> <span class="p">[</span><span class="nx">options</span><span class="p">]);</span>
+<div class="section" id="maps">
+<h2>Maps<a class="headerlink" href="#maps" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="olwidget-map">
+<h3>olwidget.Map<a class="headerlink" href="#olwidget-map" title="Permalink to this headline">¶</a></h3>
+<p><tt class="docutils literal"><span class="pre">olwidget.Map</span></tt> is the primary map type used by olwidget; the other types are
+just convenience wrappers of this type.  Constructor:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="k">new</span> <span class="nx">olwidget</span><span class="p">.</span><span class="nx">Map</span><span class="p">(</span><span class="nx">mapDivID</span><span class="p">,</span> <span class="nx">vectorLayers</span><span class="p">,</span> <span class="nx">options</span><span class="p">)</span>
 </pre></div>
 </div>
-<ul class="simple">
-<li><tt class="docutils literal"><span class="pre">textareaId</span></tt>: the DOM id of the textarea to replace</li>
-<li><tt class="docutils literal"><span class="pre">options</span></tt>: An object containing options for the resulting map.  All fields
-are optional.</li>
-</ul>
-<p>In addition to the common <a class="reference internal" href="#options">options</a> listed below, <tt class="docutils literal"><span class="pre">EditableMap</span></tt>
-accepts the following options:</p>
 <dl class="docutils">
-<dt><tt class="docutils literal"><span class="pre">geometry</span></tt> (Array or string; defaults to <tt class="docutils literal"><span class="pre">'point'</span></tt>)</dt>
-<dd>The geometry to use for this map.  Choices are <tt class="docutils literal"><span class="pre">'point'</span></tt>,
-<tt class="docutils literal"><span class="pre">'linestring'</span></tt>, and <tt class="docutils literal"><span class="pre">'polygon'</span></tt>.  To allow multiple geometries, use an
-array such as <tt class="docutils literal"><span class="pre">['point',</span> <span class="pre">'linestring',</span> <span class="pre">'polygon']</span></tt>.</dd>
-<dt><tt class="docutils literal"><span class="pre">isCollection</span></tt> (boolean, default <tt class="docutils literal"><span class="pre">false</span></tt>)</dt>
-<dd>If true, allows multiple points/lines/polygons.</dd>
-<dt><tt class="docutils literal"><span class="pre">hideTextarea</span></tt> (boolean; default <tt class="docutils literal"><span class="pre">true</span></tt>)</dt>
-<dd>Hides the textarea if true.</dd>
-<dt><tt class="docutils literal"><span class="pre">editable</span></tt> (boolean, default <tt class="docutils literal"><span class="pre">true</span></tt>)</dt>
-<dd>If true, allows editing of geometries.</dd>
+<dt><tt class="docutils literal"><span class="pre">mapDivId</span></tt></dt>
+<dd>The DOM id of a div in which to create the map.</dd>
+<dt><tt class="docutils literal"><span class="pre">vectorLayers</span></tt></dt>
+<dd>An array of vector layers (<a class="reference internal" href="#olwidget-editablelayer">olwidget.EditableLayer</a> or <a class="reference internal" href="#olwidget-infolayer">olwidget.InfoLayer</a>
+instances).</dd>
+<dt><tt class="docutils literal"><span class="pre">options</span></tt></dt>
+<dd>An object containing <a class="reference internal" href="#options">options</a> to customize the look and feel of the map.</dd>
 </dl>
-</div>
-<div class="section" id="olwidget-infomap-constructor">
-<h3>olwidget.InfoMap constructor<a class="headerlink" href="#olwidget-infomap-constructor" title="Permalink to this headline">¶</a></h3>
-<p>Format:</p>
-<div class="highlight-javascript"><div class="highlight"><pre><span class="k">new</span> <span class="nx">olwidget</span><span class="p">.</span><span class="nx">InfoMap</span><span class="p">(</span><span class="o">&lt;</span><span class="nx">mapDivId</span><span class="o">&gt;</span><span class="p">,</span> <span class="o">&lt;</span><span class="nx">infoArray</span><span class="o">&gt;</span><span class="p">,</span> <span class="p">[</span><span class="nx">options</span><span class="p">]);</span>
+<div class="section" id="example">
+<h4>Example<a class="headerlink" href="#example" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-html" id="map-example"><div class="highlight"><pre><span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">&quot;map&quot;</span><span class="nt">&gt;&lt;/div&gt;</span>
+<span class="nt">&lt;script </span><span class="na">type=</span><span class="s">&#39;text/javascript&#39;</span><span class="nt">&gt;</span>
+    <span class="k">new</span> <span class="nx">olwidget</span><span class="p">.</span><span class="nx">Map</span><span class="p">(</span><span class="s2">&quot;map&quot;</span><span class="p">,</span> <span class="p">[</span>
+        <span class="k">new</span> <span class="nx">olwidget</span><span class="p">.</span><span class="nx">InfoLayer</span><span class="p">([[</span><span class="s2">&quot;POINT (0 0)&quot;</span><span class="p">,</span> <span class="s2">&quot;the origin&quot;</span><span class="p">]],</span> <span class="p">{</span>
+            <span class="nx">name</span><span class="o">:</span> <span class="s2">&quot;Origin&quot;</span>
+        <span class="p">}),</span>
+        <span class="k">new</span> <span class="nx">olwidget</span><span class="p">.</span><span class="nx">InfoLayer</span><span class="p">([[</span><span class="s2">&quot;POINT (1 0)&quot;</span><span class="p">,</span> <span class="s2">&quot;one degree off&quot;</span><span class="p">]],</span> <span class="p">{</span>
+            <span class="nx">name</span><span class="o">:</span> <span class="s2">&quot;A little off&quot;</span>
+        <span class="p">})</span>
+    <span class="p">],</span> <span class="p">{</span>
+        <span class="nx">layers</span><span class="o">:</span> <span class="p">[</span><span class="s1">&#39;osm.mapnik&#39;</span><span class="p">,</span> <span class="s1">&#39;osm.osmarender&#39;</span><span class="p">]</span>
+    <span class="p">});</span>
+<span class="nt">&lt;/script&gt;</span>
 </pre></div>
 </div>
-<ul>
-<li><p class="first"><tt class="docutils literal"><span class="pre">mapDivId</span></tt>: the DOM id of a div to replace with this map.</p>
-</li>
-<li><p class="first"><tt class="docutils literal"><span class="pre">infoArray</span></tt>: an Array of (E)WKT geometries and content HTML for popups, such as:</p>
-<div class="highlight-javascript"><div class="highlight"><pre><span class="p">[</span>
-    <span class="p">[</span><span class="s2">&quot;SRID=4326;POINT(0 0)&quot;</span><span class="p">,</span> <span class="s2">&quot;&lt;p&gt;This is the zero point.&lt;/p&gt;&quot;</span><span class="p">],</span>
-    <span class="p">[</span><span class="s2">&quot;SRID=4326;POINT(10 10)&quot;</span><span class="p">,</span> <span class="s2">&quot;&lt;p&gt;This is longitude 10 and latitude 10.&lt;/p&gt;&quot;</span><span class="p">],</span>
-    <span class="p">...</span>
-<span class="p">]</span>
+</div>
+</div>
+<div class="section" id="olwidget-infomap">
+<h3>olwidget.InfoMap<a class="headerlink" href="#olwidget-infomap" title="Permalink to this headline">¶</a></h3>
+<p><tt class="docutils literal"><span class="pre">olwidget.InfoMap</span></tt> is a convenience type for defining a map with one info
+layer.</p>
+<p>Constructor:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="k">new</span> <span class="nx">olwidget</span><span class="p">.</span><span class="nx">InfoMap</span><span class="p">(</span><span class="nx">mapDivId</span><span class="p">,</span> <span class="nx">info</span><span class="p">,</span> <span class="nx">options</span><span class="p">);</span>
 </pre></div>
 </div>
-<p>Geometries can be displayed with individual styles by passing an object
-containing <tt class="docutils literal"><span class="pre">html</span></tt> and <tt class="docutils literal"><span class="pre">style</span></tt> keys instead of an HTML string:</p>
-<div class="highlight-javascript"><div class="highlight"><pre><span class="p">[</span>
-    <span class="p">[</span><span class="s2">&quot;SRID=4326;POINT(10 10)&quot;</span><span class="p">,</span> <span class="p">{</span>
-        <span class="nx">html</span><span class="o">:</span> <span class="s2">&quot;&lt;p&gt;A good looking point&lt;/p&gt;&quot;</span><span class="p">,</span>
-        <span class="nx">style</span><span class="o">:</span> <span class="p">{</span>
-            <span class="nx">fillColor</span><span class="o">:</span> <span class="s1">&#39;#00FF00&#39;</span>
-        <span class="p">}</span>
-    <span class="p">}],</span>
-    <span class="p">...</span>
-<span class="p">]</span>
-</pre></div>
-</div>
-</li>
-<li><p class="first"><tt class="docutils literal"><span class="pre">options</span></tt>: An object containing options for the resulting map.  All fields
-are optional.</p>
-</li>
-</ul>
-<p>In addition to the common <a class="reference internal" href="#options">options</a> listed below, <tt class="docutils literal"><span class="pre">InfoMap</span></tt> accepts the
-following options:</p>
 <dl class="docutils">
-<dt><tt class="docutils literal"><span class="pre">popupsOutside</span></tt> (boolean; default <tt class="docutils literal"><span class="pre">false</span></tt>)</dt>
-<dd>If false, popups are contained within the map&#8217;s viewport.  If true, popups
-may expand outside the map&#8217;s viewport.</dd>
-<dt><tt class="docutils literal"><span class="pre">popupDirection</span></tt> (string; default <tt class="docutils literal"><span class="pre">auto</span></tt>)</dt>
-<dd><p class="first">The direction from the clicked geometry that a popup will extend.  This may
-be one of:</p>
-<ul class="last simple">
-<li><tt class="docutils literal"><span class="pre">tr</span></tt> &#8211; top right</li>
-<li><tt class="docutils literal"><span class="pre">tl</span></tt> &#8211; top left</li>
-<li><tt class="docutils literal"><span class="pre">br</span></tt> &#8211; bottom right</li>
-<li><tt class="docutils literal"><span class="pre">bl</span></tt> &#8211; bottom left</li>
-<li><tt class="docutils literal"><span class="pre">auto</span></tt> &#8211; automatically choose direction.</li>
-</ul>
-</dd>
-<dt><tt class="docutils literal"><span class="pre">cluster</span></tt> (boolean; default <tt class="docutils literal"><span class="pre">false</span></tt>)</dt>
-<dd>If true, points will be clustered using the <a class="reference external" href="http://dev.openlayers.org/releases/OpenLayers-2.7/doc/apidocs/files/OpenLayers/Strategy/Cluster-js.html">OpenLayers.Strategy.ClusterStrategy</a>.
-(see <a class="reference external" href="examples/info_cluster.html">this cluster example</a>).</dd>
-<dt><tt class="docutils literal"><span class="pre">clusterDisplay</span></tt> (string; default <tt class="docutils literal"><span class="pre">'paginate'</span></tt>)</dt>
-<dd><p class="first">The way HTML from clustered points is handled:</p>
-<ul class="last simple">
-<li><tt class="docutils literal"><span class="pre">'list'</span></tt> &#8211; constructs an unordered list of contents</li>
-<li><tt class="docutils literal"><span class="pre">'paginate'</span></tt> &#8211; adds a pagination control to the popup to click through
-the different points&#8217; HTML.</li>
-</ul>
-</dd>
+<dt><tt class="docutils literal"><span class="pre">mapDivId</span></tt></dt>
+<dd>The DOM id of a div in which to create the map</dd>
+<dt><tt class="docutils literal"><span class="pre">info</span></tt></dt>
+<dd>An array of geometry and HTML pairs for popups.  See <a class="reference internal" href="#olwidget-infolayer">olwidget.InfoLayer</a>
+for more details.</dd>
+<dt><tt class="docutils literal"><span class="pre">options</span></tt></dt>
+<dd>An object containing <a class="reference internal" href="#options">options</a> customizing the map.</dd>
 </dl>
+<p>The following produce identical maps:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="k">new</span> <span class="nx">olwidget</span><span class="p">.</span><span class="nx">InfoMap</span><span class="p">(</span><span class="nx">mapDivId</span><span class="p">,</span> <span class="nx">info</span><span class="p">,</span> <span class="nx">options</span><span class="p">);</span>
+<span class="k">new</span> <span class="nx">olwidget</span><span class="p">.</span><span class="nx">Map</span><span class="p">(</span><span class="nx">mapDivId</span><span class="p">,</span> <span class="p">[</span><span class="k">new</span> <span class="nx">olwidget</span><span class="p">.</span><span class="nx">InfoLayer</span><span class="p">(</span><span class="nx">info</span><span class="p">)],</span> <span class="nx">options</span><span class="p">);</span>
+</pre></div>
 </div>
-<div class="section" id="common-options">
-<span id="options"></span><h3>Common options<a class="headerlink" href="#common-options" title="Permalink to this headline">¶</a></h3>
-<p>The following options are shared by <tt class="docutils literal"><span class="pre">olwidget.EditableMap</span></tt> and
-<tt class="docutils literal"><span class="pre">olwidget.InfoMap</span></tt>:</p>
+</div>
+<div class="section" id="olwidget-editablemap">
+<h3>olwidget.EditableMap<a class="headerlink" href="#olwidget-editablemap" title="Permalink to this headline">¶</a></h3>
+<p><tt class="docutils literal"><span class="pre">olwidget.EditableMap</span></tt> is a convenience type for defining a map with one
+editable layer.</p>
+<p>Constructor:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="k">new</span> <span class="nx">olwidget</span><span class="p">.</span><span class="nx">EditableMap</span><span class="p">(</span><span class="nx">textareaId</span><span class="p">,</span> <span class="nx">options</span><span class="p">);</span>
+</pre></div>
+</div>
 <dl class="docutils">
-<dt><tt class="docutils literal"><span class="pre">name</span></tt> (string; defaults to <tt class="docutils literal"><span class="pre">&quot;data&quot;</span></tt>)</dt>
-<dd>The name of the overlay layer for the map (shown in the layer switcher).</dd>
+<dt><tt class="docutils literal"><span class="pre">textareaId</span></tt></dt>
+<dd>The DOM id of a textarea which contains WKT data for this map.  A div
+containing the map wiill be created dynamically and inserted before this
+textarea.</dd>
+<dt><tt class="docutils literal"><span class="pre">options</span></tt></dt>
+<dd>An object containing <a class="reference internal" href="#options">options</a> customizing the map.</dd>
+</dl>
+<p>The following produce identical maps, with the exception that the
+<tt class="docutils literal"><span class="pre">olwidget.EditableMap</span></tt> creates a <tt class="docutils literal"><span class="pre">div</span></tt> to contain the map dynamically,
+where <tt class="docutils literal"><span class="pre">olwidget.Map</span></tt> does not.</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="k">new</span> <span class="nx">olwidget</span><span class="p">.</span><span class="nx">EditableMap</span><span class="p">(</span><span class="nx">textareaId</span><span class="p">,</span> <span class="nx">options</span><span class="p">);</span>
+<span class="k">new</span> <span class="nx">olwidget</span><span class="p">.</span><span class="nx">Map</span><span class="p">(</span><span class="nx">mapDivId</span><span class="p">,</span> <span class="p">[</span><span class="k">new</span> <span class="nx">olwidget</span><span class="p">.</span><span class="nx">EditableLayer</span><span class="p">(</span><span class="nx">textareaId</span><span class="p">)],</span> <span class="nx">options</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="layers">
+<h2>Layers<a class="headerlink" href="#layers" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="olwidget-editablelayer">
+<h3>olwidget.EditableLayer<a class="headerlink" href="#olwidget-editablelayer" title="Permalink to this headline">¶</a></h3>
+<p><tt class="docutils literal"><span class="pre">olwidget.EditableLayer</span></tt> is a layer type which reads and writes WKT geometry data to a textarea.  Constructor:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="k">new</span> <span class="nx">olwidget</span><span class="p">.</span><span class="nx">EditableLayer</span><span class="p">(</span><span class="nx">textareaId</span><span class="p">,</span> <span class="nx">options</span><span class="p">);</span>
+</pre></div>
+</div>
+<dl class="docutils">
+<dt><tt class="docutils literal"><span class="pre">textareaId</span></tt></dt>
+<dd>The DOM id of a textarea which contains WKT data for this layer.</dd>
+<dt><tt class="docutils literal"><span class="pre">options</span></tt></dt>
+<dd>An object containing <a class="reference internal" href="#options">options</a> customizing the layer.</dd>
+</dl>
+<div class="section" id="id1">
+<h4>Example<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h4>
+<p>Create a map that contains two editable layers:</p>
+<div class="highlight-html"><div class="highlight"><pre><span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">&#39;map&#39;</span><span class="nt">&gt;&lt;/div&gt;</span>
+<span class="nt">&lt;textarea</span> <span class="na">id=</span><span class="s">&#39;geom1&#39;</span><span class="nt">&gt;</span>POINT (0 0)<span class="nt">&lt;/textarea&gt;</span>
+<span class="nt">&lt;textarea</span> <span class="na">id=</span><span class="s">&#39;geom2&#39;</span><span class="nt">&gt;</span>POINT (1 1)<span class="nt">&lt;/textarea&gt;</span>
+<span class="nt">&lt;script </span><span class="na">type=</span><span class="s">&#39;text/javascript&#39;</span><span class="nt">&gt;</span>
+    <span class="k">new</span> <span class="nx">olwidget</span><span class="p">.</span><span class="nx">Map</span><span class="p">(</span><span class="s1">&#39;map&#39;</span><span class="p">,</span> <span class="p">[</span>
+        <span class="k">new</span> <span class="nx">olwidget</span><span class="p">.</span><span class="nx">EditableLayer</span><span class="p">(</span><span class="s1">&#39;geom1&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="o">:</span> <span class="s2">&quot;The origin&quot;</span><span class="p">}),</span>
+        <span class="k">new</span> <span class="nx">olwidget</span><span class="p">.</span><span class="nx">EditableLayer</span><span class="p">(</span><span class="s1">&#39;geom2&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="o">:</span> <span class="s2">&quot;A bit off&quot;</span><span class="p">})</span>
+    <span class="p">],</span> <span class="p">{</span> <span class="s1">&#39;overlayStyle&#39;</span><span class="o">:</span> <span class="p">{</span> <span class="s1">&#39;fillColor&#39;</span><span class="o">:</span> <span class="s2">&quot;#ff0000&quot;</span> <span class="p">}});</span>
+<span class="nt">&lt;/script&gt;</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="olwidget-infolayer">
+<h3>olwidget.InfoLayer<a class="headerlink" href="#olwidget-infolayer" title="Permalink to this headline">¶</a></h3>
+<p><tt class="docutils literal"><span class="pre">olwidget.InfoLayer</span></tt> is a layer type which displays geometries with clickable
+popups containing HTML.  Constructor:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="k">new</span> <span class="nx">olwidget</span><span class="p">.</span><span class="nx">InfoLayer</span><span class="p">(</span><span class="nx">info</span><span class="p">,</span> <span class="nx">options</span><span class="p">);</span>
+</pre></div>
+</div>
+<dl class="docutils">
+<dt><tt class="docutils literal"><span class="pre">info</span></tt></dt>
+<dd><p class="first">An array of <tt class="docutils literal"><span class="pre">[geom,</span> <span class="pre">html]</span></tt> pairs, where <tt class="docutils literal"><span class="pre">geom</span></tt> is a WKT geometry, and
+<tt class="docutils literal"><span class="pre">html</span></tt> is a string containing HTML to display in the popup.  <tt class="docutils literal"><span class="pre">html</span></tt> can
+also be an object containing style information for the particular geometry,
+with the following format:</p>
+<div class="last highlight-python"><pre>{
+    'html': "An html string"
+    'style': {
+        // style properties for this geometry
+    }
+}</pre>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">options</span></tt></dt>
+<dd>An object with <a class="reference internal" href="#options">options</a> for the display of this layer.</dd>
+</dl>
+<div class="section" id="id2">
+<h4>Example<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h4>
+<p>The following is an example <tt class="docutils literal"><span class="pre">olwidget.Map</span></tt> with <tt class="docutils literal"><span class="pre">olwidget.InfoLayer</span></tt>
+instances using geometry-specific styles, layer-specific styles, and map styles
+together:</p>
+<div class="highlight-html"><div class="highlight"><pre><span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">&#39;map&#39;</span><span class="nt">&gt;&lt;/div&gt;</span>
+<span class="nt">&lt;script </span><span class="na">type=</span><span class="s">&#39;text/javascript&#39;</span><span class="nt">&gt;</span>
+    <span class="k">new</span> <span class="nx">olwidget</span><span class="p">.</span><span class="nx">Map</span><span class="p">(</span><span class="s1">&#39;map&#39;</span><span class="p">,</span>
+        <span class="p">[</span><span class="k">new</span> <span class="nx">InfoLayer</span><span class="p">([[</span><span class="s2">&quot;POINT (0 0)&quot;</span><span class="p">,</span> <span class="p">{</span> <span class="nx">html</span><span class="o">:</span> <span class="s2">&quot;The origin&quot;</span><span class="p">,</span>
+                                          <span class="nx">style</span><span class="o">:</span> <span class="p">{</span>
+                                              <span class="s1">&#39;fillColor&#39;</span><span class="o">:</span> <span class="s2">&quot;#00FF00&quot;</span>
+                                          <span class="p">}],</span>
+                        <span class="p">[</span><span class="s2">&quot;POINT (0 1)&quot;</span><span class="p">,</span> <span class="p">{</span> <span class="nx">html</span><span class="o">:</span> <span class="s2">&quot;A degree off&quot;</span><span class="p">,</span>
+                                          <span class="nx">style</span><span class="o">:</span> <span class="p">{</span>
+                                              <span class="s1">&#39;fillColor&#39;</span><span class="o">:</span> <span class="s2">&quot;#FF0000&quot;</span>
+                                          <span class="p">}]],</span>
+                       <span class="p">{</span> <span class="c1">// Layer-wide options</span>
+                            <span class="s1">&#39;overlayStyle&#39;</span><span class="o">:</span> <span class="p">{</span>
+                                <span class="s1">&#39;strokeColor&#39;</span><span class="o">:</span> <span class="s2">&quot;#0000FF&quot;</span>
+                            <span class="p">}</span>
+                       <span class="p">}),</span>
+        <span class="p">],</span> <span class="p">{</span> <span class="c1">// Map-wide options</span>
+               <span class="s1">&#39;overlayStyle&#39;</span><span class="o">:</span> <span class="p">{</span>
+                   <span class="s1">&#39;strokeWidth&#39;</span><span class="o">:</span> <span class="mi">6</span>
+               <span class="p">}</span>
+    <span class="p">})</span>
+<span class="nt">&lt;/script&gt;</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="options">
+<span id="id3"></span><h2>Options<a class="headerlink" href="#options" title="Permalink to this headline">¶</a></h2>
+<p>Maps are both important user interface elements, and powerful persuasive data
+displays.  Consequently, it is necessary to support a high degree of
+customization around the appearance of a map.  OLWidget does this primarily
+through the use of OpenLayers&#8217; style framework.  All of OLWidget&#8217;s types accept
+an optional <tt class="docutils literal"><span class="pre">options</span></tt> dict which controls the appearance of the map and
+layers.</p>
+<p>Layers inherit their styles from both their default parameters, and from those
+specified for a map:</p>
+<div class="highlight-python"><pre>default layer options &lt; map options &lt; layer options</pre>
+</div>
+<p>By contrast, maps only inherit from their default options, and not from
+layers:</p>
+<div class="highlight-python"><pre>default map options &lt; map options</pre>
+</div>
+<p>This allows the map to hold defaults for all layers, but let the layers
+override them.  The following is a list of all available options.  Some are
+specific to map display, and others specific to layer display.</p>
+<div class="section" id="general-map-display">
+<h3>General map display<a class="headerlink" href="#general-map-display" title="Permalink to this headline">¶</a></h3>
+<dl class="docutils">
 <dt><tt class="docutils literal"><span class="pre">layers</span></tt> (Array; default <tt class="docutils literal"><span class="pre">['osm.mapnik']</span></tt>)</dt>
 <dd><p class="first">A list of map base layers to include.  Choices include <tt class="docutils literal"><span class="pre">'osm.mapnik'</span></tt>,
 <tt class="docutils literal"><span class="pre">'osm.osmarender'</span></tt>, <tt class="docutils literal"><span class="pre">'google.streets'</span></tt>, <tt class="docutils literal"><span class="pre">'google.physical'</span></tt>,
@@ -230,12 +347,6 @@ this is only used if there is no geometry (e.g. the textarea is empty).</dd>
 <dd>If <tt class="docutils literal"><span class="pre">true</span></tt>, the map will zoom to the extent of its vector data instead of
 <tt class="docutils literal"><span class="pre">defaultZoom</span></tt>, <tt class="docutils literal"><span class="pre">defaultLat</span></tt>, and <tt class="docutils literal"><span class="pre">defaultLon</span></tt>.  If no vector data is
 present, the map will use the defaults.</dd>
-<dt><tt class="docutils literal"><span class="pre">overlayStyle</span></tt> (object)</dt>
-<dd>An object with style definitions for the geometry overlays.  See
-<a class="reference external" href="http://docs.openlayers.org/library/feature_styling.html">OpenLayers styling</a>.</dd>
-<dt><tt class="docutils literal"><span class="pre">overlayStyleContext</span></tt> (object)</dt>
-<dd>An object with functions which expand <tt class="docutils literal"><span class="pre">'${var}'</span></tt> symbolizers in style
-definitions.  See <a class="reference external" href="http://dev.openlayers.org/docs/files/OpenLayers/Style-js.html#OpenLayers.Style.context">OpenLayers Style context</a>.</dd>
 <dt><tt class="docutils literal"><span class="pre">mapDivClass</span></tt> (string; default <tt class="docutils literal"><span class="pre">''</span></tt>)</dt>
 <dd>A CSS class name to add to the div which is created to contain the map.</dd>
 <dt><tt class="docutils literal"><span class="pre">mapDivStyle</span></tt> (object, default <tt class="docutils literal"><span class="pre">{width:</span> <span class="pre">'600px',</span> <span class="pre">height:</span> <span class="pre">'400px'}</span></tt>)</dt>
@@ -263,10 +374,121 @@ which will be instantiated without arguments.</li>
 <p class="last">Any additional parameters available to the <a class="reference external" href="http://dev.openlayers.org/docs/files/OpenLayers/Map-js.html#OpenLayers.Map.Constructor">OpenLayers.Map.Constructor</a>
 may be included, and will be passed directly.</p>
 </dd>
+<dt><tt class="docutils literal"><span class="pre">popupsOutside</span></tt> (boolean; default <tt class="docutils literal"><span class="pre">false</span></tt>)</dt>
+<dd>If false, popups are contained within the map&#8217;s viewport.  If true, popups
+may expand outside the map&#8217;s viewport.</dd>
+<dt><tt class="docutils literal"><span class="pre">popupDirection</span></tt> (string; default <tt class="docutils literal"><span class="pre">auto</span></tt>)</dt>
+<dd><p class="first">The direction from the clicked geometry that a popup will extend.  This may
+be one of:</p>
+<ul class="last simple">
+<li><tt class="docutils literal"><span class="pre">tr</span></tt> &#8211; top right</li>
+<li><tt class="docutils literal"><span class="pre">tl</span></tt> &#8211; top left</li>
+<li><tt class="docutils literal"><span class="pre">br</span></tt> &#8211; bottom right</li>
+<li><tt class="docutils literal"><span class="pre">bl</span></tt> &#8211; bottom left</li>
+<li><tt class="docutils literal"><span class="pre">auto</span></tt> &#8211; automatically choose direction.</li>
+</ul>
+</dd>
+</dl>
+<dl class="docutils" id="clusterdisplay">
+<dt><tt class="docutils literal"><span class="pre">clusterDisplay</span></tt> (string; default <tt class="docutils literal"><span class="pre">'paginate'</span></tt>)</dt>
+<dd><p class="first">The way HTML from clustered points is handled:</p>
+<ul class="last simple">
+<li><tt class="docutils literal"><span class="pre">'list'</span></tt> &#8211; constructs an unordered list of contents</li>
+<li><tt class="docutils literal"><span class="pre">'paginate'</span></tt> &#8211; adds a pagination control to the popup to click through
+the different points&#8217; HTML.
+See <a class="reference internal" href="#cluster">cluster</a>.</li>
+</ul>
+</dd>
 </dl>
 </div>
+<div class="section" id="layer-options">
+<h3>Layer options<a class="headerlink" href="#layer-options" title="Permalink to this headline">¶</a></h3>
+<dl class="docutils">
+<dt><tt class="docutils literal"><span class="pre">name</span></tt> (string; defaults to <tt class="docutils literal"><span class="pre">&quot;data&quot;</span></tt>)</dt>
+<dd>The name of the overlay layer for the map (shown in the layer switcher).</dd>
+<dt><tt class="docutils literal"><span class="pre">overlayStyle</span></tt> (object)</dt>
+<dd>An object with style definitions for the geometry overlays.  See
+<a class="reference external" href="http://docs.openlayers.org/library/feature_styling.html">OpenLayers styling</a>.</dd>
+<dt><tt class="docutils literal"><span class="pre">overlayStyleContext</span></tt> (object)</dt>
+<dd>An object with functions which expand <tt class="docutils literal"><span class="pre">'${var}'</span></tt> symbolizers in style
+definitions.  See <a class="reference external" href="http://dev.openlayers.org/docs/files/OpenLayers/Style-js.html#OpenLayers.Style.context">OpenLayers Style context</a>.</dd>
+</dl>
+</div>
+<div class="section" id="options-for-editable-layers">
+<h3>Options for editable layers<a class="headerlink" href="#options-for-editable-layers" title="Permalink to this headline">¶</a></h3>
+<dl class="docutils">
+<dt><tt class="docutils literal"><span class="pre">geometry</span></tt> (Array or string; defaults to <tt class="docutils literal"><span class="pre">'point'</span></tt>)</dt>
+<dd>The geometry to use for editing this map.  Ignored by
+<tt class="docutils literal"><span class="pre">olwidget.InfoLayer</span></tt>.  Choices are <tt class="docutils literal"><span class="pre">'point'</span></tt>, <tt class="docutils literal"><span class="pre">'linestring'</span></tt>, and
+<tt class="docutils literal"><span class="pre">'polygon'</span></tt>.  To allow multiple geometries, use an array such as
+<tt class="docutils literal"><span class="pre">['point',</span> <span class="pre">'linestring',</span> <span class="pre">'polygon']</span></tt>.</dd>
+<dt><tt class="docutils literal"><span class="pre">isCollection</span></tt> (boolean, default <tt class="docutils literal"><span class="pre">false</span></tt>)</dt>
+<dd>If true, allows multiple points/lines/polygons.</dd>
+<dt><tt class="docutils literal"><span class="pre">hideTextarea</span></tt> (boolean; default <tt class="docutils literal"><span class="pre">true</span></tt>)</dt>
+<dd>Hides the textarea if true.</dd>
+<dt><tt class="docutils literal"><span class="pre">editable</span></tt> (boolean, default <tt class="docutils literal"><span class="pre">true</span></tt>)</dt>
+<dd>If true, allows editing of geometries.</dd>
+</dl>
+</div>
+<div class="section" id="options-for-info-layers">
+<h3>Options for info layers<a class="headerlink" href="#options-for-info-layers" title="Permalink to this headline">¶</a></h3>
+<dl class="docutils" id="cluster">
+<dt><tt class="docutils literal"><span class="pre">cluster</span></tt> (boolean; default <tt class="docutils literal"><span class="pre">false</span></tt>)</dt>
+<dd>If true, points will be clustered using the <a class="reference external" href="http://dev.openlayers.org/releases/OpenLayers-2.7/doc/apidocs/files/OpenLayers/Strategy/Cluster-js.html">OpenLayers.Strategy.ClusterStrategy</a>.
+See <a class="reference external" href="examples/info_cluster.html">this cluster example</a>.
+Also see <a class="reference internal" href="#clusterdisplay">clusterDisplay</a>.</dd>
+</dl>
+</div>
+</div>
+<div class="section" id="extras">
+<h2>Extras<a class="headerlink" href="#extras" title="Permalink to this headline">¶</a></h2>
+<p>A couple of internal <tt class="docutils literal"><span class="pre">olwidget</span></tt> types might be useful outside <tt class="docutils literal"><span class="pre">olwidget</span></tt> as
+well.</p>
+<div class="section" id="olwidget-popup">
+<h3>olwidget.Popup<a class="headerlink" href="#olwidget-popup" title="Permalink to this headline">¶</a></h3>
+<p><tt class="docutils literal"><span class="pre">olwidget</span></tt> defines its own Popup type, which it uses for display of popups in
+<tt class="docutils literal"><span class="pre">InfoLayer</span></tt> instances.  The popup differs from default <a class="reference external" href="http://dev.openlayers.org/docs/files/OpenLayers/Popup-js.html">OpenLayers popup
+types</a> in a
+few important ways: first, it is styled primarily using CSS rather than
+hard-coded javascript.  Second, it will paginate data if it is passed an array
+as the <tt class="docutils literal"><span class="pre">contentHTML</span></tt> parameter.  Third, it can be placed outside the map&#8217;s
+viewport as well as inside it.  The popup&#8217;s CSS class hierarchy is as follows:</p>
+<div class="highlight-html"><div class="highlight"><pre><span class="nt">&lt;div&gt;</span> <span class="c">&lt;!-- container div for popup --&gt;</span>
+    <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&#39;olPopupContent&#39;</span><span class="nt">&gt;</span> <span class="c">&lt;!-- the main content frame --&gt;</span>
+        <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&#39;olwidgetPopupContent&#39;</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&#39;olwidgetPopupCloseBox&#39;</span><span class="nt">&gt;</span>
+                <span class="c">&lt;!-- the close box --&gt;</span>
+            <span class="nt">&lt;/div&gt;</span>
+            <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&#39;olwidgetPopupPage&#39;</span><span class="nt">&gt;</span>
+                <span class="c">&lt;!-- the message in the popup --&gt;</span>
+            <span class="nt">&lt;/div&gt;</span>
+            <span class="c">&lt;!-- paginator shown only if contentHTML is an array --&gt;</span>
+            <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&#39;olwidgetPopupPagination&#39;</span><span class="nt">&gt;</span>
+                <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&#39;olwidgetPaginationPrevious&#39;</span><span class="nt">&gt;&lt;/div&gt;</span>
+                <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&#39;olwidgetPaginationCount&#39;</span><span class="nt">&gt;&lt;/div&gt;</span>
+                <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&#39;olwidgetPaginationNext&#39;</span><span class="nt">&gt;&lt;/div&gt;</span>
+            <span class="nt">&lt;/div&gt;</span>
+            <span class="nt">&lt;div</span> <span class="na">style=</span><span class="s">&#39;clear: both;&#39;</span><span class="nt">&gt;&lt;/div&gt;</span>
+        <span class="nt">&lt;/div&gt;</span>
+        <span class="c">&lt;!-- the stem class may be one of:</span>
+<span class="c">            olwidgetPopupStemBR (bottom right),</span>
+<span class="c">            olwidgetPopupStemBL (bottom left),</span>
+<span class="c">            olwidgetPopupStemTR (top right),</span>
+<span class="c">            olwidgetPopupStemTL (top left) --&gt;</span>
+        <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&#39;olwidgetPopupStemBR&#39;</span><span class="nt">&gt;&lt;/div&gt;</span>
+    <span class="nt">&lt;/div&gt;</span>
+<span class="nt">&lt;/div&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="olwidget-deletevertexcontrol">
+<h3>olwidget.DeleteVertexControl<a class="headerlink" href="#olwidget-deletevertexcontrol" title="Permalink to this headline">¶</a></h3>
+<p><tt class="docutils literal"><span class="pre">olwidget.DeleteVertexControl</span></tt> is a simple control which deletes vertices
+when they are clicked.  It may be useful outside of <tt class="docutils literal"><span class="pre">olwidget</span></tt>.</p>
+</div>
+</div>
 <div class="section" id="projections">
-<h3>Projections<a class="headerlink" href="#projections" title="Permalink to this headline">¶</a></h3>
+<h2>Projections<a class="headerlink" href="#projections" title="Permalink to this headline">¶</a></h2>
 <p><tt class="docutils literal"><span class="pre">olwidget</span></tt> uses the projections given in <tt class="docutils literal"><span class="pre">mapOptions</span></tt> to determine the
 input and output of WKT data.  By default, it expects incoming WKT data to use
 <tt class="docutils literal"><span class="pre">&quot;EPSG:4326&quot;</span></tt> (familiar latitudes and longitudes), which is transformed
@@ -287,7 +509,6 @@ the SRID present in any initial WKT data, and uses the projection specified in
 </div>
 </div>
 </div>
-</div>
 
 
           </div>
@@ -300,14 +521,45 @@ the SRID present in any initial WKT data, and uses the projection specified in
 <li><a class="reference external" href="#">olwidget.js documentation</a><ul>
 <li><a class="reference external" href="#introduction">Introduction</a></li>
 <li><a class="reference external" href="#installation">Installation</a></li>
-<li><a class="reference external" href="#examples">Examples</a></li>
 <li><a class="reference external" href="#documentation">Documentation</a><ul>
-<li><a class="reference external" href="#olwidget-editablemap-constructor">olwidget.EditableMap constructor</a></li>
-<li><a class="reference external" href="#olwidget-infomap-constructor">olwidget.InfoMap constructor</a></li>
-<li><a class="reference external" href="#common-options">Common options</a></li>
-<li><a class="reference external" href="#projections">Projections</a></li>
+<li><a class="reference external" href="#map-types">Map types</a></li>
+<li><a class="reference external" href="#layer-types">Layer types</a></li>
 </ul>
 </li>
+<li><a class="reference external" href="#examples">Examples</a></li>
+<li><a class="reference external" href="#maps">Maps</a><ul>
+<li><a class="reference external" href="#olwidget-map">olwidget.Map</a><ul>
+<li><a class="reference external" href="#example">Example</a></li>
+</ul>
+</li>
+<li><a class="reference external" href="#olwidget-infomap">olwidget.InfoMap</a></li>
+<li><a class="reference external" href="#olwidget-editablemap">olwidget.EditableMap</a></li>
+</ul>
+</li>
+<li><a class="reference external" href="#layers">Layers</a><ul>
+<li><a class="reference external" href="#olwidget-editablelayer">olwidget.EditableLayer</a><ul>
+<li><a class="reference external" href="#id1">Example</a></li>
+</ul>
+</li>
+<li><a class="reference external" href="#olwidget-infolayer">olwidget.InfoLayer</a><ul>
+<li><a class="reference external" href="#id2">Example</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference external" href="#options">Options</a><ul>
+<li><a class="reference external" href="#general-map-display">General map display</a></li>
+<li><a class="reference external" href="#layer-options">Layer options</a></li>
+<li><a class="reference external" href="#options-for-editable-layers">Options for editable layers</a></li>
+<li><a class="reference external" href="#options-for-info-layers">Options for info layers</a></li>
+</ul>
+</li>
+<li><a class="reference external" href="#extras">Extras</a><ul>
+<li><a class="reference external" href="#olwidget-popup">olwidget.Popup</a></li>
+<li><a class="reference external" href="#olwidget-deletevertexcontrol">olwidget.DeleteVertexControl</a></li>
+</ul>
+</li>
+<li><a class="reference external" href="#projections">Projections</a></li>
 </ul>
 </li>
 </ul>
@@ -344,7 +596,7 @@ the SRID present in any initial WKT data, and uses the projection specified in
         <li class="right" >
           <a href="django-olwidget.html" title="django-olwidget documentation"
              >previous</a> |</li>
-        <li><a href="index.html">olwidget v0.3 documentation</a> &raquo;</li> 
+        <li><a href="index.html">olwidget v0.4 alpha documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">

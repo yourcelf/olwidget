@@ -38,7 +38,7 @@ should be familiar to users of other reusable Django apps:
     in your settings file.  ``olwidget`` uses an OpenStreetMaps layer by
     default, which requires no key.
 
-OLWidget includes a test project demonstrating some of the ``olwidget`` app's
+``olwidget`` includes a test project demonstrating some of the ``olwidget`` app's
 functionality; this can be found in the ``django-olwidget/test_project``
 directory.  To use it, modify the ``settings.py`` directory to reflect your
 database settings.  For convenience, a shell script, ``reset_testolwidget.sh``,
@@ -50,10 +50,10 @@ Getting started
 
 A quick guide to the ``olwidget`` module contents:
 
-For multi-layer map editing in forms -- ``fields``
+Fields: for multi-layer map editing in forms:
     MapField_, EditableLayerField_, and InfoLayerField_
 
-For display outside forms, or to make custom fields -- ``widgets``
+Widgets: for display outside forms, or to make custom fields:
     Single layer:
         EditableMap_
         InfoMap_
@@ -61,10 +61,10 @@ For display outside forms, or to make custom fields -- ``widgets``
     Multi layer:
         `Map, EditableLayer, and InfoLayer`_
 
-For ModelForm convenience with multi- or single-layer maps -- ``forms``
+Forms: for ModelForm convenience with multi- or single-layer maps:
     MapModelForm_
 
-``olwidget`` looks great in ``admin``
+olwidget looks great in admin:
     GeoModelAdmin_
 
 And of course, customization of all types: options_
@@ -332,7 +332,7 @@ Use these widgets together to display multi-layer maps outside of forms.
 ``layer_names`` 
     An optional list of names to use for the layers' POST data.
 
-``EditableLayer`` constructor:
+**EditableLayer** constructor:
 
 .. code-block:: python
 
@@ -343,7 +343,7 @@ Use these widgets together to display multi-layer maps outside of forms.
 ``template``
     An optional template to use to render this layer's javascript.
 
-``InfoLayer`` constructor:
+**InfoLayer** constructor:
 
 .. code-block:: python
 
@@ -368,7 +368,7 @@ An example of a widget with two info layers:
             InfoLayer([["POINT (1 0)", "one degree off"]], {'name': 'a bit off'}),
         ], { overlay_style: {'fill_color': '#ffffff'} })
 
-In a template (for both examples):
+In a template:
 
 .. code-block:: django
 
@@ -383,7 +383,8 @@ Inside Admin
 ``olwidget`` has several advantages over the built-in geodjango admin map
 implementation, including greater map customization, support for more geometry
 types, the ability to edit multiple fields using one map, and the option to
-include a map in admin changelist pages.
+include a map in admin changelist pages, on top of basic usability like
+undo/redo and the ability to delete individual vertices.
 
 To use ``olwidget`` for admin, simply use ``olwidget.admin.GeoModelAdmin`` or a
 subclass of it as the ModelAdmin type for your model.
@@ -484,8 +485,8 @@ Options
 ~~~~~~~
 Maps are both important user interface elements, and powerful persuasive data
 displays.  Consequently, it is necessary to support a high degree of
-customization around the appearance of a map.  OLWidget does this primarily
-through the use of OpenLayers' style framework.  All of OLWidget's types accept
+customization around the appearance of a map.  ``olwidget`` does this primarily
+through the use of OpenLayers' style framework.  All of ``olwidget``'s types accept
 an optional ``options`` dict which controls the appearance of the map and
 layers.
 
@@ -521,6 +522,7 @@ General map display
     CloudMade
         ``'cloudmade.<num>'`` (where ``<num>`` is the number for a cloudmade
         style).
+
     Remember to include ``GOOGLE_API_KEY``, ``YAHOO_APP_ID``, or
     ``CLOUDMADE_API_KEY`` in your ``settings.py`` if you use any of those
     layers.
@@ -636,24 +638,9 @@ layer override the corresponding options from the map.
 .. _cluster:
 
 ``cluster`` (boolean; default ``false``)
-    If true, points will be clustered using the `OpenLayers.Strategy.ClusterStrategy
+    If true, points will be clustered using the
+    `OpenLayers.Strategy.ClusterStrategy
     <http://dev.openlayers.org/releases/OpenLayers-2.7/doc/apidocs/files/OpenLayers/Strategy/Cluster-js.html>`_.
-    (see `this cluster example <examples/info_cluster.html>`_).  See also `cluster display`_.
-``cluster_style`` (dict)
-    The default style is:
-
-    .. code-block:: python
-
-        { 
-            point_radius: "${radius}",
-            stroke_width: "${width}",
-            label: "${label}",
-            font_size: "11px",
-            font_family: "Helvetica, sans-serif",
-            font_color: "#ffffff" 
-        }
-
-    The arguments expressed with ``${}`` are programmatically replaced with
-    values based on the cluster.  Setting them to specific values will prevent
-    this programatic replacement.
+    (see `this cluster example <examples/info_cluster.html>`_).  See also
+    `cluster display`_.
 

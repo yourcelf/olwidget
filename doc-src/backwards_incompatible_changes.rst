@@ -23,6 +23,9 @@ olwidget.js changes
 -------------------
 * ``map.vector_layer`` no longer exists; it has been replaced with an array,
   ``map.vector_layers``.
+* ``olwidget.js`` now uses version 2.9 of the OpenLayers API.  Django users
+  should get this change automatically, but ``olwidget.js`` users will have to
+  change their script tags for the OpenLayers import.
 
 In version 0.3
 ~~~~~~~~~~~~~~
