@@ -44,10 +44,32 @@
             
   <div class="section" id="django-olwidget-documentation">
 <span id="django-olwidget"></span><h1>django-olwidget documentation<a class="headerlink" href="#django-olwidget-documentation" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="introduction">
+<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
+<p><tt class="docutils literal"><span class="pre">django-olwidget</span></tt> is a portable Django application that uses <a class="reference external" href="olwidget.js.html#olwidget-js"><em>olwidget.js</em></a> to easily create editable and informational maps using GeoDjango, inside and outside of Django&#8217;s admin.</p>
+<p>A quick guide to the <tt class="docutils literal"><span class="pre">olwidget</span></tt> module contents:</p>
+<dl class="docutils">
+<dt>Widgets: for display outside forms, single-layer maps in forms, or custom fields:</dt>
+<dd><dl class="first last docutils">
+<dt>Single layer:</dt>
+<dd><a class="reference internal" href="#editablemap">EditableMap</a>, <a class="reference internal" href="#infomap">InfoMap</a></dd>
+<dt>Multi layer:</dt>
+<dd><a class="reference internal" href="#map-editablelayer-and-infolayer">Map, EditableLayer, and InfoLayer</a></dd>
+</dl>
+</dd>
+<dt>Forms: for ModelForm convenience with multi- or single-layer maps:</dt>
+<dd><a class="reference internal" href="#mapmodelform">MapModelForm</a></dd>
+<dt>Fields: for multi-layer map editing in forms:</dt>
+<dd><a class="reference internal" href="#mapfield-editablelayerfield-and-infolayerfield">MapField, EditableLayerField, and InfoLayerField</a></dd>
+<dt>olwidget looks great in admin:</dt>
+<dd><a class="reference internal" href="#geomodeladmin">GeoModelAdmin</a></dd>
+</dl>
+<p>And of course, customization of all types: <a class="reference internal" href="#options">options</a></p>
+</div>
 <div class="section" id="installation">
 <h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
-<p>Installation of the <tt class="docutils literal"><span class="pre">olwidget</span></tt> Django app requires a couple of steps &#8211; these
-should be familiar to users of other reusable Django apps:</p>
+<p>Installation of the <tt class="docutils literal"><span class="pre">olwidget</span></tt> requires a couple of steps &#8211; these should be
+familiar to users of other reusable Django apps:</p>
 <ol class="arabic">
 <li><p class="first">Install <tt class="docutils literal"><span class="pre">django-olwidget</span></tt> using your preferred method for python modules.
 The folder <tt class="docutils literal"><span class="pre">olwidget</span></tt> in the <tt class="docutils literal"><span class="pre">django-olwidget</span></tt> directory must end up in
@@ -78,163 +100,6 @@ functionality; this can be found in the <tt class="docutils literal"><span class
 directory.  To use it, modify the <tt class="docutils literal"><span class="pre">settings.py</span></tt> directory to reflect your
 database settings.  For convenience, a shell script, <tt class="docutils literal"><span class="pre">reset_testolwidget.sh</span></tt>,
 is included to set up the database using <tt class="docutils literal"><span class="pre">postgres</span></tt>, <tt class="docutils literal"><span class="pre">template_postgis</span></tt>,and the database user and password specified in the script.</p>
-</div>
-<div class="section" id="getting-started">
-<h2>Getting started<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h2>
-<p>A quick guide to the <tt class="docutils literal"><span class="pre">olwidget</span></tt> module contents:</p>
-<dl class="docutils">
-<dt>Fields: for multi-layer map editing in forms:</dt>
-<dd><a class="reference internal" href="#mapfield-editablelayerfield-and-infolayerfield">MapField, EditableLayerField, and InfoLayerField</a></dd>
-<dt>Forms: for ModelForm convenience with multi- or single-layer maps:</dt>
-<dd><a class="reference internal" href="#mapmodelform">MapModelForm</a></dd>
-<dt>Widgets: for display outside forms, or to make custom fields:</dt>
-<dd><dl class="first last docutils">
-<dt>Single layer:</dt>
-<dd><a class="reference internal" href="#editablemap">EditableMap</a>, <a class="reference internal" href="#infomap">InfoMap</a></dd>
-<dt>Multi layer:</dt>
-<dd><a class="reference internal" href="#map-editablelayer-and-infolayer">Map, EditableLayer, and InfoLayer</a></dd>
-</dl>
-</dd>
-<dt>olwidget looks great in admin:</dt>
-<dd><a class="reference internal" href="#geomodeladmin">GeoModelAdmin</a></dd>
-</dl>
-<p>And of course, customization of all types: <a class="reference internal" href="#options">options</a></p>
-</div>
-<div class="section" id="fields">
-<h2>Fields<a class="headerlink" href="#fields" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="mapfield-editablelayerfield-and-infolayerfield">
-<h3>MapField, EditableLayerField, and InfoLayerField<a class="headerlink" href="#mapfield-editablelayerfield-and-infolayerfield" title="Permalink to this headline">¶</a></h3>
-<p>Multi-layer maps are possible using the <tt class="docutils literal"><span class="pre">MapField</span></tt> type, which is a container
-field for any number of layer fields.  The layer fields are
-<tt class="docutils literal"><span class="pre">EditableLayerField</span></tt> or <tt class="docutils literal"><span class="pre">InfoLayerField</span></tt> types, which allow editing or
-display of vector data on the map.</p>
-<p id="mapfield"><strong>MapField</strong> constructor:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">olwidget</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">MapField</span><span class="p">(</span><span class="n">fields</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">layer_names</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">template</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
-</pre></div>
-</div>
-<dl class="docutils">
-<dt><tt class="docutils literal"><span class="pre">fields</span></tt></dt>
-<dd>An array of layer fields (either <tt class="docutils literal"><span class="pre">EditableLayerField</span></tt> or
-<tt class="docutils literal"><span class="pre">InfoLayerField</span></tt>) which should appear on the map.</dd>
-<dt><tt class="docutils literal"><span class="pre">options</span></tt></dt>
-<dd>A dict of <a class="reference internal" href="#options">options</a> for the map.</dd>
-<dt><tt class="docutils literal"><span class="pre">layer_names</span></tt></dt>
-<dd>If provided, these will be used as the names for textareas in editable
-fields and raw POST data.  However, <tt class="docutils literal"><span class="pre">form.cleaned_data</span></tt> will not use
-these names, and will instead contain a list of the values in each layer
-using the MapField&#8217;s declared name.</dd>
-<dt><tt class="docutils literal"><span class="pre">template</span></tt></dt>
-<dd><p class="first">The name of a custom template to render the map.  It will receive the context:</p>
-<div class="last highlight-python"><pre>{'id': html id for the map,
- 'layer_js': an array of javascript invocations from each layer,
- 'layer_html': an array of html data from each layer,
- 'map_opts': a JSON string of options for the map.
-}</pre>
-</div>
-</dd>
-</dl>
-<p id="editablelayerfield"><strong>EditableLayerField</strong> constructor:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">olwidget</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">EditableLayerField</span><span class="p">(</span><span class="n">options</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
-</pre></div>
-</div>
-<dl class="docutils">
-<dt><tt class="docutils literal"><span class="pre">options</span></tt></dt>
-<dd>A dict of <a class="reference internal" href="#options">options</a> for this layer, which override the containing <tt class="docutils literal"><span class="pre">Map</span></tt> defaults.</dd>
-</dl>
-<p id="infolayerfield"><strong>InfoLayerField</strong> constructor:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">olwidget</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">InfoLayerField</span><span class="p">(</span><span class="n">info</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
-</pre></div>
-</div>
-<dl class="docutils">
-<dt><tt class="docutils literal"><span class="pre">info</span></tt></dt>
-<dd>A list of <tt class="docutils literal"><span class="pre">[geometry,</span> <span class="pre">html]</span></tt> pairs for clickable popups.  See <a class="reference internal" href="#infolayer">InfoLayer</a>
-for more.</dd>
-<dt><tt class="docutils literal"><span class="pre">options</span></tt></dt>
-<dd>A dict of <a class="reference internal" href="#options">options</a> for this layer, which override the containing <tt class="docutils literal"><span class="pre">Map</span></tt>
-defaults.</dd>
-</dl>
-<div class="section" id="example">
-<h4>Example<a class="headerlink" href="#example" title="Permalink to this headline">¶</a></h4>
-<p>The following is an example that constructs a map widget with 3 fields, two of
-them editable.  It uses both layer-specific options and global map options:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django</span> <span class="kn">import</span> <span class="n">forms</span>
-<span class="kn">from</span> <span class="nn">olwidget.fields</span> <span class="kn">import</span> <span class="n">MapField</span><span class="p">,</span> <span class="n">EditableLayerField</span><span class="p">,</span> <span class="n">InfoLayerField</span>
-
-<span class="k">class</span> <span class="nc">MyForm</span><span class="p">(</span><span class="n">forms</span><span class="o">.</span><span class="n">Form</span><span class="p">):</span>
-    <span class="n">country</span> <span class="o">=</span> <span class="n">MapField</span><span class="p">([</span>
-            <span class="n">EditableLayerField</span><span class="p">({</span><span class="s">&#39;geometry&#39;</span><span class="p">:</span> <span class="s">&#39;polygon&#39;</span><span class="p">,</span> <span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">&#39;boundary&#39;</span><span class="p">}),</span>
-            <span class="n">EditableLayerField</span><span class="p">({</span><span class="s">&#39;geometry&#39;</span><span class="p">:</span> <span class="s">&#39;point&#39;</span><span class="p">,</span> <span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">&#39;capital&#39;</span><span class="p">}),</span>
-            <span class="n">InfoLayerField</span><span class="p">([[</span><span class="s">&quot;Point (0 0)&quot;</span><span class="p">,</span> <span class="s">&quot;Of interest&quot;</span><span class="p">]],</span> <span class="p">{</span><span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">&quot;Points of interest&quot;</span><span class="p">}),</span>
-        <span class="p">],</span> <span class="p">{</span>
-            <span class="s">&#39;overlay_style&#39;</span><span class="p">:</span> <span class="p">{</span>
-                <span class="s">&#39;fill_color&#39;</span><span class="p">:</span> <span class="s">&#39;#00ff00&#39;</span><span class="p">,</span>
-            <span class="p">},</span>
-        <span class="p">})</span>
-</pre></div>
-</div>
-<p>In a template:</p>
-<div class="highlight-django"><div class="highlight"><pre><span class="x">&lt;head&gt;... </span><span class="cp">{{</span> <span class="nv">form.media</span> <span class="cp">}}</span><span class="x"> ...&lt;/head&gt;</span>
-<span class="x">&lt;body&gt;...    </span><span class="cp">{{</span> <span class="nv">form</span> <span class="cp">}}</span><span class="x">    ...&lt;/body&gt;</span>
-</pre></div>
-</div>
-</div>
-</div>
-</div>
-<div class="section" id="modelforms">
-<span id="mapmodelform"></span><h2>ModelForms<a class="headerlink" href="#modelforms" title="Permalink to this headline">¶</a></h2>
-<p><tt class="docutils literal"><span class="pre">MapModelForm</span></tt> is an extension of the built-in <a class="reference external" href="http://docs.djangoproject.com/en/dev/topics/forms/modelforms/">ModelForm</a> type which
-adds
-support for maps.  <tt class="docutils literal"><span class="pre">MapModelForm</span></tt> subclasses can possess two extra parameters
-in their inner <tt class="docutils literal"><span class="pre">Meta</span></tt> class &#8211; an optional <tt class="docutils literal"><span class="pre">maps</span></tt> parameter which specifies
-which fields to use with which maps, and an <tt class="docutils literal"><span class="pre">options</span></tt> parameter that specifies
-global map <a class="reference internal" href="#options">options</a>.</p>
-<p>The following is a simple example using a separate map for each field, and the
-same appearance for all maps:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="c"># models.py</span>
-<span class="k">class</span> <span class="nc">MyModel</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
-    <span class="n">geom1</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">PointField</span><span class="p">()</span>
-    <span class="n">geom2</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">LineStringField</span><span class="p">()</span>
-    <span class="n">geom3</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">GeometryCollectionField</span><span class="p">()</span>
-
-
-<span class="c"># forms.py</span>
-<span class="kn">from</span> <span class="nn">olwidget.forms</span> <span class="kn">import</span> <span class="n">MapModelForm</span>
-<span class="kn">from</span> <span class="nn">models</span> <span class="kn">import</span> <span class="n">MyModel</span>
-
-<span class="k">class</span> <span class="nc">MyForm</span><span class="p">(</span><span class="n">MapModelForm</span><span class="p">):</span>
-    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
-        <span class="n">model</span> <span class="o">=</span> <span class="n">MyModel</span>
-        <span class="n">options</span> <span class="o">=</span> <span class="p">{</span> <span class="s">&#39;layers&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s">&#39;google.streets&#39;</span><span class="p">]</span> <span class="p">}</span>
-</pre></div>
-</div>
-<p>To edit multiple fields in a single map, specify the <tt class="docutils literal"><span class="pre">maps</span></tt> parameter.  The
-following will construct a form with 2 maps, the first editing <tt class="docutils literal"><span class="pre">geom1</span></tt> and
-<tt class="docutils literal"><span class="pre">geom2</span></tt> fields and using Google Streets as a base layer, and the second
-editing <tt class="docutils literal"><span class="pre">geom3</span></tt> and using default options:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">MyForm</span><span class="p">(</span><span class="n">MapModelForm</span><span class="p">):</span>
-    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
-        <span class="n">model</span> <span class="o">=</span> <span class="n">MyModel</span>
-        <span class="n">maps</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="p">((</span><span class="s">&#39;geom1&#39;</span><span class="p">,</span> <span class="s">&#39;geom2&#39;</span><span class="p">),</span> <span class="p">{</span> <span class="s">&#39;layers&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s">&#39;google.streets&#39;</span><span class="p">]</span> <span class="p">}),</span>
-            <span class="p">((</span><span class="s">&#39;geom3&#39;</span><span class="p">,</span> <span class="p">),</span> <span class="bp">None</span><span class="p">),</span>
-        <span class="p">)</span>
-</pre></div>
-</div>
-<p>To define options for particular fields, override the field definition.</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">olwidget.forms</span> <span class="kn">import</span> <span class="n">MapModelForm</span>
-<span class="kn">from</span> <span class="nn">olwidget.fields</span> <span class="kn">import</span> <span class="n">EditableLayerField</span>
-
-<span class="k">class</span> <span class="nc">MyForm</span><span class="p">(</span><span class="n">MapModelForm</span><span class="p">):</span>
-    <span class="n">geom1</span> <span class="o">=</span> <span class="n">EditableLayerField</span><span class="p">({</span><span class="s">&#39;overlay_style&#39;</span><span class="p">:</span> <span class="p">{</span> <span class="s">&#39;fill_color&#39;</span><span class="p">:</span> <span class="s">&quot;#ff0000&quot;</span> <span class="p">}})</span>
-    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
-        <span class="n">model</span> <span class="o">=</span> <span class="n">MyModel</span>
-</pre></div>
-</div>
-<p>Using the form in a template is the same as before.</p>
-<div class="highlight-django"><div class="highlight"><pre><span class="x">&lt;head&gt; </span><span class="cp">{{</span> <span class="nv">form.media</span> <span class="cp">}}</span><span class="x"> &lt;/head&gt;</span>
-<span class="x">&lt;body&gt;     </span><span class="cp">{{</span> <span class="nv">form</span> <span class="cp">}}</span><span class="x">   &lt;/body&gt;</span>
-</pre></div>
-</div>
 </div>
 <div class="section" id="widgets">
 <h2>Widgets<a class="headerlink" href="#widgets" title="Permalink to this headline">¶</a></h2>
@@ -342,7 +207,7 @@ display on the map.</dd>
 </div>
 <dl class="docutils">
 <dt><tt class="docutils literal"><span class="pre">info</span></tt></dt>
-<dd>An list of [<tt class="docutils literal"><span class="pre">geometry</span></tt>, <tt class="docutils literal"><span class="pre">html</span></tt>] pairs which specify geometries and the
+<dd>A list of [<tt class="docutils literal"><span class="pre">geometry</span></tt>, <tt class="docutils literal"><span class="pre">html</span></tt>] pairs which specify geometries and the
 html contents of popups when those geometries are clicked.  <tt class="docutils literal"><span class="pre">html</span></tt> can
 also be a dict such as <tt class="docutils literal"><span class="pre">{</span> <span class="pre">html:</span> <span class="pre">&quot;...&quot;,</span> <span class="pre">style:</span> <span class="pre">{}}</span></tt>.  The <tt class="docutils literal"><span class="pre">style</span></tt>
 parameter is used for individual styling of the geometry within the layer.</dd>
@@ -361,6 +226,142 @@ parameter is used for individual styling of the geometry within the layer.</dd>
 <p>In a template:</p>
 <div class="highlight-django"><div class="highlight"><pre><span class="x">&lt;head&gt; ... </span><span class="cp">{{</span> <span class="nv">mymap.media</span> <span class="cp">}}</span><span class="x"> ... &lt;/head&gt;</span>
 <span class="x">&lt;body&gt; ...    </span><span class="cp">{{</span> <span class="nv">mymap</span> <span class="cp">}}</span><span class="x">    ... &lt;/body&gt;</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="modelforms">
+<span id="mapmodelform"></span><h2>ModelForms<a class="headerlink" href="#modelforms" title="Permalink to this headline">¶</a></h2>
+<p><tt class="docutils literal"><span class="pre">MapModelForm</span></tt> is an extension of the built-in <a class="reference external" href="http://docs.djangoproject.com/en/dev/topics/forms/modelforms/">ModelForm</a> type which
+adds
+support for maps.  <tt class="docutils literal"><span class="pre">MapModelForm</span></tt> subclasses can possess two extra parameters
+in their inner <tt class="docutils literal"><span class="pre">Meta</span></tt> class &#8211; an optional <tt class="docutils literal"><span class="pre">maps</span></tt> parameter which specifies
+which fields to use with which maps, and an <tt class="docutils literal"><span class="pre">options</span></tt> parameter that specifies
+global map <a class="reference internal" href="#options">options</a>.</p>
+<p>The following is a simple example using a separate map for each field, and the
+same appearance for all maps:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># models.py</span>
+<span class="k">class</span> <span class="nc">MyModel</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">geom1</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">PointField</span><span class="p">()</span>
+    <span class="n">geom2</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">LineStringField</span><span class="p">()</span>
+    <span class="n">geom3</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">GeometryCollectionField</span><span class="p">()</span>
+
+
+<span class="c"># forms.py</span>
+<span class="kn">from</span> <span class="nn">olwidget.forms</span> <span class="kn">import</span> <span class="n">MapModelForm</span>
+<span class="kn">from</span> <span class="nn">models</span> <span class="kn">import</span> <span class="n">MyModel</span>
+
+<span class="k">class</span> <span class="nc">MyForm</span><span class="p">(</span><span class="n">MapModelForm</span><span class="p">):</span>
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="n">MyModel</span>
+        <span class="n">options</span> <span class="o">=</span> <span class="p">{</span> <span class="s">&#39;layers&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s">&#39;google.streets&#39;</span><span class="p">]</span> <span class="p">}</span>
+</pre></div>
+</div>
+<p>To edit multiple fields in a single map, specify the <tt class="docutils literal"><span class="pre">maps</span></tt> parameter.  The
+following will construct a form with 2 maps, the first editing <tt class="docutils literal"><span class="pre">geom1</span></tt> and
+<tt class="docutils literal"><span class="pre">geom2</span></tt> fields and using Google Streets as a base layer, and the second
+editing <tt class="docutils literal"><span class="pre">geom3</span></tt> and using default options:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">MyForm</span><span class="p">(</span><span class="n">MapModelForm</span><span class="p">):</span>
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="n">MyModel</span>
+        <span class="n">maps</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="p">((</span><span class="s">&#39;geom1&#39;</span><span class="p">,</span> <span class="s">&#39;geom2&#39;</span><span class="p">),</span> <span class="p">{</span> <span class="s">&#39;layers&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s">&#39;google.streets&#39;</span><span class="p">]</span> <span class="p">}),</span>
+            <span class="p">((</span><span class="s">&#39;geom3&#39;</span><span class="p">,</span> <span class="p">),</span> <span class="bp">None</span><span class="p">),</span>
+        <span class="p">)</span>
+</pre></div>
+</div>
+<p>To define options for particular fields, override the field definition.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">olwidget.forms</span> <span class="kn">import</span> <span class="n">MapModelForm</span>
+<span class="kn">from</span> <span class="nn">olwidget.fields</span> <span class="kn">import</span> <span class="n">EditableLayerField</span>
+
+<span class="k">class</span> <span class="nc">MyForm</span><span class="p">(</span><span class="n">MapModelForm</span><span class="p">):</span>
+    <span class="n">geom1</span> <span class="o">=</span> <span class="n">EditableLayerField</span><span class="p">({</span><span class="s">&#39;overlay_style&#39;</span><span class="p">:</span> <span class="p">{</span> <span class="s">&#39;fill_color&#39;</span><span class="p">:</span> <span class="s">&quot;#ff0000&quot;</span> <span class="p">}})</span>
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="n">MyModel</span>
+</pre></div>
+</div>
+<p>Using the form in a template is the same as before.</p>
+<div class="highlight-django"><div class="highlight"><pre><span class="x">&lt;head&gt; </span><span class="cp">{{</span> <span class="nv">form.media</span> <span class="cp">}}</span><span class="x"> &lt;/head&gt;</span>
+<span class="x">&lt;body&gt;     </span><span class="cp">{{</span> <span class="nv">form</span> <span class="cp">}}</span><span class="x">   &lt;/body&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="fields">
+<h2>Fields<a class="headerlink" href="#fields" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="mapfield-editablelayerfield-and-infolayerfield">
+<h3>MapField, EditableLayerField, and InfoLayerField<a class="headerlink" href="#mapfield-editablelayerfield-and-infolayerfield" title="Permalink to this headline">¶</a></h3>
+<p>Multi-layer maps are possible in forms using the <tt class="docutils literal"><span class="pre">MapField</span></tt> type, which is a
+container field for any number of layer fields.  The layer fields are
+<tt class="docutils literal"><span class="pre">EditableLayerField</span></tt> or <tt class="docutils literal"><span class="pre">InfoLayerField</span></tt> types, which allow editing or
+display of vector data on the map.</p>
+<p id="mapfield"><strong>MapField</strong> constructor:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">olwidget</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">MapField</span><span class="p">(</span><span class="n">fields</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">layer_names</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">template</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="docutils">
+<dt><tt class="docutils literal"><span class="pre">fields</span></tt></dt>
+<dd>An array of layer fields (either <tt class="docutils literal"><span class="pre">EditableLayerField</span></tt> or
+<tt class="docutils literal"><span class="pre">InfoLayerField</span></tt>) which should appear on the map.</dd>
+<dt><tt class="docutils literal"><span class="pre">options</span></tt></dt>
+<dd>A dict of <a class="reference internal" href="#options">options</a> for the map.</dd>
+<dt><tt class="docutils literal"><span class="pre">layer_names</span></tt></dt>
+<dd>If provided, these will be used as the names for textareas in editable
+fields and raw POST data.  However, <tt class="docutils literal"><span class="pre">form.cleaned_data</span></tt> will not use
+these names, and will instead contain a list of the values in each layer
+using the MapField&#8217;s declared name.</dd>
+<dt><tt class="docutils literal"><span class="pre">template</span></tt></dt>
+<dd><p class="first">The name of a custom template to render the map.  It will receive the context:</p>
+<div class="last highlight-python"><pre>{'id': html id for the map,
+ 'layer_js': an array of javascript invocations from each layer,
+ 'layer_html': an array of html data from each layer,
+ 'map_opts': a JSON string of options for the map.
+}</pre>
+</div>
+</dd>
+</dl>
+<p id="editablelayerfield"><strong>EditableLayerField</strong> constructor:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">olwidget</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">EditableLayerField</span><span class="p">(</span><span class="n">options</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="docutils">
+<dt><tt class="docutils literal"><span class="pre">options</span></tt></dt>
+<dd>A dict of <a class="reference internal" href="#options">options</a> for this layer, which override the containing <tt class="docutils literal"><span class="pre">Map</span></tt> defaults.</dd>
+</dl>
+<p id="infolayerfield"><strong>InfoLayerField</strong> constructor:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">olwidget</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">InfoLayerField</span><span class="p">(</span><span class="n">info</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="docutils">
+<dt><tt class="docutils literal"><span class="pre">info</span></tt></dt>
+<dd>A list of <tt class="docutils literal"><span class="pre">[geometry,</span> <span class="pre">html]</span></tt> pairs for clickable popups.  See <a class="reference internal" href="#infolayer">InfoLayer</a>
+for more.</dd>
+<dt><tt class="docutils literal"><span class="pre">options</span></tt></dt>
+<dd>A dict of <a class="reference internal" href="#options">options</a> for this layer, which override the containing <tt class="docutils literal"><span class="pre">Map</span></tt>
+defaults.</dd>
+</dl>
+<div class="section" id="example">
+<h4>Example<a class="headerlink" href="#example" title="Permalink to this headline">¶</a></h4>
+<p>The following is an example that constructs a map widget with 3 fields, two of
+them editable.  It uses both layer-specific options and global map options:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django</span> <span class="kn">import</span> <span class="n">forms</span>
+<span class="kn">from</span> <span class="nn">olwidget.fields</span> <span class="kn">import</span> <span class="n">MapField</span><span class="p">,</span> <span class="n">EditableLayerField</span><span class="p">,</span> <span class="n">InfoLayerField</span>
+
+<span class="k">class</span> <span class="nc">MyForm</span><span class="p">(</span><span class="n">forms</span><span class="o">.</span><span class="n">Form</span><span class="p">):</span>
+    <span class="n">country</span> <span class="o">=</span> <span class="n">MapField</span><span class="p">([</span>
+            <span class="n">EditableLayerField</span><span class="p">({</span><span class="s">&#39;geometry&#39;</span><span class="p">:</span> <span class="s">&#39;polygon&#39;</span><span class="p">,</span> <span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">&#39;boundary&#39;</span><span class="p">}),</span>
+            <span class="n">EditableLayerField</span><span class="p">({</span><span class="s">&#39;geometry&#39;</span><span class="p">:</span> <span class="s">&#39;point&#39;</span><span class="p">,</span> <span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">&#39;capital&#39;</span><span class="p">}),</span>
+            <span class="n">InfoLayerField</span><span class="p">([[</span><span class="s">&quot;Point (0 0)&quot;</span><span class="p">,</span> <span class="s">&quot;Of interest&quot;</span><span class="p">]],</span> <span class="p">{</span><span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">&quot;Points of interest&quot;</span><span class="p">}),</span>
+        <span class="p">],</span> <span class="p">{</span>
+            <span class="s">&#39;overlay_style&#39;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s">&#39;fill_color&#39;</span><span class="p">:</span> <span class="s">&#39;#00ff00&#39;</span><span class="p">,</span>
+            <span class="p">},</span>
+        <span class="p">})</span>
+</pre></div>
+</div>
+<p>In a template:</p>
+<div class="highlight-django"><div class="highlight"><pre><span class="x">&lt;head&gt;... </span><span class="cp">{{</span> <span class="nv">form.media</span> <span class="cp">}}</span><span class="x"> ...&lt;/head&gt;</span>
+<span class="x">&lt;body&gt;...    </span><span class="cp">{{</span> <span class="nv">form</span> <span class="cp">}}</span><span class="x">    ...&lt;/body&gt;</span>
 </pre></div>
 </div>
 </div>
@@ -425,27 +426,28 @@ parameter, but can override it by specifying options.</p>
 <div class="section" id="changelist-maps">
 <h3>Changelist maps<a class="headerlink" href="#changelist-maps" title="Permalink to this headline">¶</a></h3>
 <p>To show a clickable map on the admin changelist page, use the <tt class="docutils literal"><span class="pre">list_map</span></tt>
-property to specify which fields to display:</p>
+property to specify which fields to display in the changelist map:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="c"># an example model:</span>
 
-<span class="k">class</span> <span class="nc">City</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">Tree</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
     <span class="n">location</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">PointField</span><span class="p">()</span>
+    <span class="n">root_spread</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">PolygonField</span><span class="p">()</span>
 
 <span class="c"># admin.py</span>
 
 <span class="kn">from</span> <span class="nn">django.contrib</span> <span class="kn">import</span> <span class="n">admin</span>
 <span class="kn">from</span> <span class="nn">olwidget.admin</span> <span class="kn">import</span> <span class="n">GeoModelAdmin</span>
-<span class="kn">from</span> <span class="nn">myapp</span> <span class="kn">import</span> <span class="n">City</span>
+<span class="kn">from</span> <span class="nn">myapp</span> <span class="kn">import</span> <span class="n">Tree</span>
 
-<span class="k">class</span> <span class="nc">CityGeoAdmin</span><span class="p">(</span><span class="n">GeoModelAdmin</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">TreeGeoAdmin</span><span class="p">(</span><span class="n">GeoModelAdmin</span><span class="p">):</span>
     <span class="n">list_map</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;location&#39;</span><span class="p">]</span>
 
-<span class="n">admin</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">City</span><span class="p">,</span> <span class="n">CityGeoAdmin</span><span class="p">)</span>
+<span class="n">admin</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">Tree</span><span class="p">,</span> <span class="n">TreeGeoAdmin</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Options can be set for the changelist map using the <tt class="docutils literal"><span class="pre">list_map_options</span></tt>
 property:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">CityGeoAdmin</span><span class="p">(</span><span class="n">GeoModelAdmin</span><span class="p">):</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">TreeGeoAdmin</span><span class="p">(</span><span class="n">GeoModelAdmin</span><span class="p">):</span>
     <span class="n">list_map</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;location&#39;</span><span class="p">]</span>
     <span class="n">list_map_options</span> <span class="o">=</span> <span class="p">{</span>
         <span class="c"># group nearby points into clusters</span>
@@ -454,6 +456,8 @@ property:</p>
     <span class="p">}</span>
 </pre></div>
 </div>
+<p>This results in a map like this:</p>
+<img alt="_images/changelist_map.png" src="_images/changelist_map.png" />
 </div>
 </div>
 <div class="section" id="options">
@@ -551,16 +555,6 @@ be one of:</p>
 </ul>
 </dd>
 </dl>
-<dl class="docutils" id="cluster-display">
-<dt><tt class="docutils literal"><span class="pre">cluster_display</span></tt> (string; default <tt class="docutils literal"><span class="pre">'paginate'</span></tt>)</dt>
-<dd><p class="first">The way HTML from clustered points is handled (see <a class="reference internal" href="#cluster">cluster</a>):</p>
-<ul class="last simple">
-<li><tt class="docutils literal"><span class="pre">'list'</span></tt> &#8211; constructs an unordered list of contents</li>
-<li><tt class="docutils literal"><span class="pre">'paginate'</span></tt> &#8211; adds a pagination control to the popup to click through
-the different points&#8217; HTML.</li>
-</ul>
-</dd>
-</dl>
 </div>
 <div class="section" id="layer-options">
 <h3>Layer options<a class="headerlink" href="#layer-options" title="Permalink to this headline">¶</a></h3>
@@ -616,8 +610,15 @@ associated textarea.</dd>
 <dt><tt class="docutils literal"><span class="pre">cluster</span></tt> (boolean; default <tt class="docutils literal"><span class="pre">false</span></tt>)</dt>
 <dd>If true, points will be clustered using the
 <a class="reference external" href="http://dev.openlayers.org/releases/OpenLayers-2.7/doc/apidocs/files/OpenLayers/Strategy/Cluster-js.html">OpenLayers.Strategy.ClusterStrategy</a>.
-(see <a class="reference external" href="examples/info_cluster.html">this cluster example</a>).  See also
-<a class="reference internal" href="#cluster-display">cluster display</a>.</dd>
+(see <a class="reference external" href="examples/info_cluster.html">this cluster example</a>).</dd>
+<dt><tt class="docutils literal"><span class="pre">cluster_display</span></tt> (string; default <tt class="docutils literal"><span class="pre">'paginate'</span></tt>)</dt>
+<dd><p class="first">The way HTML from clustered points is handled (see <a class="reference internal" href="#cluster">cluster</a>):</p>
+<ul class="last simple">
+<li><tt class="docutils literal"><span class="pre">'list'</span></tt> &#8211; constructs an unordered list of contents</li>
+<li><tt class="docutils literal"><span class="pre">'paginate'</span></tt> &#8211; adds a pagination control to the popup to click through
+the different points&#8217; HTML.</li>
+</ul>
+</dd>
 </dl>
 </div>
 </div>
@@ -632,21 +633,21 @@ associated textarea.</dd>
             <h3><a href="index.html">Table Of Contents</a></h3>
             <ul>
 <li><a class="reference external" href="#">django-olwidget documentation</a><ul>
+<li><a class="reference external" href="#introduction">Introduction</a></li>
 <li><a class="reference external" href="#installation">Installation</a></li>
-<li><a class="reference external" href="#getting-started">Getting started</a></li>
-<li><a class="reference external" href="#fields">Fields</a><ul>
-<li><a class="reference external" href="#mapfield-editablelayerfield-and-infolayerfield">MapField, EditableLayerField, and InfoLayerField</a><ul>
-<li><a class="reference external" href="#example">Example</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li><a class="reference external" href="#modelforms">ModelForms</a></li>
 <li><a class="reference external" href="#widgets">Widgets</a><ul>
 <li><a class="reference external" href="#editablemap">EditableMap</a></li>
 <li><a class="reference external" href="#infomap">InfoMap</a></li>
 <li><a class="reference external" href="#map-editablelayer-and-infolayer">Map, EditableLayer, and InfoLayer</a><ul>
 <li><a class="reference external" href="#examples">Examples</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference external" href="#modelforms">ModelForms</a></li>
+<li><a class="reference external" href="#fields">Fields</a><ul>
+<li><a class="reference external" href="#mapfield-editablelayerfield-and-infolayerfield">MapField, EditableLayerField, and InfoLayerField</a><ul>
+<li><a class="reference external" href="#example">Example</a></li>
 </ul>
 </li>
 </ul>

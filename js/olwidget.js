@@ -383,11 +383,13 @@ olwidget.Map = OpenLayers.Class(OpenLayers.Map, {
 
         var popupHTML = [];
         if (feature.cluster) {
-            if (this.opts.clusterDisplay == 'list') {
+            if (feature.layer && feature.layer.opts &&
+                    feature.layer.opts.clusterDisplay == 'list') {
                 if (feature.cluster.length > 1) {
                     var html = "<ul class='olwidgetClusterList'>";
                     for (var i = 0; i < feature.cluster.length; i++) {
-                        html += "<li>" + feature.cluster[i].attributes.html + "</li>";
+                        html += "<li>" + feature.cluster[i].attributes.html +
+                            "</li>";
                     }
                     html += "</ul>";
                     popupHTML.push(html);
@@ -594,9 +596,10 @@ olwidget.EditableLayer = OpenLayers.Class(olwidget.BaseVectorLayer, {
             geometry: 'point',
             hideTextarea: true,
             isCollection: false,
-            cluster: false
         };
         olwidget.BaseVectorLayer.prototype.setMap.apply(this, arguments);
+        // force non-clustering, it doesn't make sense for editable maps.
+        this.opts.cluster = false;
         if (this.opts.hideTextarea) {
             this.textarea.style.display = 'none';
         }

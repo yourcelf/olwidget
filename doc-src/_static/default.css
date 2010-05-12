@@ -1,2 +1,11 @@
 @import "basic.css";
 @import "http://olwidget.org/css/style.css";
+
+a.headerlink, a.headerlink:hover {
+    font-size: smaller;
+    color: #C60F0F !important;
+    margin-left: 0.5em;
+}
+.literal {
+    background-color: #FEFEE4;
+}

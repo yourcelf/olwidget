@@ -58,8 +58,40 @@ features which produce popup bubbles when clicked.</p>
 and <tt class="docutils literal"><span class="pre">img/</span></tt> directories into your website&#8217;s path.  The three directories
 should share a parent.</p>
 </div>
-<div class="section" id="documentation">
-<h2>Documentation<a class="headerlink" href="#documentation" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<p><tt class="docutils literal"><span class="pre">olwidget</span></tt> supports multiple geometry types, any number of maps per page,
+multiple map providers, and much more (see <a class="reference internal" href="#options">options</a> below).  A simple
+example of how to use it:</p>
+<div class="highlight-html"><div class="highlight"><pre><span class="nt">&lt;html&gt;</span>
+    <span class="nt">&lt;head&gt;</span>
+        <span class="nt">&lt;script </span><span class="na">type=</span><span class="s">&#39;text/javascript&#39;</span> <span class="na">src=</span><span class="s">&#39;http://openlayers.org/api/2.9/OpenLayers.js&#39;</span><span class="nt">&gt;&lt;/script&gt;</span>
+        <span class="nt">&lt;script </span><span class="na">type=</span><span class="s">&#39;text/javascript&#39;</span> <span class="na">src=</span><span class="s">&#39;http://openstreetmap.org/openlayers/OpenStreetMap.js&#39;</span><span class="nt">&gt;&lt;/script&gt;</span>
+        <span class="nt">&lt;script </span><span class="na">type=</span><span class="s">&#39;text/javascript&#39;</span> <span class="na">src=</span><span class="s">&#39;olwidget/js/olwidget.js&#39;</span><span class="nt">&gt;&lt;/script&gt;</span>
+        <span class="nt">&lt;link</span> <span class="na">rel=</span><span class="s">&#39;stylesheet&#39;</span> <span class="na">href=</span><span class="s">&#39;olwidget/css/olwidget.css&#39;</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;/head&gt;</span>
+    <span class="nt">&lt;body&gt;</span>
+        <span class="c">&lt;!-- a map with an editable overlay --&gt;</span>
+        <span class="nt">&lt;textarea</span> <span class="na">id=</span><span class="s">&#39;my_point&#39;</span><span class="nt">&gt;</span>SRID=4326;POINT(0 0)<span class="nt">&lt;/textarea&gt;</span>
+        <span class="nt">&lt;script </span><span class="na">type=</span><span class="s">&#39;text/javascript&#39;</span><span class="nt">&gt;</span>
+            <span class="k">new</span> <span class="nx">olwidget</span><span class="p">.</span><span class="nx">EditableMap</span><span class="p">(</span><span class="s1">&#39;my_point&#39;</span><span class="p">,</span> <span class="p">{</span><span class="nx">name</span><span class="o">:</span> <span class="s1">&#39;My Point&#39;</span><span class="p">});</span>
+        <span class="nt">&lt;/script&gt;</span>
+
+        <span class="c">&lt;!-- a map displaying an info popup over a geometry --&gt;</span>
+        <span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">&#39;map&#39;</span><span class="nt">&gt;&lt;/div&gt;</span>
+        <span class="nt">&lt;script </span><span class="na">type=</span><span class="s">&#39;text/javascript&#39;</span><span class="nt">&gt;</span>
+            <span class="k">new</span> <span class="nx">olwidget</span><span class="p">.</span><span class="nx">InfoMap</span><span class="p">(</span><span class="s1">&#39;map&#39;</span><span class="p">,</span> <span class="p">[</span>
+                <span class="p">[</span><span class="s1">&#39;SRID=4326;POINT(0 0)&#39;</span><span class="p">,</span> <span class="s2">&quot;&lt;p&gt;Here at the zero point!&lt;/p&gt;&quot;</span><span class="p">]</span>
+            <span class="p">]);</span>
+        <span class="nt">&lt;/script&gt;</span>
+    <span class="nt">&lt;/body&gt;</span>
+<span class="nt">&lt;/html&gt;</span>
+</pre></div>
+</div>
+<p>See <a class="reference external" href="examples.html#examples"><em>Examples</em></a> for several examples of olwidget in action.</p>
+</div>
+<div class="section" id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="map-types">
 <h3>Map types<a class="headerlink" href="#map-types" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
@@ -87,39 +119,7 @@ geometries when clicked.  The popups are stylable using CSS, work with
 clustered as well as non-clustered points, and can be shown both inside and
 outside the Map&#8217;s &#8220;viewport&#8221;.</li>
 </ul>
-<p><tt class="docutils literal"><span class="pre">olwidget</span></tt> supports multiple geometry types, any number of maps per page,
-multiple map providers, and much more (see <a class="reference internal" href="#options">options</a> below).  A simple
-example:</p>
-<div class="highlight-html"><div class="highlight"><pre><span class="nt">&lt;html&gt;</span>
-    <span class="nt">&lt;head&gt;</span>
-        <span class="nt">&lt;script </span><span class="na">type=</span><span class="s">&#39;text/javascript&#39;</span> <span class="na">src=</span><span class="s">&#39;http://openlayers.org/api/2.8/OpenLayers.js&#39;</span><span class="nt">&gt;&lt;/script&gt;</span>
-        <span class="nt">&lt;script </span><span class="na">type=</span><span class="s">&#39;text/javascript&#39;</span> <span class="na">src=</span><span class="s">&#39;http://openstreetmap.org/openlayers/OpenStreetMap.js&#39;</span><span class="nt">&gt;&lt;/script&gt;</span>
-        <span class="nt">&lt;script </span><span class="na">type=</span><span class="s">&#39;text/javascript&#39;</span> <span class="na">src=</span><span class="s">&#39;js/olwidget.js&#39;</span><span class="nt">&gt;&lt;/script&gt;</span>
-        <span class="nt">&lt;link</span> <span class="na">rel=</span><span class="s">&#39;stylesheet&#39;</span> <span class="na">href=</span><span class="s">&#39;css/olwidget.css&#39;</span> <span class="nt">/&gt;</span>
-    <span class="nt">&lt;/head&gt;</span>
-    <span class="nt">&lt;body&gt;</span>
-        <span class="c">&lt;!-- a map with an editable overlay --&gt;</span>
-        <span class="nt">&lt;textarea</span> <span class="na">id=</span><span class="s">&#39;my_point&#39;</span><span class="nt">&gt;</span>SRID=4326;POINT(0 0)<span class="nt">&lt;/textarea&gt;</span>
-        <span class="nt">&lt;script </span><span class="na">type=</span><span class="s">&#39;text/javascript&#39;</span><span class="nt">&gt;</span>
-            <span class="k">new</span> <span class="nx">olwidget</span><span class="p">.</span><span class="nx">EditableMap</span><span class="p">(</span><span class="s1">&#39;my_point&#39;</span><span class="p">,</span> <span class="p">{</span><span class="nx">name</span><span class="o">:</span> <span class="s1">&#39;My Point&#39;</span><span class="p">});</span>
-        <span class="nt">&lt;/script&gt;</span>
-
-        <span class="c">&lt;!-- a map displaying an info popup over a geometry --&gt;</span>
-        <span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">&#39;map&#39;</span><span class="nt">&gt;&lt;/div&gt;</span>
-        <span class="nt">&lt;script </span><span class="na">type=</span><span class="s">&#39;text/javascript&#39;</span><span class="nt">&gt;</span>
-            <span class="k">new</span> <span class="nx">olwidget</span><span class="p">.</span><span class="nx">InfoMap</span><span class="p">(</span><span class="s1">&#39;map&#39;</span><span class="p">,</span> <span class="p">[</span>
-                <span class="p">[</span><span class="s1">&#39;SRID=4326;POINT(0 0)&#39;</span><span class="p">,</span> <span class="s2">&quot;&lt;p&gt;Here at the zero point!&lt;/p&gt;&quot;</span><span class="p">]</span>
-            <span class="p">]);</span>
-        <span class="nt">&lt;/script&gt;</span>
-    <span class="nt">&lt;/body&gt;</span>
-<span class="nt">&lt;/html&gt;</span>
-</pre></div>
 </div>
-</div>
-</div>
-<div class="section" id="examples">
-<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
-<p>See <a class="reference external" href="examples.html#examples"><em>Examples</em></a> for several examples of olwidget in action.</p>
 </div>
 <div class="section" id="maps">
 <h2>Maps<a class="headerlink" href="#maps" title="Permalink to this headline">¶</a></h2>
@@ -264,7 +264,8 @@ with the following format:</p>
 <h4>Example<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h4>
 <p>The following is an example <tt class="docutils literal"><span class="pre">olwidget.Map</span></tt> with <tt class="docutils literal"><span class="pre">olwidget.InfoLayer</span></tt>
 instances using geometry-specific styles, layer-specific styles, and map styles
-together:</p>
+together.  See <a class="reference external" href="examples/multi_style_inheritance.html">this example</a> for a
+full example of style inheritance:</p>
 <div class="highlight-html"><div class="highlight"><pre><span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">&#39;map&#39;</span><span class="nt">&gt;&lt;/div&gt;</span>
 <span class="nt">&lt;script </span><span class="na">type=</span><span class="s">&#39;text/javascript&#39;</span><span class="nt">&gt;</span>
     <span class="k">new</span> <span class="nx">olwidget</span><span class="p">.</span><span class="nx">Map</span><span class="p">(</span><span class="s1">&#39;map&#39;</span><span class="p">,</span>
@@ -302,15 +303,13 @@ an optional <tt class="docutils literal"><span class="pre">options</span></tt> d
 layers.</p>
 <p>Layers inherit their styles from both their default parameters, and from those
 specified for a map:</p>
-<div class="highlight-python"><pre>default layer options &lt; map options &lt; layer options</pre>
-</div>
-<p>By contrast, maps only inherit from their default options, and not from
-layers:</p>
-<div class="highlight-python"><pre>default map options &lt; map options</pre>
+<div class="highlight-python"><pre>default options &lt; map options &lt; layer options</pre>
 </div>
 <p>This allows the map to hold defaults for all layers, but let the layers
-override them.  The following is a list of all available options.  Some are
-specific to map display, and others specific to layer display.</p>
+override them.  See <a class="reference external" href="examples/multi_style_inheritance.html">this example</a> for
+a full example of style inheritance with multi-layer maps.</p>
+<p>The following is a list of all available options.  Some are specific to map
+display, and others specific to layer display.</p>
 <div class="section" id="general-map-display">
 <h3>General map display<a class="headerlink" href="#general-map-display" title="Permalink to this headline">¶</a></h3>
 <dl class="docutils">
@@ -521,12 +520,12 @@ the SRID present in any initial WKT data, and uses the projection specified in
 <li><a class="reference external" href="#">olwidget.js documentation</a><ul>
 <li><a class="reference external" href="#introduction">Introduction</a></li>
 <li><a class="reference external" href="#installation">Installation</a></li>
-<li><a class="reference external" href="#documentation">Documentation</a><ul>
+<li><a class="reference external" href="#examples">Examples</a></li>
+<li><a class="reference external" href="#overview">Overview</a><ul>
 <li><a class="reference external" href="#map-types">Map types</a></li>
 <li><a class="reference external" href="#layer-types">Layer types</a></li>
 </ul>
 </li>
-<li><a class="reference external" href="#examples">Examples</a></li>
 <li><a class="reference external" href="#maps">Maps</a><ul>
 <li><a class="reference external" href="#olwidget-map">olwidget.Map</a><ul>
 <li><a class="reference external" href="#example">Example</a></li>

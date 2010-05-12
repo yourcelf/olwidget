@@ -3,11 +3,36 @@
 django-olwidget documentation
 =============================
 
+Introduction
+~~~~~~~~~~~~
+
+``django-olwidget`` is a portable Django application that uses :ref:`olwidget.js <olwidget.js>` to easily create editable and informational maps using GeoDjango, inside and outside of Django's admin.
+
+A quick guide to the ``olwidget`` module contents:
+
+Widgets: for display outside forms, single-layer maps in forms, or custom fields:
+    Single layer:
+        EditableMap_, InfoMap_
+    Multi layer:
+        `Map, EditableLayer, and InfoLayer`_
+
+Forms: for ModelForm convenience with multi- or single-layer maps:
+    MapModelForm_
+
+Fields: for multi-layer map editing in forms:
+    `MapField, EditableLayerField, and InfoLayerField`_
+
+olwidget looks great in admin:
+    GeoModelAdmin_
+
+And of course, customization of all types: options_
+
+
 Installation
 ~~~~~~~~~~~~
 
-Installation of the ``olwidget`` Django app requires a couple of steps -- these
-should be familiar to users of other reusable Django apps:
+Installation of the ``olwidget`` requires a couple of steps -- these should be
+familiar to users of other reusable Django apps:
 
 1.  Install ``django-olwidget`` using your preferred method for python modules.
     The folder ``olwidget`` in the ``django-olwidget`` directory must end up in
@@ -44,185 +69,6 @@ directory.  To use it, modify the ``settings.py`` directory to reflect your
 database settings.  For convenience, a shell script, ``reset_testolwidget.sh``,
 is included to set up the database using ``postgres``, ``template_postgis``,\
 and the database user and password specified in the script.
-
-Getting started
-~~~~~~~~~~~~~~~
-
-A quick guide to the ``olwidget`` module contents:
-
-Fields: for multi-layer map editing in forms:
-    `MapField, EditableLayerField, and InfoLayerField`_
-Forms: for ModelForm convenience with multi- or single-layer maps:
-    MapModelForm_
-Widgets: for display outside forms, or to make custom fields:
-    Single layer:
-        EditableMap_, InfoMap_
-    Multi layer:
-        `Map, EditableLayer, and InfoLayer`_
-olwidget looks great in admin:
-    GeoModelAdmin_
-
-And of course, customization of all types: options_
-
-
-Fields
-~~~~~~
-MapField, EditableLayerField, and InfoLayerField
-------------------------------------------------
-Multi-layer maps are possible using the ``MapField`` type, which is a container
-field for any number of layer fields.  The layer fields are
-``EditableLayerField`` or ``InfoLayerField`` types, which allow editing or
-display of vector data on the map.
-
-.. _MapField:
-
-**MapField** constructor:
-
-.. code-block:: python
-    
-    olwidget.fields.MapField(fields=None, options=None, layer_names=None, template=None)
-
-``fields``
-    An array of layer fields (either ``EditableLayerField`` or
-    ``InfoLayerField``) which should appear on the map.
-``options``
-    A dict of options_ for the map.
-``layer_names``
-    If provided, these will be used as the names for textareas in editable
-    fields and raw POST data.  However, ``form.cleaned_data`` will not use
-    these names, and will instead contain a list of the values in each layer
-    using the MapField's declared name.
-``template``
-    The name of a custom template to render the map.  It will receive the context::
-        
-        {'id': html id for the map,
-         'layer_js': an array of javascript invocations from each layer,
-         'layer_html': an array of html data from each layer,
-         'map_opts': a JSON string of options for the map.
-        }
-
-.. _EditableLayerField:
-
-**EditableLayerField** constructor:
-
-.. code-block:: python
-
-    olwidget.fields.EditableLayerField(options=None)
-
-``options``
-    A dict of options_ for this layer, which override the containing ``Map`` defaults.
-
-.. _InfoLayerField:
-
-**InfoLayerField** constructor:
-
-.. code-block:: python
-
-    olwidget.fields.InfoLayerField(info=None, options=None)
-
-``info``
-    A list of ``[geometry, html]`` pairs for clickable popups.  See InfoLayer_
-    for more.
-``options``
-    A dict of options_ for this layer, which override the containing ``Map``
-    defaults.
-
-Example
-'''''''
-
-The following is an example that constructs a map widget with 3 fields, two of
-them editable.  It uses both layer-specific options and global map options:
-
-.. code-block:: python
-
-    from django import forms
-    from olwidget.fields import MapField, EditableLayerField, InfoLayerField
-
-    class MyForm(forms.Form):
-        country = MapField([
-                EditableLayerField({'geometry': 'polygon', 'name': 'boundary'}),
-                EditableLayerField({'geometry': 'point', 'name': 'capital'}),
-                InfoLayerField([["Point (0 0)", "Of interest"]], {'name': "Points of interest"}),
-            ], {
-                'overlay_style': {
-                    'fill_color': '#00ff00',
-                },
-            })
-
-In a template:
-
-.. code-block:: django
-
-    <head>... {{ form.media }} ...</head>
-    <body>...    {{ form }}    ...</body>
-
-.. _MapModelForm:
-
-ModelForms
-~~~~~~~~~~
-
-``MapModelForm`` is an extension of the built-in `ModelForm
-<http://docs.djangoproject.com/en/dev/topics/forms/modelforms/>`_ type which
-adds
-support for maps.  ``MapModelForm`` subclasses can possess two extra parameters
-in their inner ``Meta`` class -- an optional ``maps`` parameter which specifies
-which fields to use with which maps, and an ``options`` parameter that specifies
-global map options_.  
-
-The following is a simple example using a separate map for each field, and the
-same appearance for all maps:
-
-.. code-block:: python
-
-    # models.py
-    class MyModel(models.Model):
-        geom1 = models.PointField()
-        geom2 = models.LineStringField()
-        geom3 = models.GeometryCollectionField()
-
-
-    # forms.py
-    from olwidget.forms import MapModelForm
-    from models import MyModel
-
-    class MyForm(MapModelForm):
-        class Meta:
-            model = MyModel
-            options = { 'layers': ['google.streets'] }
-
-To edit multiple fields in a single map, specify the ``maps`` parameter.  The
-following will construct a form with 2 maps, the first editing ``geom1`` and
-``geom2`` fields and using Google Streets as a base layer, and the second
-editing ``geom3`` and using default options:
-
-.. code-block:: python
-
-    class MyForm(MapModelForm):
-        class Meta:
-            model = MyModel
-            maps = (
-                (('geom1', 'geom2'), { 'layers': ['google.streets'] }),
-                (('geom3', ), None),
-            )
-
-To define options for particular fields, override the field definition.
-
-.. code-block:: python
-
-    from olwidget.forms import MapModelForm
-    from olwidget.fields import EditableLayerField
-    
-    class MyForm(MapModelForm):
-        geom1 = EditableLayerField({'overlay_style': { 'fill_color': "#ff0000" }})
-        class Meta:
-            model = MyModel
-
-Using the form in a template is the same as before.
-
-.. code-block:: django
-
-    <head> {{ form.media }} </head>
-    <body>     {{ form }}   </body>
 
 Widgets
 ~~~~~~~
@@ -351,7 +197,7 @@ Use these widgets together to display multi-layer maps outside of forms.
     olwidget.widgets.InfoLayer(info=None, options=None, template=None)
 
 ``info``
-    An list of [``geometry``, ``html``] pairs which specify geometries and the
+    A list of [``geometry``, ``html``] pairs which specify geometries and the
     html contents of popups when those geometries are clicked.  ``html`` can
     also be a dict such as ``{ html: "...", style: {}}``.  The ``style``
     parameter is used for individual styling of the geometry within the layer.
@@ -375,6 +221,166 @@ In a template:
 
     <head> ... {{ mymap.media }} ... </head>
     <body> ...    {{ mymap }}    ... </body>
+
+.. _MapModelForm:
+
+ModelForms
+~~~~~~~~~~
+
+``MapModelForm`` is an extension of the built-in `ModelForm
+<http://docs.djangoproject.com/en/dev/topics/forms/modelforms/>`_ type which
+adds
+support for maps.  ``MapModelForm`` subclasses can possess two extra parameters
+in their inner ``Meta`` class -- an optional ``maps`` parameter which specifies
+which fields to use with which maps, and an ``options`` parameter that specifies
+global map options_.  
+
+The following is a simple example using a separate map for each field, and the
+same appearance for all maps:
+
+.. code-block:: python
+
+    # models.py
+    class MyModel(models.Model):
+        geom1 = models.PointField()
+        geom2 = models.LineStringField()
+        geom3 = models.GeometryCollectionField()
+
+
+    # forms.py
+    from olwidget.forms import MapModelForm
+    from models import MyModel
+
+    class MyForm(MapModelForm):
+        class Meta:
+            model = MyModel
+            options = { 'layers': ['google.streets'] }
+
+To edit multiple fields in a single map, specify the ``maps`` parameter.  The
+following will construct a form with 2 maps, the first editing ``geom1`` and
+``geom2`` fields and using Google Streets as a base layer, and the second
+editing ``geom3`` and using default options:
+
+.. code-block:: python
+
+    class MyForm(MapModelForm):
+        class Meta:
+            model = MyModel
+            maps = (
+                (('geom1', 'geom2'), { 'layers': ['google.streets'] }),
+                (('geom3', ), None),
+            )
+
+To define options for particular fields, override the field definition.
+
+.. code-block:: python
+
+    from olwidget.forms import MapModelForm
+    from olwidget.fields import EditableLayerField
+    
+    class MyForm(MapModelForm):
+        geom1 = EditableLayerField({'overlay_style': { 'fill_color': "#ff0000" }})
+        class Meta:
+            model = MyModel
+
+Using the form in a template is the same as before.
+
+.. code-block:: django
+
+    <head> {{ form.media }} </head>
+    <body>     {{ form }}   </body>
+
+Fields
+~~~~~~
+MapField, EditableLayerField, and InfoLayerField
+------------------------------------------------
+Multi-layer maps are possible in forms using the ``MapField`` type, which is a
+container field for any number of layer fields.  The layer fields are
+``EditableLayerField`` or ``InfoLayerField`` types, which allow editing or
+display of vector data on the map.
+
+.. _MapField:
+
+**MapField** constructor:
+
+.. code-block:: python
+    
+    olwidget.fields.MapField(fields=None, options=None, layer_names=None, template=None)
+
+``fields``
+    An array of layer fields (either ``EditableLayerField`` or
+    ``InfoLayerField``) which should appear on the map.
+``options``
+    A dict of options_ for the map.
+``layer_names``
+    If provided, these will be used as the names for textareas in editable
+    fields and raw POST data.  However, ``form.cleaned_data`` will not use
+    these names, and will instead contain a list of the values in each layer
+    using the MapField's declared name.
+``template``
+    The name of a custom template to render the map.  It will receive the context::
+        
+        {'id': html id for the map,
+         'layer_js': an array of javascript invocations from each layer,
+         'layer_html': an array of html data from each layer,
+         'map_opts': a JSON string of options for the map.
+        }
+
+.. _EditableLayerField:
+
+**EditableLayerField** constructor:
+
+.. code-block:: python
+
+    olwidget.fields.EditableLayerField(options=None)
+
+``options``
+    A dict of options_ for this layer, which override the containing ``Map`` defaults.
+
+.. _InfoLayerField:
+
+**InfoLayerField** constructor:
+
+.. code-block:: python
+
+    olwidget.fields.InfoLayerField(info=None, options=None)
+
+``info``
+    A list of ``[geometry, html]`` pairs for clickable popups.  See InfoLayer_
+    for more.
+``options``
+    A dict of options_ for this layer, which override the containing ``Map``
+    defaults.
+
+Example
+'''''''
+
+The following is an example that constructs a map widget with 3 fields, two of
+them editable.  It uses both layer-specific options and global map options:
+
+.. code-block:: python
+
+    from django import forms
+    from olwidget.fields import MapField, EditableLayerField, InfoLayerField
+
+    class MyForm(forms.Form):
+        country = MapField([
+                EditableLayerField({'geometry': 'polygon', 'name': 'boundary'}),
+                EditableLayerField({'geometry': 'point', 'name': 'capital'}),
+                InfoLayerField([["Point (0 0)", "Of interest"]], {'name': "Points of interest"}),
+            ], {
+                'overlay_style': {
+                    'fill_color': '#00ff00',
+                },
+            })
+
+In a template:
+
+.. code-block:: django
+
+    <head>... {{ form.media }} ...</head>
+    <body>...    {{ form }}    ...</body>
+
 
 .. _GeoModelAdmin:
 
@@ -447,38 +453,43 @@ Changelist maps
 ---------------
 
 To show a clickable map on the admin changelist page, use the ``list_map``
-property to specify which fields to display:
+property to specify which fields to display in the changelist map:
 
 .. code-block:: python
 
     # an example model:
 
-    class City(models.Model):
+    class Tree(models.Model):
         location = models.PointField()
+        root_spread = models.PolygonField()
 
     # admin.py
 
     from django.contrib import admin
     from olwidget.admin import GeoModelAdmin
-    from myapp import City
+    from myapp import Tree 
 
-    class CityGeoAdmin(GeoModelAdmin):
+    class TreeGeoAdmin(GeoModelAdmin):
         list_map = ['location'] 
 
-    admin.site.register(City, CityGeoAdmin)
+    admin.site.register(Tree, TreeGeoAdmin)
 
 Options can be set for the changelist map using the ``list_map_options``
 property:
 
 .. code-block:: python
 
-    class CityGeoAdmin(GeoModelAdmin):
+    class TreeGeoAdmin(GeoModelAdmin):
         list_map = ['location']
         list_map_options = {
             # group nearby points into clusters
             'cluster': True,
             'cluster_display': 'list',
         }
+
+This results in a map like this:
+
+.. image:: /examples/changelist_map.png
     
 .. _options:
 
@@ -578,15 +589,6 @@ General map display
     * ``bl`` -- bottom left
     * ``auto`` -- automatically choose direction.
 
-.. _cluster display:
-
-``cluster_display`` (string; default ``'paginate'``)
-    The way HTML from clustered points is handled (see cluster_):
-
-    * ``'list'`` -- constructs an unordered list of contents
-    * ``'paginate'`` -- adds a pagination control to the popup to click through
-      the different points' HTML.
-
 Layer options
 -------------
 Layer options can also be specified at the map level.  Any options passed to a
@@ -642,6 +644,10 @@ layer override the corresponding options from the map.
     If true, points will be clustered using the
     `OpenLayers.Strategy.ClusterStrategy
     <http://dev.openlayers.org/releases/OpenLayers-2.7/doc/apidocs/files/OpenLayers/Strategy/Cluster-js.html>`_.
-    (see `this cluster example <examples/info_cluster.html>`_).  See also
-    `cluster display`_.
+    (see `this cluster example <examples/info_cluster.html>`_).
+``cluster_display`` (string; default ``'paginate'``)
+    The way HTML from clustered points is handled (see cluster_):
 
+    * ``'list'`` -- constructs an unordered list of contents
+    * ``'paginate'`` -- adds a pagination control to the popup to click through
+      the different points' HTML.

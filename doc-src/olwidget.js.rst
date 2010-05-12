@@ -19,8 +19,44 @@ Copy or link the olwidget media directory (which contains ``js/``, ``css/``,
 and ``img/`` directories into your website's path.  The three directories
 should share a parent.
 
-Documentation
-~~~~~~~~~~~~~
+Examples
+~~~~~~~~
+
+``olwidget`` supports multiple geometry types, any number of maps per page,
+multiple map providers, and much more (see options_ below).  A simple
+example of how to use it:
+
+.. code-block:: html
+
+    <html>
+        <head>
+            <script type='text/javascript' src='http://openlayers.org/api/2.9/OpenLayers.js'></script>
+            <script type='text/javascript' src='http://openstreetmap.org/openlayers/OpenStreetMap.js'></script>
+            <script type='text/javascript' src='olwidget/js/olwidget.js'></script>
+            <link rel='stylesheet' href='olwidget/css/olwidget.css' />
+        </head>
+        <body>
+            <!-- a map with an editable overlay -->
+            <textarea id='my_point'>SRID=4326;POINT(0 0)</textarea>
+            <script type='text/javascript'>
+                new olwidget.EditableMap('my_point', {name: 'My Point'});
+            </script>
+
+            <!-- a map displaying an info popup over a geometry -->
+            <div id='map'></div>
+            <script type='text/javascript'>
+                new olwidget.InfoMap('map', [
+                    ['SRID=4326;POINT(0 0)', "<p>Here at the zero point!</p>"]
+                ]);
+            </script>
+        </body>
+    </html>
+
+
+See :ref:`examples` for several examples of olwidget in action.
+
+Overview
+~~~~~~~~
 
 Map types
 ---------
@@ -51,41 +87,6 @@ Layer types
   clustered as well as non-clustered points, and can be shown both inside and
   outside the Map's "viewport".
 
-``olwidget`` supports multiple geometry types, any number of maps per page,
-multiple map providers, and much more (see options_ below).  A simple
-example:
-
-.. code-block:: html
-
-    <html>
-        <head>
-            <script type='text/javascript' src='http://openlayers.org/api/2.8/OpenLayers.js'></script>
-            <script type='text/javascript' src='http://openstreetmap.org/openlayers/OpenStreetMap.js'></script>
-            <script type='text/javascript' src='js/olwidget.js'></script>
-            <link rel='stylesheet' href='css/olwidget.css' />
-        </head>
-        <body>
-            <!-- a map with an editable overlay -->
-            <textarea id='my_point'>SRID=4326;POINT(0 0)</textarea>
-            <script type='text/javascript'>
-                new olwidget.EditableMap('my_point', {name: 'My Point'});
-            </script>
-
-            <!-- a map displaying an info popup over a geometry -->
-            <div id='map'></div>
-            <script type='text/javascript'>
-                new olwidget.InfoMap('map', [
-                    ['SRID=4326;POINT(0 0)', "<p>Here at the zero point!</p>"]
-                ]);
-            </script>
-        </body>
-    </html>
-
-
-Examples
-~~~~~~~~
-
-See :ref:`examples` for several examples of olwidget in action.
 
 Maps
 ~~~~
@@ -244,7 +245,8 @@ Example
 '''''''
 The following is an example ``olwidget.Map`` with ``olwidget.InfoLayer``
 instances using geometry-specific styles, layer-specific styles, and map styles
-together:
+together.  See `this example <examples/multi_style_inheritance.html>`_ for a
+full example of style inheritance:
 
 .. code-block:: html
 
@@ -286,16 +288,14 @@ layers.
 Layers inherit their styles from both their default parameters, and from those
 specified for a map::
 
-    default layer options < map options < layer options
-
-By contrast, maps only inherit from their default options, and not from
-layers::
-
-    default map options < map options
+    default options < map options < layer options
 
 This allows the map to hold defaults for all layers, but let the layers
-override them.  The following is a list of all available options.  Some are
-specific to map display, and others specific to layer display.
+override them.  See `this example <examples/multi_style_inheritance.html>`_ for
+a full example of style inheritance with multi-layer maps.  
+
+The following is a list of all available options.  Some are specific to map
+display, and others specific to layer display.
 
 General map display
 -------------------

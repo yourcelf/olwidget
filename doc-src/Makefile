@@ -32,9 +32,11 @@ clean:
 	-rm -rf ../doc/*
 
 html:
+	rm -rf ../doc/_static
 	$(SPHINXBUILD) -b html . ../doc/
 	rm -f ../doc/examples
 	ln -s ../doc-src/examples ../doc/examples
+	cp -r _static ../doc/
 	@echo
 	@echo "Build finished.  The HTML pages are in ../doc"
 

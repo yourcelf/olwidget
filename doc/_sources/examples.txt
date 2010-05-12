@@ -10,7 +10,8 @@ In addition, the source distribution contains an example project called ``test_p
 Editable Maps
 -------------
 * `Simple example <examples/simple.html>`_
-* `Collections <examples/collection.html>`_ of multiple geometries.
+* `Collections <examples/collection.html>`_ of multiple geometries (e.g. more
+  than one linestring at once).
 * Read only maps and `multiple maps per page <examples/read_only_and_multiple_maps.html>`_
 * Custom `starting locations and colors <examples/custom_start_point_and_colors.html>`_
 * `Other map providers <examples/other_providers.html>`_, including Google,
@@ -27,3 +28,10 @@ Info Maps
 * Info map with `different styles per geometry <examples/info_per_point_style.html>`_
 * Info map with `clustered points and per-geometry styles <examples/info_cluster_per_point_style.html>`_
 
+Multiple Vector Layer Maps
+--------------------------
+* Map with `both info layers and editable layers
+  <examples/multi_info_and_editable.html>`_
+* Map demonstrating `style inheritance
+  <examples/multi_style_inheritance.html>`_ using individual geometry, layer,
+  and map styles.
