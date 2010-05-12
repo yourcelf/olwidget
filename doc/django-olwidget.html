@@ -415,7 +415,7 @@ like so:</p>
     <span class="p">}</span>
     <span class="n">maps</span> <span class="o">=</span> <span class="p">(</span>
         <span class="p">((</span><span class="s">&#39;capital&#39;</span><span class="p">,</span> <span class="s">&#39;perimiter&#39;</span><span class="p">),</span> <span class="p">{</span> <span class="s">&#39;layers&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s">&#39;google.streets&#39;</span><span class="p">]</span> <span class="p">}),</span>
-        <span class="p">((</span><span class="s">&#39;biggest_river&#39;</span><span class="p">,),</span> <span class="p">{</span><span class="s">&#39;overlay_style&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;fill_color&#39;</span><span class="p">:</span> <span class="s">&quot;#0000ff&quot;</span><span class="p">}}),</span>
+        <span class="p">((</span><span class="s">&#39;biggest_river&#39;</span><span class="p">,),</span> <span class="p">{</span><span class="s">&#39;overlay_style&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;stroke_color&#39;</span><span class="p">:</span> <span class="s">&quot;#0000ff&quot;</span><span class="p">}}),</span>
     <span class="p">)</span>
 </pre></div>
 </div>
@@ -600,19 +600,32 @@ javascript usage example.  Note that javascript functions can&#8217;t be
 specified directly from python in an <tt class="docutils literal"><span class="pre">options</span></tt> dict, as the serializer
 will interpret them as strings.  Instead, they must be specified manually
 in a template.</dd>
+</dl>
+<div class="section" id="options-for-editable-layers">
+<h4>Options for editable layers<a class="headerlink" href="#options-for-editable-layers" title="Permalink to this headline">¶</a></h4>
+<dl class="docutils">
+<dt><tt class="docutils literal"><span class="pre">geometry</span></tt> (Array or string; default <tt class="docutils literal"><span class="pre">'point'</span></tt>)</dt>
+<dd>The geometry to use while editing this layer.  Choices are <tt class="docutils literal"><span class="pre">'point'</span></tt>,
+<tt class="docutils literal"><span class="pre">'linestring'</span></tt>, and <tt class="docutils literal"><span class="pre">'polygon'</span></tt>.  To allow multiple geometries, use an
+array such as <tt class="docutils literal"><span class="pre">['point',</span> <span class="pre">'linestring',</span> <span class="pre">'polygon']</span></tt>.</dd>
+<dt><tt class="docutils literal"><span class="pre">isCollection</span></tt> (boolean, default <tt class="docutils literal"><span class="pre">false</span></tt>)</dt>
+<dd>If true, allows multiple points/lines/polygons.</dd>
 <dt><tt class="docutils literal"><span class="pre">hide_textarea</span></tt> (boolean; default <tt class="docutils literal"><span class="pre">true</span></tt>)</dt>
 <dd>Hides the textarea if true.  Ignored if the layer does not have an
 associated textarea.</dd>
 <dt><tt class="docutils literal"><span class="pre">editable</span></tt> (boolean, default <tt class="docutils literal"><span class="pre">true</span></tt>)</dt>
 <dd>If true, allows editing of geometries.  Ignored by <tt class="docutils literal"><span class="pre">InfoLayer</span></tt> types.</dd>
 </dl>
-<dl class="docutils" id="cluster">
+</div>
+<div class="section" id="options-for-info-layers">
+<h4>Options for info layers<a class="headerlink" href="#options-for-info-layers" title="Permalink to this headline">¶</a></h4>
+<dl class="docutils">
 <dt><tt class="docutils literal"><span class="pre">cluster</span></tt> (boolean; default <tt class="docutils literal"><span class="pre">false</span></tt>)</dt>
 <dd>If true, points will be clustered using the
 <a class="reference external" href="http://dev.openlayers.org/releases/OpenLayers-2.7/doc/apidocs/files/OpenLayers/Strategy/Cluster-js.html">OpenLayers.Strategy.ClusterStrategy</a>.
 (see <a class="reference external" href="examples/info_cluster.html">this cluster example</a>).</dd>
 <dt><tt class="docutils literal"><span class="pre">cluster_display</span></tt> (string; default <tt class="docutils literal"><span class="pre">'paginate'</span></tt>)</dt>
-<dd><p class="first">The way HTML from clustered points is handled (see <a class="reference internal" href="#cluster">cluster</a>):</p>
+<dd><p class="first">The way HTML from clustered points is handled.</p>
 <ul class="last simple">
 <li><tt class="docutils literal"><span class="pre">'list'</span></tt> &#8211; constructs an unordered list of contents</li>
 <li><tt class="docutils literal"><span class="pre">'paginate'</span></tt> &#8211; adds a pagination control to the popup to click through
@@ -620,6 +633,7 @@ the different points&#8217; HTML.</li>
 </ul>
 </dd>
 </dl>
+</div>
 </div>
 </div>
 </div>
@@ -658,7 +672,11 @@ the different points&#8217; HTML.</li>
 </li>
 <li><a class="reference external" href="#options">Options</a><ul>
 <li><a class="reference external" href="#general-map-display">General map display</a></li>
-<li><a class="reference external" href="#layer-options">Layer options</a></li>
+<li><a class="reference external" href="#layer-options">Layer options</a><ul>
+<li><a class="reference external" href="#options-for-editable-layers">Options for editable layers</a></li>
+<li><a class="reference external" href="#options-for-info-layers">Options for info layers</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>

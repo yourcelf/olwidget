@@ -388,17 +388,6 @@ be one of:</p>
 </ul>
 </dd>
 </dl>
-<dl class="docutils" id="clusterdisplay">
-<dt><tt class="docutils literal"><span class="pre">clusterDisplay</span></tt> (string; default <tt class="docutils literal"><span class="pre">'paginate'</span></tt>)</dt>
-<dd><p class="first">The way HTML from clustered points is handled:</p>
-<ul class="last simple">
-<li><tt class="docutils literal"><span class="pre">'list'</span></tt> &#8211; constructs an unordered list of contents</li>
-<li><tt class="docutils literal"><span class="pre">'paginate'</span></tt> &#8211; adds a pagination control to the popup to click through
-the different points&#8217; HTML.
-See <a class="reference internal" href="#cluster">cluster</a>.</li>
-</ul>
-</dd>
-</dl>
 </div>
 <div class="section" id="layer-options">
 <h3>Layer options<a class="headerlink" href="#layer-options" title="Permalink to this headline">¶</a></h3>
@@ -417,10 +406,9 @@ definitions.  See <a class="reference external" href="http://dev.openlayers.org/
 <h3>Options for editable layers<a class="headerlink" href="#options-for-editable-layers" title="Permalink to this headline">¶</a></h3>
 <dl class="docutils">
 <dt><tt class="docutils literal"><span class="pre">geometry</span></tt> (Array or string; defaults to <tt class="docutils literal"><span class="pre">'point'</span></tt>)</dt>
-<dd>The geometry to use for editing this map.  Ignored by
-<tt class="docutils literal"><span class="pre">olwidget.InfoLayer</span></tt>.  Choices are <tt class="docutils literal"><span class="pre">'point'</span></tt>, <tt class="docutils literal"><span class="pre">'linestring'</span></tt>, and
-<tt class="docutils literal"><span class="pre">'polygon'</span></tt>.  To allow multiple geometries, use an array such as
-<tt class="docutils literal"><span class="pre">['point',</span> <span class="pre">'linestring',</span> <span class="pre">'polygon']</span></tt>.</dd>
+<dd>The geometry to use for editing this layer.  Choices are <tt class="docutils literal"><span class="pre">'point'</span></tt>,
+<tt class="docutils literal"><span class="pre">'linestring'</span></tt>, and <tt class="docutils literal"><span class="pre">'polygon'</span></tt>.  To allow multiple geometries, use an
+array such as <tt class="docutils literal"><span class="pre">['point',</span> <span class="pre">'linestring',</span> <span class="pre">'polygon']</span></tt>.</dd>
 <dt><tt class="docutils literal"><span class="pre">isCollection</span></tt> (boolean, default <tt class="docutils literal"><span class="pre">false</span></tt>)</dt>
 <dd>If true, allows multiple points/lines/polygons.</dd>
 <dt><tt class="docutils literal"><span class="pre">hideTextarea</span></tt> (boolean; default <tt class="docutils literal"><span class="pre">true</span></tt>)</dt>
@@ -431,11 +419,19 @@ definitions.  See <a class="reference external" href="http://dev.openlayers.org/
 </div>
 <div class="section" id="options-for-info-layers">
 <h3>Options for info layers<a class="headerlink" href="#options-for-info-layers" title="Permalink to this headline">¶</a></h3>
-<dl class="docutils" id="cluster">
+<dl class="docutils">
 <dt><tt class="docutils literal"><span class="pre">cluster</span></tt> (boolean; default <tt class="docutils literal"><span class="pre">false</span></tt>)</dt>
-<dd>If true, points will be clustered using the <a class="reference external" href="http://dev.openlayers.org/releases/OpenLayers-2.7/doc/apidocs/files/OpenLayers/Strategy/Cluster-js.html">OpenLayers.Strategy.ClusterStrategy</a>.
-See <a class="reference external" href="examples/info_cluster.html">this cluster example</a>.
-Also see <a class="reference internal" href="#clusterdisplay">clusterDisplay</a>.</dd>
+<dd>If true, points will be clustered using the
+<a class="reference external" href="http://dev.openlayers.org/releases/OpenLayers-2.7/doc/apidocs/files/OpenLayers/Strategy/Cluster-js.html">OpenLayers.Strategy.ClusterStrategy</a>.
+See <a class="reference external" href="examples/info_cluster.html">this cluster example</a>.</dd>
+<dt><tt class="docutils literal"><span class="pre">clusterDisplay</span></tt> (string; default <tt class="docutils literal"><span class="pre">'paginate'</span></tt>)</dt>
+<dd><p class="first">The way HTML from clustered points is handled:</p>
+<ul class="last simple">
+<li><tt class="docutils literal"><span class="pre">'list'</span></tt> &#8211; constructs an unordered list of contents</li>
+<li><tt class="docutils literal"><span class="pre">'paginate'</span></tt> &#8211; adds a pagination control to the popup to click through
+the different points&#8217; HTML.</li>
+</ul>
+</dd>
 </dl>
 </div>
 </div>

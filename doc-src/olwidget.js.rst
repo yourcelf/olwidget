@@ -376,17 +376,6 @@ General map display
     * ``bl`` -- bottom left
     * ``auto`` -- automatically choose direction.
 
-.. _clusterDisplay:
-
-``clusterDisplay`` (string; default ``'paginate'``)
-    The way HTML from clustered points is handled:
-
-    * ``'list'`` -- constructs an unordered list of contents
-    * ``'paginate'`` -- adds a pagination control to the popup to click through
-      the different points' HTML.
-      See cluster_.
-
-
 Layer options
 -------------
 
@@ -403,10 +392,9 @@ Options for editable layers
 ---------------------------
 
 ``geometry`` (Array or string; defaults to ``'point'``) 
-    The geometry to use for editing this map.  Ignored by
-    ``olwidget.InfoLayer``.  Choices are ``'point'``, ``'linestring'``, and
-    ``'polygon'``.  To allow multiple geometries, use an array such as
-    ``['point', 'linestring', 'polygon']``.
+    The geometry to use for editing this layer.  Choices are ``'point'``,
+    ``'linestring'``, and ``'polygon'``.  To allow multiple geometries, use an
+    array such as ``['point', 'linestring', 'polygon']``.
 ``isCollection`` (boolean, default ``false``) 
     If true, allows multiple points/lines/polygons.
 ``hideTextarea`` (boolean; default ``true``) 
@@ -417,13 +405,18 @@ Options for editable layers
 Options for info layers
 -----------------------
 
-.. _cluster:
-
 ``cluster`` (boolean; default ``false``)
-    If true, points will be clustered using the `OpenLayers.Strategy.ClusterStrategy
+    If true, points will be clustered using the
+    `OpenLayers.Strategy.ClusterStrategy
     <http://dev.openlayers.org/releases/OpenLayers-2.7/doc/apidocs/files/OpenLayers/Strategy/Cluster-js.html>`_.
     See `this cluster example <examples/info_cluster.html>`_.
-    Also see clusterDisplay_.
+``clusterDisplay`` (string; default ``'paginate'``)
+    The way HTML from clustered points is handled:
+
+    * ``'list'`` -- constructs an unordered list of contents
+    * ``'paginate'`` -- adds a pagination control to the popup to click through
+      the different points' HTML.
+
 
 Extras
 ~~~~~~

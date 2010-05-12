@@ -440,7 +440,7 @@ like so:
         }
         maps = (
             (('capital', 'perimiter'), { 'layers': ['google.streets'] }),
-            (('biggest_river',), {'overlay_style': {'fill_color': "#0000ff"}}),
+            (('biggest_river',), {'overlay_style': {'stroke_color': "#0000ff"}}),
         )
 
 
@@ -632,13 +632,23 @@ layer override the corresponding options from the map.
     specified directly from python in an ``options`` dict, as the serializer
     will interpret them as strings.  Instead, they must be specified manually
     in a template.
+
+Options for editable layers
+'''''''''''''''''''''''''''
+``geometry`` (Array or string; default ``'point'``)
+    The geometry to use while editing this layer.  Choices are ``'point'``,
+    ``'linestring'``, and ``'polygon'``.  To allow multiple geometries, use an
+    array such as ``['point', 'linestring', 'polygon']``.
+``isCollection`` (boolean, default ``false``)
+    If true, allows multiple points/lines/polygons.
 ``hide_textarea`` (boolean; default ``true``) 
     Hides the textarea if true.  Ignored if the layer does not have an
     associated textarea.
 ``editable`` (boolean, default ``true``) 
     If true, allows editing of geometries.  Ignored by ``InfoLayer`` types.
 
-.. _cluster:
+Options for info layers
+'''''''''''''''''''''''
 
 ``cluster`` (boolean; default ``false``)
     If true, points will be clustered using the
@@ -646,8 +656,9 @@ layer override the corresponding options from the map.
     <http://dev.openlayers.org/releases/OpenLayers-2.7/doc/apidocs/files/OpenLayers/Strategy/Cluster-js.html>`_.
     (see `this cluster example <examples/info_cluster.html>`_).
 ``cluster_display`` (string; default ``'paginate'``)
-    The way HTML from clustered points is handled (see cluster_):
+    The way HTML from clustered points is handled.
 
     * ``'list'`` -- constructs an unordered list of contents
     * ``'paginate'`` -- adds a pagination control to the popup to click through
       the different points' HTML.
+
