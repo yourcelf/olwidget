@@ -51,19 +51,14 @@ Getting started
 A quick guide to the ``olwidget`` module contents:
 
 Fields: for multi-layer map editing in forms:
-    MapField_, EditableLayerField_, and InfoLayerField_
-
-Widgets: for display outside forms, or to make custom fields:
-    Single layer:
-        EditableMap_
-        InfoMap_
-
-    Multi layer:
-        `Map, EditableLayer, and InfoLayer`_
-
+    `MapField, EditableLayerField, and InfoLayerField`_
 Forms: for ModelForm convenience with multi- or single-layer maps:
     MapModelForm_
-
+Widgets: for display outside forms, or to make custom fields:
+    Single layer:
+        EditableMap_, InfoMap_
+    Multi layer:
+        `Map, EditableLayer, and InfoLayer`_
 olwidget looks great in admin:
     GeoModelAdmin_
 
@@ -72,8 +67,8 @@ And of course, customization of all types: options_
 
 Fields
 ~~~~~~
-MapField, EditableLayerField, InfoLayerField
---------------------------------------------
+MapField, EditableLayerField, and InfoLayerField
+------------------------------------------------
 Multi-layer maps are possible using the ``MapField`` type, which is a container
 field for any number of layer fields.  The layer fields are
 ``EditableLayerField`` or ``InfoLayerField`` types, which allow editing or
@@ -123,10 +118,14 @@ display of vector data on the map.
 
 .. code-block:: python
 
-    olwidget.fields.InfoLayerField(options=None)
+    olwidget.fields.InfoLayerField(info=None, options=None)
 
+``info``
+    A list of ``[geometry, html]`` pairs for clickable popups.  See InfoLayer_
+    for more.
 ``options``
-    A dict of options_ for this layer, which override the containing ``Map`` defaults.
+    A dict of options_ for this layer, which override the containing ``Map``
+    defaults.
 
 Example
 '''''''
@@ -342,6 +341,8 @@ Use these widgets together to display multi-layer maps outside of forms.
     Optional options_ for the layer.
 ``template``
     An optional template to use to render this layer's javascript.
+
+.. _InfoLayer:
 
 **InfoLayer** constructor:
 

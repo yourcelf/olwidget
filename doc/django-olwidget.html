@@ -84,18 +84,17 @@ is included to set up the database using <tt class="docutils literal"><span clas
 <p>A quick guide to the <tt class="docutils literal"><span class="pre">olwidget</span></tt> module contents:</p>
 <dl class="docutils">
 <dt>Fields: for multi-layer map editing in forms:</dt>
-<dd><a class="reference internal" href="#mapfield">MapField</a>, <a class="reference internal" href="#editablelayerfield">EditableLayerField</a>, and <a class="reference internal" href="#infolayerfield">InfoLayerField</a></dd>
+<dd><a class="reference internal" href="#mapfield-editablelayerfield-and-infolayerfield">MapField, EditableLayerField, and InfoLayerField</a></dd>
+<dt>Forms: for ModelForm convenience with multi- or single-layer maps:</dt>
+<dd><a class="reference internal" href="#mapmodelform">MapModelForm</a></dd>
 <dt>Widgets: for display outside forms, or to make custom fields:</dt>
 <dd><dl class="first last docutils">
 <dt>Single layer:</dt>
-<dd><a class="reference internal" href="#editablemap">EditableMap</a>
-<a class="reference internal" href="#infomap">InfoMap</a></dd>
+<dd><a class="reference internal" href="#editablemap">EditableMap</a>, <a class="reference internal" href="#infomap">InfoMap</a></dd>
 <dt>Multi layer:</dt>
 <dd><a class="reference internal" href="#map-editablelayer-and-infolayer">Map, EditableLayer, and InfoLayer</a></dd>
 </dl>
 </dd>
-<dt>Forms: for ModelForm convenience with multi- or single-layer maps:</dt>
-<dd><a class="reference internal" href="#mapmodelform">MapModelForm</a></dd>
 <dt>olwidget looks great in admin:</dt>
 <dd><a class="reference internal" href="#geomodeladmin">GeoModelAdmin</a></dd>
 </dl>
@@ -103,8 +102,8 @@ is included to set up the database using <tt class="docutils literal"><span clas
 </div>
 <div class="section" id="fields">
 <h2>Fields<a class="headerlink" href="#fields" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="mapfield-editablelayerfield-infolayerfield">
-<h3>MapField, EditableLayerField, InfoLayerField<a class="headerlink" href="#mapfield-editablelayerfield-infolayerfield" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="mapfield-editablelayerfield-and-infolayerfield">
+<h3>MapField, EditableLayerField, and InfoLayerField<a class="headerlink" href="#mapfield-editablelayerfield-and-infolayerfield" title="Permalink to this headline">¶</a></h3>
 <p>Multi-layer maps are possible using the <tt class="docutils literal"><span class="pre">MapField</span></tt> type, which is a container
 field for any number of layer fields.  The layer fields are
 <tt class="docutils literal"><span class="pre">EditableLayerField</span></tt> or <tt class="docutils literal"><span class="pre">InfoLayerField</span></tt> types, which allow editing or
@@ -143,12 +142,16 @@ using the MapField&#8217;s declared name.</dd>
 <dd>A dict of <a class="reference internal" href="#options">options</a> for this layer, which override the containing <tt class="docutils literal"><span class="pre">Map</span></tt> defaults.</dd>
 </dl>
 <p id="infolayerfield"><strong>InfoLayerField</strong> constructor:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">olwidget</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">InfoLayerField</span><span class="p">(</span><span class="n">options</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">olwidget</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">InfoLayerField</span><span class="p">(</span><span class="n">info</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
 </pre></div>
 </div>
 <dl class="docutils">
+<dt><tt class="docutils literal"><span class="pre">info</span></tt></dt>
+<dd>A list of <tt class="docutils literal"><span class="pre">[geometry,</span> <span class="pre">html]</span></tt> pairs for clickable popups.  See <a class="reference internal" href="#infolayer">InfoLayer</a>
+for more.</dd>
 <dt><tt class="docutils literal"><span class="pre">options</span></tt></dt>
-<dd>A dict of <a class="reference internal" href="#options">options</a> for this layer, which override the containing <tt class="docutils literal"><span class="pre">Map</span></tt> defaults.</dd>
+<dd>A dict of <a class="reference internal" href="#options">options</a> for this layer, which override the containing <tt class="docutils literal"><span class="pre">Map</span></tt>
+defaults.</dd>
 </dl>
 <div class="section" id="example">
 <h4>Example<a class="headerlink" href="#example" title="Permalink to this headline">¶</a></h4>
@@ -333,7 +336,7 @@ display on the map.</dd>
 <dt><tt class="docutils literal"><span class="pre">template</span></tt></dt>
 <dd>An optional template to use to render this layer&#8217;s javascript.</dd>
 </dl>
-<p><strong>InfoLayer</strong> constructor:</p>
+<p id="infolayer"><strong>InfoLayer</strong> constructor:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="n">olwidget</span><span class="o">.</span><span class="n">widgets</span><span class="o">.</span><span class="n">InfoLayer</span><span class="p">(</span><span class="n">info</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">template</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -632,7 +635,7 @@ associated textarea.</dd>
 <li><a class="reference external" href="#installation">Installation</a></li>
 <li><a class="reference external" href="#getting-started">Getting started</a></li>
 <li><a class="reference external" href="#fields">Fields</a><ul>
-<li><a class="reference external" href="#mapfield-editablelayerfield-infolayerfield">MapField, EditableLayerField, InfoLayerField</a><ul>
+<li><a class="reference external" href="#mapfield-editablelayerfield-and-infolayerfield">MapField, EditableLayerField, and InfoLayerField</a><ul>
 <li><a class="reference external" href="#example">Example</a></li>
 </ul>
 </li>
