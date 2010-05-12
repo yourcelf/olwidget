@@ -1,4 +1,4 @@
-olwidget v0.4 pre alpha (multi-vector-layer branch)
+olwidget v0.4 beta (multi-vector-layer branch)
 ===================================================
 
 This branch represents an almost complete rewrite of olwidget, in order to
