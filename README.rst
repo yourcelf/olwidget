@@ -2,13 +2,10 @@ olwidget v0.4 pre alpha (multi-vector-layer branch)
 ===================================================
 
 This branch represents an almost complete rewrite of olwidget, in order to
-allow editing and display of multiple vector layers simultaneously.  The
-documentation hasn't been written yet, but you can find an example that uses
-the new syntax for creating a map and layers in doc/examples/testmulti.html.  
+allow editing and display of multiple vector layers simultaneously.  
 
 This branch will be merged with master in the coming weeks.  Please help out by
 testing it!
-
 
 About
 -----
