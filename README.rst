@@ -5,7 +5,9 @@ This branch represents an almost complete rewrite of olwidget, in order to
 allow editing and display of multiple vector layers simultaneously.  
 
 This branch will be merged with master in the coming weeks.  Please help out by
-testing it!
+testing it!  Check out this branch (``multi``)::
+
+   git clone git://github.com/yourcelf/olwidget.git --branch multi 
 
 About
 -----
