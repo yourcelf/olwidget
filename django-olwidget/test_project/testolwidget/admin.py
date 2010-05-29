@@ -1,7 +1,7 @@
 from django.contrib import admin
 from olwidget.admin import GeoModelAdmin
 
-from testolwidget.models import Country, EnergyVortex, AlienActivity, Tree
+from testolwidget.models import Country, EnergyVortex, AlienActivity, Tree, Nullable
 
 # Default map
 admin.site.register(Country, GeoModelAdmin)
@@ -75,3 +75,11 @@ class AlienActivityAdmin(GeoModelAdmin):
     list_map = ['landings']
 admin.site.register(AlienActivity, AlienActivityAdmin)
 
+class NullableAdmin(GeoModelAdmin):
+    list_map_options = {
+        'cluster': True,
+        'cluster_display': 'list',
+        'map_div_style': { 'width': '300px', 'height': '200px' },
+    }
+    list_map = ['location']
+admin.site.register(Nullable, NullableAdmin)

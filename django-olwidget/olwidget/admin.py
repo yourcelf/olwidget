@@ -29,6 +29,7 @@ import copy
 
 # Get the parts necessary for the methods we override #{{{
 from django.contrib.admin import ModelAdmin
+from django.contrib.admin import helpers
 from django.contrib.gis.db import models
 from django.contrib.gis.geos import GeometryCollection
 from django.shortcuts import render_to_response
@@ -88,19 +89,21 @@ class GeoModelAdmin(ModelAdmin):
                 geoms = []
                 for field in self.list_map:
                     geom = getattr(obj, field)
-                    if callable(geom):
-                        geom = geom()
-                    geoms.append(geom)
+                    if geom:
+                        if callable(geom):
+                            geom = geom()
+                        geoms.append(geom)
                 for geom in geoms:
                     geom.transform(int(DEFAULT_PROJ))
 
-                info.append((
-                    GeometryCollection(geoms, srid=int(DEFAULT_PROJ)),
-                    "<a href='%s'>%s</a>" % (
-                        cl.url_for_result(obj),
-                        force_unicode(obj)
-                    )
-                ))
+                if geoms:
+                    info.append((
+                        GeometryCollection(geoms, srid=int(DEFAULT_PROJ)),
+                        "<a href='%s'>%s</a>" % (
+                            cl.url_for_result(obj),
+                            force_unicode(obj)
+                        )
+                    ))
 
             return InfoMap(info, options=self.list_map_options)
         return None

@@ -50,3 +50,11 @@ class Tree(models.Model):
 
     def __unicode__(self):
         return self.species
+
+class Nullable(models.Model):
+    location = models.PointField(null=True, blank=True)
+
+    objects = models.GeoManager()
+
+    def __unicode__(self):
+        return str(self.location)
