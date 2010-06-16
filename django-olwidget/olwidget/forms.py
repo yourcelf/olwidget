@@ -29,8 +29,7 @@ class BaseMapModelForm(forms.models.BaseModelForm):
 
     def clean(self):
         super(BaseMapModelForm, self).clean()
-        fix_cleaned_data(self.cleaned_data,
-            self.initial_data_keymap)
+        fix_cleaned_data(self.cleaned_data, self.initial_data_keymap)
         return self.cleaned_data
 
 class MapModelFormOptions(forms.models.ModelFormOptions):
@@ -118,7 +117,8 @@ def apply_maps_to_modelform_fields(fields, maps, default_options=None, default_t
     created that contans all the fields in ``field_list``.
     """
     if not maps:
-        maps = [((name,),None) for name,field in fields.iteritems() if isinstance(field, GeometryField)]
+        maps = [((name,),) for name,field in fields.iteritems() if isinstance(field, (MapField, GeometryField))]
+
     default_options = default_options or {}
     initial_data_keymap = {}
 
@@ -133,11 +133,7 @@ def apply_maps_to_modelform_fields(fields, maps, default_options=None, default_t
         else:
             template = default_template
         
-        try:
-            options = map_definition[1]
-        except IndexError:
-            options = {}
-        map_name = "map_%i" % i
+        map_name = "_".join(field_list)
         layer_fields = []
         names = []
         min_pos = 65535 # arbitrarily high number for field ordering
@@ -146,17 +142,21 @@ def apply_maps_to_modelform_fields(fields, maps, default_options=None, default_t
             min_pos = min(min_pos, fields.keyOrder.index(field_name))
             field = fields.pop(field_name)
             initial.append(field_name)
-            if not isinstance(field.widget, BaseVectorLayer):
+            if not isinstance(field.widget, (Map, BaseVectorLayer)):
                 field.widget = EditableLayer(
                         options=utils.options_for_field(field))
             layer_fields.append(field)
             names.append(field_name)
-        map_opts = {}
-        map_opts.update(default_options)
-        map_opts.update(options or {})
-        map_field = MapField(layer_fields, map_opts, layer_names=names,
-            label=", ".join(forms.forms.pretty_name(f) for f in field_list),
-            template=template)
+
+        if isinstance(field, MapField):
+            map_field = field
+        else:
+            map_opts = {}
+            map_opts.update(default_options)
+            map_opts.update(options or {})
+            map_field = MapField(layer_fields, map_opts, layer_names=names,
+                label=", ".join(forms.forms.pretty_name(f) for f in field_list),
+                template=template)
         fields.insert(min_pos, map_name, map_field)
         initial_data_keymap[map_name] = initial
     return initial_data_keymap

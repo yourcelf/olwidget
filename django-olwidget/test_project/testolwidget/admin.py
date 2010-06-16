@@ -4,7 +4,24 @@ from olwidget.admin import GeoModelAdmin
 from testolwidget.models import Country, EnergyVortex, AlienActivity, Tree, Nullable
 
 # Default map
-admin.site.register(Country, GeoModelAdmin)
+#admin.site.register(Country, GeoModelAdmin)
+from django import forms
+from olwidget.fields import MapField, EditableLayerField, InfoLayerField
+class TestAdminForm(forms.ModelForm):
+    boundary = MapField([
+        EditableLayerField({'geometry': 'polygon', 'name': 'boundary', 'is_collection': True}),
+        InfoLayerField([["SRID=4326;POINT (0 0)", "Of Interest"]], {"name": "Test"}),
+    ], { 'overlay_style': { 'fill_color': '#00ff00' }}, 
+    template="olwidget/admin_olwidget.html")
+
+    class Meta:
+        model = Country
+
+class CountryAdmin(GeoModelAdmin):
+    form = TestAdminForm
+
+admin.site.register(Country, CountryAdmin)
+
 
 # Custom multi-layer map with a few options.
 class EnergyVortexAdmin(GeoModelAdmin):

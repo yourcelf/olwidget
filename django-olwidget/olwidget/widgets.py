@@ -50,7 +50,9 @@ class Map(forms.Widget):
 
     def __init__(self, vector_layers=None, options=None, template=None,
             layer_names=None):
-        self.vector_layers = vector_layers or []
+        self.vector_layers = VectorLayerList()
+        for layer in vector_layers:
+            self.vector_layers.append(layer)
         self.layer_names = layer_names
         self.options = options or {}
         # Though this layer is the olwidget.js default, it must be explicitly
@@ -75,11 +77,17 @@ class Map(forms.Widget):
         layer_js = []
         layer_html = []
         layer_names = self._get_layer_names(name)
+        value_count = 0
         for i, layer in enumerate(self.vector_layers):
+            if layer.editable:
+                value = values[value_count]
+                value_count += 1
+            else:
+                value = None
             lyr_name = layer_names[i]
             id_ = "%s_%s" % (map_id, lyr_name)
             # Use "prepare" rather than "render" to get both js and html
-            (js, html) = layer.prepare(lyr_name, values[i], attrs={'id': id_ })
+            (js, html) = layer.prepare(lyr_name, value, attrs={'id': id_ })
             layer_js.append(js)
             layer_html.append(html)
 
@@ -105,13 +113,13 @@ class Map(forms.Widget):
         if self.layer_names and len(self.layer_names) == n:
             return self.layer_names
 
-        name = name or "data"
-        if n == 1:
-            # If there's only one layer, use it as the name rather than
-            # 'name_0'. 
-            self.layer_names = [name]
-        else:
-            self.layer_names = ["%s_%i" % (name, i) for i in range(n)]
+        singleton = len(self.vector_layers.editable) == 1
+        self.layer_names = []
+        for i,layer in enumerate(self.vector_layers):
+            if singleton and layer.editable:
+                self.layer_names.append("%s" % name)
+            else:
+                self.layer_names.append("%s_%i" % (name, i))
         return self.layer_names
 
     def _has_changed(self, initial, data):
@@ -148,11 +156,33 @@ class Map(forms.Widget):
         obj.vector_layers = copy.deepcopy(self.vector_layers)
         return obj
 
+class VectorLayerList(list):
+    def __init__(self, *args, **kwargs):
+        super(VectorLayerList, self).__init__(*args, **kwargs)
+        self.editable = []
+
+    def append(self, obj):
+        super(VectorLayerList, self).append(obj)
+        if getattr(obj, "editable", False):
+            self.editable.append(obj)
+
+    def remove(self, obj):
+        super(VectorLayerList, self).remove(obj)
+        if getattr(obj, "editable", False):
+            self.editable.remove(obj)
+
+    def __deepcopy__(self, memo):
+        obj = VectorLayerList()
+        for thing in self:
+            obj.append(copy.deepcopy(thing))
+        return obj
+
 #
 # Layer widgets
 #
 
 class BaseVectorLayer(forms.Widget):
+    editable = False
     def prepare(self, name, value, attrs=None):
         """
         Given the name, value and attrs, prepare both html and javascript
@@ -214,6 +244,7 @@ class EditableLayer(BaseVectorLayer):
     use as a sub-widget for the Map widget.
     """
     default_template = "olwidget/editable_layer.html"
+    editable = True
 
     def __init__(self, options=None, template=None):
         self.options = options or {}

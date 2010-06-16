@@ -22,19 +22,8 @@ class MyModel(models.Model):
     objects = models.GeoManager()
 
 #
-# forms for testing
+# form for testing
 #
-
-class MySingleForm(forms.Form):
-    char = forms.CharField(max_length=10, required=False)
-    field = forms.CharField(widget=EditableMap({"name": "Fun times"}))
-
-class MyMultiForm(forms.Form):
-    mymap = MapField((
-        EditableLayerField({'name': 'Fun'}),
-        InfoLayerField([[Point(0, 0, srid=4326), "that"]]),
-        EditableLayerField(),
-    ))
 
 class MyModelForm(MapModelForm):
     class Meta:
@@ -44,20 +33,16 @@ class MyModelForm(MapModelForm):
             (('route',), None),
         )
 
-class MyOtherModelForm(MapModelForm):
-    class Meta:
-        model = MyModel
-
-class Vanilla(forms.ModelForm):
-    class Meta:
-        model = MyModel
-
 #
 # tests
 #
 
 class TestForm(TestCase):
     def test_single_form(self):
+        class MySingleForm(forms.Form):
+            char = forms.CharField(max_length=10, required=False)
+            field = forms.CharField(widget=EditableMap({"name": "Fun times"}))
+
         form = MySingleForm({'field': 1})
         #print(form)
         self.assertTrue(form.is_bound)
@@ -72,6 +57,13 @@ class TestForm(TestCase):
         self.assertFalse(form.is_valid())
 
     def test_multi_form(self):
+        class MyMultiForm(forms.Form):
+            mymap = MapField((
+                EditableLayerField({'name': 'Fun'}),
+                InfoLayerField([[Point(0, 0, srid=4326), "that"]]),
+                EditableLayerField(),
+            ))
+
         form = MyMultiForm({'mymap_0': 0, 'mymap_2': 1})
          #print(form)
 
@@ -100,12 +92,16 @@ class TestForm(TestCase):
         self.assertTrue(form.is_valid())
         # check order of keys
         self.assertEqual(form.fields.keys(), 
-            ['koan', 'map_0', 'love', 'map_1', 'death']
+            ['koan', 'start_end', 'love', 'route', 'death']
         )
         form.save()
         #print(form)
 
     def test_modelform_invalid(self):
+        class MyOtherModelForm(MapModelForm):
+            class Meta:
+                model = MyModel
+
         form = MyModelForm({'start': 1})
         self.assertTrue(form.is_bound)
         self.assertFalse(form.is_valid())
@@ -116,8 +112,33 @@ class TestForm(TestCase):
 
     def test_modelform_initial(self):
         form = MyModelForm(instance=MyModel.objects.create(start="SRID=4326;POINT(0 0)", route="SRID=4326;LINESTRING(0 0,1 1)"))
-        #form = Vanilla(instance=MyModel.objects.create(start="SRID=4326;POINT(0 0)", route="SRID=4326;LINESTRING(0 0,1 1)"))
-        #print form.initial
-        #print form.fields['start']
         unicode(form)
 
+    def test_info_modelform(self):
+        class MyInfoModelForm(MapModelForm):
+            start = MapField([
+                EditableLayerField({'name': 'start'}),
+                InfoLayerField([[Point(0, 0, srid=4326), "Of interest"]]),
+            ])
+            class Meta:
+                model = MyModel
+
+        instance = MyModel.objects.create(start="SRID=4326;POINT(0 0)",
+                route="SRID=4326;LINESTRING(0 0,1 1)")
+        form = MyInfoModelForm({
+                'start': "SRID=4326;POINT(0 0)",
+                'route': "SRID=4326;LINESTRING(0 0,1 1)",
+                'death': False,
+            }, instance=instance)
+        self.assertEqual(form.fields.keys(),
+            ['koan', 'start', 'love', 'route', 'death', 'end'])
+        self.assertEquals(form.errors, {})
+        form.save()
+
+    def test_custom_form(self):
+        class MixedForm(forms.Form):
+            stuff = MapField([
+                InfoLayerField([["SRID=4326;POINT(0 0)", "Origin"]]),
+                EditableLayerField({'geometry': 'point'}),
+            ])
+        unicode(MixedForm())

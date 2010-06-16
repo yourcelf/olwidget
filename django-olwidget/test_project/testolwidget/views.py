@@ -28,7 +28,7 @@ def edit_alienactivity(request, object_id):
             return HttpResponseRedirect(
                     reverse("show_alienactivity", args=[obj.id]))
         except ValueError:
-            pass
+            raise
     return render_to_response("testolwidget/edit_obj.html", {
         'obj': obj, 'form': form,
     }, context_instance=RequestContext(request))
