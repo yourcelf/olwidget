@@ -1,4 +1,3 @@
-from copy import deepcopy
 from django import forms
 from django.contrib.gis.forms.fields import GeometryField
 
@@ -122,7 +121,7 @@ def apply_maps_to_modelform_fields(fields, maps, default_options=None, default_t
     default_options = default_options or {}
     initial_data_keymap = {}
 
-    for i, map_definition in enumerate(maps):
+    for map_definition in maps:
         field_list = map_definition[0]
         if len(map_definition) > 1:
             options = map_definition[1]

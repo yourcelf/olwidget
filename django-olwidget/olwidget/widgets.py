@@ -71,7 +71,6 @@ class Map(forms.Widget):
         attrs = attrs or {}
         # Get an arbitrary unique ID if we weren't handed one (e.g. widget used
         # outside of a form).
-        n = len(self.vector_layers)
         map_id = attrs.get('id', "id_%s" % id(self))
 
         layer_js = []
@@ -124,7 +123,7 @@ class Map(forms.Widget):
 
     def _has_changed(self, initial, data):
         if (initial is None) or (not isinstance(initial, (tuple, list))):
-            initial = [u'' for x in range(0, len(data))]
+            initial = [u''] * len(data)
         for widget, initial, data in zip(self.vector_layers, initial, data):
             if widget._has_changed(initial, data):
                 return True
@@ -197,7 +196,7 @@ class BaseVectorLayer(forms.Widget):
         HTML component, call ``prepare``.
         """
         (javascript, html) = self.prepare(name, value, attrs)
-        return self.javascript
+        return javascript
 
     def __unicode__(self):
         return self.render(None, None)

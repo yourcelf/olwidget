@@ -30,7 +30,6 @@ import copy
 # Get the parts necessary for the methods we override #{{{
 from django.contrib.admin import ModelAdmin
 from django.contrib.admin import helpers
-from django.contrib.gis.db import models
 from django.contrib.gis.geos import GeometryCollection
 from django.shortcuts import render_to_response
 from django import template
@@ -57,26 +56,36 @@ class GeoModelAdmin(ModelAdmin):
     change_list_template = "admin/olwidget_change_list.html"
 
     def get_form(self, *args, **kwargs):
+        """ 
+        Get a ModelForm with our own `__init__` and `clean` methods.  However,
+        we need to allow ModelForm's metaclass_factory to run unimpeded, so
+        dynamically override the methods rather than subclassing.
+        """
         # Get the vanilla modelform class
         ModelForm = super(GeoModelAdmin, self).get_form(*args, **kwargs)
-        # Add our constructor to change initial data
-        class _MapForm(ModelForm):
-            def __init__(self, *args, **kwargs):
-                super(_MapForm, self).__init__(*args, **kwargs)
-                fix_initial_data(self.initial, self.initial_data_keymap)
 
-            def clean(self):
-                super(_MapForm, self).clean()
-                fix_cleaned_data(self.cleaned_data, 
-                    self.initial_data_keymap)
-                return self.cleaned_data
+        # enclose klass.__init__
+        orig_init = ModelForm.__init__
+        def new_init(self, *args, **kwargs):
+            orig_init(self, *args, **kwargs)
+            fix_initial_data(self.initial, self.initial_data_keymap)
 
-        # Rearrange base_fields, adding maps, and set initial data keymap for
-        # rearranged fields
-        _MapForm.initial_data_keymap = apply_maps_to_modelform_fields(
-                _MapForm.base_fields, self.maps, self.options, 
+        # enclose klass.clean
+        orig_clean = ModelForm.clean
+        def new_clean(self):
+            orig_clean(self)
+            fix_cleaned_data(self.cleaned_data, self.initial_data_keymap)
+            return self.cleaned_data
+        
+        # Override methods
+        ModelForm.__init__ = new_init
+        ModelForm.clean = new_clean
+
+        # Rearrange fields
+        ModelForm.initial_data_keymap = apply_maps_to_modelform_fields(
+                ModelForm.base_fields, self.maps, self.options,
                 self.map_template)
-        return _MapForm
+        return ModelForm
 
     def get_changelist_map(self, cl):
         """ 

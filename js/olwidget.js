@@ -595,7 +595,7 @@ olwidget.EditableLayer = OpenLayers.Class(olwidget.BaseVectorLayer, {
             editable: true,
             geometry: 'point',
             hideTextarea: true,
-            isCollection: false,
+            isCollection: false
         };
         olwidget.BaseVectorLayer.prototype.setMap.apply(this, arguments);
         // force non-clustering, it doesn't make sense for editable maps.
