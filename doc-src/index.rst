@@ -6,8 +6,8 @@
 Welcome to olwidget's documentation!
 ====================================
 
-This is documentation for the stable (old) version of olwidget, v0.3.  You can
-get the `development version's documentation <../../dev/doc/>`_ here.
+This is documentation for an old version of olwidget, v0.3.  You can
+get the `current version <../../v0.4/doc/>`_ here.
 
 .. toctree::
   :maxdepth: 1
