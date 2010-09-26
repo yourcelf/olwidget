@@ -1,2 +1,5 @@
 @import "basic.css";
 @import "http://olwidget.org/css/style.css";
+ul,ol {
+    padding-left: 1em;
+}
