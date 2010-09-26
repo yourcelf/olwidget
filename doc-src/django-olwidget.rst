@@ -6,7 +6,9 @@ django-olwidget documentation
 Introduction
 ~~~~~~~~~~~~
 
-``django-olwidget`` is a portable Django application that uses :ref:`olwidget.js <olwidget.js>` to easily create editable and informational maps using GeoDjango, inside and outside of Django's admin.
+``django-olwidget`` is a portable Django application that uses
+:ref:`olwidget.js <olwidget.js>` to easily create editable and informational
+maps using GeoDjango, inside and outside of Django's admin.
 
 A quick guide to the ``olwidget`` module contents:
 
@@ -43,11 +45,15 @@ familiar to users of other reusable Django apps:
 
         python setup.py install
 
-    The preferred method is to install from git source using `pip
+    The preferred method is to install from using `pip
     <http://pip.openplans.org/>`_ with `virtualenv
     <http://pypi.python.org/pypi/virtualenv>`_.  The `requirements file
-    <http://pip.openplans.org/#requirements-files>`_ entry for this is as
-    follows::
+    <http://pip.openplans.org/#requirements-files>`_ entry for the stable
+    version::
+
+        django-olwidget
+
+    To use the development version, the requirements is::
 
         -e git://github.com/yourcelf/olwidget.git#egg=django-olwidget
 

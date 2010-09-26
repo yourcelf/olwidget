@@ -6,8 +6,8 @@
 Welcome to olwidget's documentation!
 ====================================
 
-This is the development documentation, which is substantially different from
-the current stable version.  The stable documentation can be found `here
+This is the development for v0.4, which is substantially different from the
+previous versions.  The old documentation can be found `here
 <../../v0.3/doc/>`_.
 
 .. toctree::
