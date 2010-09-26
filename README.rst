@@ -7,7 +7,7 @@ library, ``olwidget.js``, can be used standalone or in Django via the olwidget
 Django app.
 
  * `Documentation and installation instructions <http://olwidget.org/olwidget/v0.4/doc/>`_
- * `Example maps <http://olwidget.org/olwidget/doc/examples.html>`_
+ * `Example maps <http://olwidget.org/olwidget/v0.4/doc/examples.html>`_
  * `Bugs <http://github.com/yourcelf/olwidget/issues>`_
  * `Mailing list <http://groups.google.com/group/olwidget>`_
 
