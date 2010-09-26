@@ -46,7 +46,7 @@ setup(name='django-olwidget',
         'License :: OSI Approved :: BSD License',
         'Operating System :: OS Independent',
         'Programming Language :: Python',
-        'Programming Language :: javascript',
+        'Programming Language :: JavaScript',
         'Topic :: Software Development :: Libraries :: Application Frameworks',
     ],
 )
