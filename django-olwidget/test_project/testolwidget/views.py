@@ -1,210 +1,136 @@
-from django import forms
-from django.shortcuts import render_to_response
+from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
 from django.core.urlresolvers import reverse
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseRedirect
+from django.conf import settings
 
-from testolwidget.models import GeoModel, MultiGeoModel, InfoModel, PointModel, MultiLinestringModel
-from olwidget.widgets import MapDisplay, EditableMap, InfoMap
+from olwidget.fields import MapField, EditableLayerField
+from olwidget.widgets import Map, EditableLayer, InfoLayer, InfoMap
 
-class GeoModelForm(forms.ModelForm):
-    point = forms.CharField(widget=EditableMap(options={
-        'hide_textarea': False,
-    }))
-    linestring = forms.CharField(widget=EditableMap(options={
-        'geometry': 'linestring',
-        'hide_textarea': False,
-    }))
-    poly = forms.CharField(widget=EditableMap(options={
-        'geometry': 'polygon', 
-        'hide_textarea': False,
-        'hide_textarea': False,
-    }))
-    class Meta:
-        model = GeoModel
+from testolwidget.models import *
+from testolwidget.forms import AlienActivityForm, CustomTreeForm, \
+        DefaultTreeForm, MixedForm
 
-class MultiGeoModelForm(forms.ModelForm):
-    point = forms.CharField(widget=EditableMap(options={
-        'geometry': 'point',
-        'is_collection': True,
-        'hide_textarea': False,
-    }))
-    linestring = forms.CharField(widget=EditableMap(options={
-        'geometry': 'linestring',
-        'is_collection': True,
-        'hide_textarea': False,
-    }))
-    poly = forms.CharField(widget=EditableMap(options={
-        'geometry': 'polygon',
-        'is_collection': True,
-        'hide_textarea': False,
-    }))
-    collection = forms.CharField(widget=EditableMap(options={
-        'geometry': ['point', 'linestring', 'polygon'],
-        'is_collection': True,
-        'hide_textarea': False,
-    }))
-    class Meta:
-        model = MultiGeoModel
+def edit_alienactivity(request, object_id):
+    obj = get_object_or_404(AlienActivity, id=object_id)
+    form = AlienActivityForm(request.POST or None, initial={
+        'incident_name': obj.incident_name,
+        'landings': obj.landings,
+        'other_stuff': [obj.strange_lights, obj.chemtrails],
+    })
+    if form.is_valid():
+        try:
+            obj.landings = form.cleaned_data['landings'][0]
+            obj.strange_lights = form.cleaned_data['other_stuff'][0]
+            obj.chemtrails = form.cleaned_data['other_stuff'][1]
+            obj.incident_name = form.cleaned_data['incident_name']
+            obj.save()
+            return HttpResponseRedirect(
+                    reverse("show_alienactivity", args=[obj.id]))
+        except ValueError:
+            raise
+    return render_to_response("testolwidget/edit_obj.html", {
+        'obj': obj, 'form': form,
+    }, context_instance=RequestContext(request))
 
-class MultiLinestringModelForm(forms.ModelForm):
-    linestring = forms.CharField(widget=EditableMap(options={
-        'geometry': 'linestring',
-        'is_collection': True,
-        'hide_textarea': False,
-    }))
-    class Meta:
-        model = MultiLinestringModel
 
-class InfoModelForm(forms.ModelForm):
-    geometry = forms.CharField(widget=EditableMap(options={
-        'geometry': ['point', 'linestring', 'polygon'],
-        'is_collection': True,
-    }))
-    class Meta:
-        model = InfoModel
+def show_alienactivity(request, object_id):
+    obj = get_object_or_404(AlienActivity, id=object_id)
+    return render_to_response("testolwidget/show_obj.html", {
+        'obj': obj, 'map': Map([
+                InfoLayer([[obj.landings, 
+                    "%s landings" % obj.incident_name]], {
+                        'overlay_style': {
+                            'external_graphic': settings.MEDIA_URL+"alien.png",
+                            'graphic_width': 21,
+                            'graphic_height': 25,
+                            'fill_color': '#00FF00',
+                            'stroke_color': '#008800',
+                        }, 'name': "Landings"
+                    }),
+                InfoLayer([[obj.strange_lights, 
+                    "%s strange lights" % obj.incident_name]], {
+                        'overlay_style': {
+                            'fill_color': '#FFFF00',
+                            'stroke_color': '#FFFF00',
+                            'stroke_width': 6,
+                        }, 'name': "Strange lights",
+                    }),
+                InfoLayer([[obj.chemtrails, 
+                    "%s chemtrails" % obj.incident_name]], {
+                        'overlay_style': {
+                            'fill_color': '#ffffff',
+                            'stroke_color': '#ffffff',
+                            'stroke_width': 6,
+                        }, 'name': "Chemtrails",
+                    })
+            ], {'layers': ['osm.mapnik', 'google.physical']}),
+        'edit_link': reverse("edit_alienactivity", args=[obj.id])
+    }, context_instance=RequestContext(request))
 
-def show_multigeomodel(request, model_id):
-    return show_model(request, model_id, klass=MultiGeoModel)
+def edit_tree(request, object_id):
+    return do_edit_tree(request, object_id, DefaultTreeForm)
 
-def show_multilinestringmodel(request, model_id):
-    model = MultiLinestringModel.objects.get(id=model_id)
-    map = MapDisplay(fields=[model.linestring])
-    return render_to_response("testolwidget/show_maps.html",
-            {'maps': [["map", map]], 'map_media': map.media, 'object': model},
-            RequestContext(request))
+def edit_tree_custom(request, object_id):
+    return do_edit_tree(request, object_id, CustomTreeForm)
 
-def show_geomodel(request, model_id):
-    return show_model(request, model_id, klass=GeoModel)
+def do_edit_tree(request, object_id, Form):
+    obj = get_object_or_404(Tree, id=object_id)
+    form = Form(request.POST or None, instance=obj)
+    if form.is_valid():
+        form.save()
+        return HttpResponseRedirect(reverse("show_tree", args=[obj.id]))
+    return render_to_response("testolwidget/edit_obj.html", {
+            'obj': obj, 'form': form,
+        }, context_instance=RequestContext(request))
 
-def show_model(request, model_id, klass=GeoModel):
-    geomodel = klass.objects.get(pk=model_id)
-    maps = [("Points", 
-                MapDisplay(fields=[geomodel.point], 
-                    options={'layers': ['google.streets']})),
-            ("3 fields: Point, linestring, and poly", 
-                MapDisplay(
-                    fields=[geomodel.point, geomodel.linestring, geomodel.poly], 
-                    options={'hide_textarea': False})), 
-    ]
-    try:
-        maps.append(("Single field Collection", 
-            MapDisplay(fields=[geomodel.collection])))
-    except AttributeError:
-        pass
-    map_media = maps[0][1].media
-    for descr, map in maps[1:]:
-        map_media += map.media
-    return render_to_response("testolwidget/show_maps.html",
-            {'maps': maps, 'map_media': map_media, 'object': geomodel},
-            RequestContext(request))
+def show_tree(request, object_id):
+    obj = get_object_or_404(Tree, id=object_id)
+    # Use the convenience 1-layer map type
+    map_ = InfoMap([
+            [obj.root_spread, "Root spread"],
+            [obj.location, "Trunk center"],
+        ])
+    return render_to_response("testolwidget/show_obj.html", {
+            'obj': obj, 'map': map_, 
+            'edit_link': reverse("edit_tree", args=[obj.id]),
+        }, context_instance=RequestContext(request))
 
-def show_infomodel(request, model_id):
-    object = InfoModel.objects.get(pk=model_id)
-    map = InfoMap([(object.geometry, object.story)], options={'name': 'Project area'})
-    return render_to_response("testolwidget/info_maps.html",
-            {'map': map, 'object': object})
+def edit_capitals(request):
+    return render_to_response("testolwidget/edit_obj.html", {
+        'obj': "Capitals",
+        'form': MixedForm(),
+    }, context_instance=RequestContext(request))
 
-def point_infomodel(request):
-    geoms = []
-    for point in PointModel.objects.all():
-        geoms.append([point.point, '%s' % point.point])
 
-    map = InfoMap(geoms)
-    return render_to_response("testolwidget/info_maps.html", {'map': map})
-
-def per_point_style_cluster_infomodel(request):
-    geoms = []
-    for point in PointModel.objects.all():
-        geoms.append([point.point, '%s' % point.point])
-
-    map = InfoMap(geoms, template="testolwidget/style_info.html")
-    return render_to_response("testolwidget/info_maps.html", {'map': map})
-
-def style_infomodel(request):
-    geoms = []
-    for i, point in enumerate(PointModel.objects.all()):
-        color = (float(0xFFFFFF) / len(PointModel.objects.all())) * i
-        geoms.append([point.point, { 
-            'html': '%s' % point.point, 
+def show_countries(request):
+    info = []
+    colors = ["red", "green", "blue", "peach"]
+    for i,country in enumerate(Country.objects.all()):
+        info.append((country.boundary, {
+            'html': country.about,
             'style': {
-                'fill_color': "#%06x" % (color),
-                'stroke_color': "#%06x" % (0xFFFFFF - color),
-                'fill_opacity': 1,
-                'point_radius': 10,
-                },
-        }])
-    map = InfoMap(geoms)
-    return render_to_response("testolwidget/info_maps.html", {'map': map})
-
-
-
-def edit_geomodel(request, model_id=None):
-    return edit_model(request, model_id, GeoModelForm)
-
-def edit_multigeomodel(request, model_id=None):
-    return edit_model(request, model_id, MultiGeoModelForm)
-
-def edit_multilinestringmodel(request, model_id=None):
-    return edit_model(request, model_id, MultiLinestringModelForm)
-
-def edit_model(request, model_id=None, Form=GeoModelForm):
-    if model_id:
-        instance = Form.Meta.model.objects.get(pk=model_id)
-    else:
-        instance = Form.Meta.model()
-
-    if request.method == 'POST':
-        form = Form(request.POST, instance=instance)
-        try:
-            model = form.save()
-            return HttpResponseRedirect(model.get_absolute_url())
-        except ValueError:
-            pass
-    else:
-        form = Form(instance=instance)
-
-    return render_to_response("testolwidget/edit_map.html",
-            {'form': form},
-            RequestContext(request))
-
-def edit_infomodel(request, model_id=None):
-    if model_id:
-        instance = InfoModel.objects.get(pk=model_id)
-    else:
-        instance = InfoModel()
-
-    if request.method == 'POST':
-        form = InfoModelForm(request.POST, instance=instance)
-        try:
-            model = form.save()
-            return HttpResponseRedirect(model.get_absolute_url())
-        except ValueError:
-            pass
-    else:
-        form = InfoModelForm(instance=instance)
-
-    return render_to_response("testolwidget/edit_map.html",
-            {'form': form},
-            RequestContext(request))
+                # TODO: 4-color map algorithm.  Just kidding.
+                'fill_color': colors[i]
+            },
+        }))
+    map_ = InfoMap(info)
+    return render_to_response("testolwidget/show_obj.html", {
+        'obj': "Countries", "map": map_, 
+        "edit_link": "/admin/testolwidget/country/",
+    }, context_instance=RequestContext(request))
 
 def index(request):
-    return render_to_response("testolwidget/index.html", {},
-            RequestContext(request))
-
-def test(request):
-    object = GeoModel.objects.all()[0]
-    temp_map = MapDisplay(
-        fields = [object.point],
-        options = {
-            'mapDivStyle': {
-                'width': '100%',
-                'height': '100px',
-            },
-            'editable': False,
-            'defaultZoom': '4',
-        },
-    )
-    return HttpResponse("ok!")
-
-
+    return render_to_response("testolwidget/index.html", {
+            'map': Map([ 
+                EditableLayer({
+                    'geometry': ['point', 'linestring', 'polygon'],
+                    'is_collection': True,
+                }),
+            ], {
+                'default_lat': 42.360836996182,
+                'default_lon': -71.087611985694,
+                'default_zoom': 10,
+                'layers': ['osm.mapnik', 'google.physical'],
+            }), 
+        }, context_instance=RequestContext(request))

@@ -1,0 +1,217 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Backwards incompatible changes &mdash; olwidget v0.4 documentation</title>
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.4',
+        COLLAPSE_MODINDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="olwidget v0.4 documentation" href="index.html" />
+    <link rel="prev" title="Examples" href="examples.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="examples.html" title="Examples"
+             accesskey="P">previous</a></li>
+        <li><a href="index.html">olwidget v0.4 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="backwards-incompatible-changes">
+<span id="backwards-incompatible"></span><h1>Backwards incompatible changes<a class="headerlink" href="#backwards-incompatible-changes" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="in-version-0-4">
+<h2>In version 0.4<a class="headerlink" href="#in-version-0-4" title="Permalink to this headline">¶</a></h2>
+<p>Version 0.4 represents a complete overhaul of olwidget to build in support for
+multiple vector layers.  As such, chances are high that v0.4 will break any
+custom extensions that make use of undocumented implementation details.
+However, the public, documented API from v0.3 is compatible with v0.4.  The
+following are notable changes that have a higher probability of breaking your
+app if you did customization.</p>
+<div class="section" id="django-olwidget-changes">
+<h3>django-olwidget changes<a class="headerlink" href="#django-olwidget-changes" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>The template format and context variables used in the templates have
+changed, which will break custom map rendering templates.</li>
+<li>The ID&#8217;s used for form elements have changed, which will break custom
+javascript that accesses form elements directly.</li>
+</ul>
+</div>
+<div class="section" id="olwidget-js-changes">
+<h3>olwidget.js changes<a class="headerlink" href="#olwidget-js-changes" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">map.vector_layer</span></tt> no longer exists; it has been replaced with an array,
+<tt class="docutils literal"><span class="pre">map.vector_layers</span></tt>.</li>
+<li><tt class="docutils literal"><span class="pre">olwidget.js</span></tt> now uses version 2.9 of the OpenLayers API.  Django users
+should get this change automatically, but <tt class="docutils literal"><span class="pre">olwidget.js</span></tt> users will have to
+change their script tags for the OpenLayers import.</li>
+</ul>
+</div>
+</div>
+<div class="section" id="in-version-0-3">
+<h2>In version 0.3<a class="headerlink" href="#in-version-0-3" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id1">
+<h3>django-olwidget changes<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>2009-04-13: Changed the media for the olwidget app to live in
+&#8220;olwidget/media/olwidget/...&#8221; by default, in accordance with the convention
+proposed by <a class="reference external" href="http://pypi.python.org/pypi/django-staticmedia/#avoiding-media-filename-conflicts">django-staticmedia</a>
+(thanks to <a class="reference external" href="http://github.com/yourcelf/olwidget/issues/closed#issue/39">skyl</a> for suggesting
+this good idea).  This doesn&#8217;t change any URLs, but it has the potential to
+break symlink paths from previous installations.</li>
+</ul>
+</div>
+</div>
+<div class="section" id="in-version-0-2">
+<h2>In version 0.2<a class="headerlink" href="#in-version-0-2" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id2">
+<h3>django-olwidget changes<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<ul>
+<li><p class="first"><tt class="docutils literal"><span class="pre">olwidget.widgets.OLWidget</span></tt> has been renamed <tt class="docutils literal"><span class="pre">olwidget.widgets.EditableMap</span></tt></p>
+</li>
+<li><p class="first">The <tt class="docutils literal"><span class="pre">&quot;olwidget/olwidget.html&quot;</span></tt> template has been renamed
+<tt class="docutils literal"><span class="pre">&quot;olwidget/editable_map.html&quot;</span></tt></p>
+</li>
+<li><p class="first">The <tt class="docutils literal"><span class="pre">admin.custom_geo_admin</span></tt> method has been removed.  Instead, just
+subclass <tt class="docutils literal"><span class="pre">olwidget.admin.GeoModelAdmin</span></tt>.</p>
+</li>
+<li><p class="first"><tt class="docutils literal"><span class="pre">olwidget.admin</span></tt> No longer inherits from <tt class="docutils literal"><span class="pre">django.contrib.admin</span></tt>.  The old
+way:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">olwidget</span> <span class="kn">import</span> <span class="n">admin</span>
+
+<span class="c"># no longer works</span>
+<span class="n">admin</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">MyModel</span><span class="p">,</span> <span class="n">admin</span><span class="o">.</span><span class="n">GeoModelAdmin</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Instead, import admin from <tt class="docutils literal"><span class="pre">django.contrib</span></tt> as normal, and import
+<tt class="docutils literal"><span class="pre">GeoModelAdmin</span></tt> from <tt class="docutils literal"><span class="pre">olwidget</span></tt>, like this:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.contrib</span> <span class="kn">import</span> <span class="n">admin</span>
+<span class="kn">from</span> <span class="nn">olwidget.admin</span> <span class="kn">import</span> <span class="n">GeoModelAdmin</span>
+
+<span class="n">admin</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">MyModel</span><span class="p">,</span> <span class="n">GeoModelAdmin</span><span class="p">)</span>
+</pre></div>
+</div>
+</li>
+</ul>
+</div>
+<div class="section" id="id3">
+<h3>olwidget.js changes<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
+<ul>
+<li><p class="first"><tt class="docutils literal"><span class="pre">olwidget.Map</span></tt> has been renamed <tt class="docutils literal"><span class="pre">olwidget.EditableMap</span></tt></p>
+</li>
+<li><p class="first">Many of the options parameters&#8217; names have changed, mostly to conform to
+OpenLayers&#8217; mixedCase standard:</p>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">default_lat</span></tt> is now <tt class="docutils literal"><span class="pre">defaultLat</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">default_lon</span></tt> is now <tt class="docutils literal"><span class="pre">defaultLon</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">default_zoom</span></tt> is now <tt class="docutils literal"><span class="pre">defaultZoom</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">overlay_style</span></tt> is now <tt class="docutils literal"><span class="pre">overlayStyle</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">map_class</span></tt> is now <tt class="docutils literal"><span class="pre">mapDivClass</span></tt> (note addition of &#8220;Div&#8221;)</li>
+<li><tt class="docutils literal"><span class="pre">map_style</span></tt> is now <tt class="docutils literal"><span class="pre">mapDivStyle</span></tt> (note addition of &#8220;Div&#8221;)</li>
+<li><tt class="docutils literal"><span class="pre">map_options</span></tt> is now <tt class="docutils literal"><span class="pre">mapOptions</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">is_collection</span></tt> is now <tt class="docutils literal"><span class="pre">isCollection</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">hide_textarea</span></tt> is now <tt class="docutils literal"><span class="pre">hideTextarea</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">'yahoo'</span></tt> map layer is now called <tt class="docutils literal"><span class="pre">'yahoo.map'</span></tt></li>
+</ul>
+<p>All internal methods and variables have also changed to use mixedCase.</p>
+</li>
+<li><p class="first">Map types now inherit from <tt class="docutils literal"><span class="pre">OpenLayers.Map</span></tt>.  This affects javascript
+customizations that access the base map type.</p>
+<p>The old way:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="kd">var</span> <span class="nx">mymap</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">olwidget</span><span class="p">.</span><span class="nx">Map</span><span class="p">(</span><span class="s1">&#39;textareaId&#39;</span><span class="p">);</span>
+<span class="nx">mymap</span><span class="p">.</span><span class="nx">map</span><span class="p">.</span><span class="nx">zoomTo</span><span class="p">(</span><span class="mi">4</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>The new way:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="kd">var</span> <span class="nx">mymap</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">olwidget</span><span class="p">.</span><span class="nx">EditableMap</span><span class="p">(</span><span class="s1">&#39;textareaId&#39;</span><span class="p">);</span>
+<span class="nx">mymap</span><span class="p">.</span><span class="nx">zoomTo</span><span class="p">(</span><span class="mi">4</span><span class="p">);</span>
+</pre></div>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <h3><a href="index.html">Table Of Contents</a></h3>
+            <ul>
+<li><a class="reference external" href="#">Backwards incompatible changes</a><ul>
+<li><a class="reference external" href="#in-version-0-4">In version 0.4</a><ul>
+<li><a class="reference external" href="#django-olwidget-changes">django-olwidget changes</a></li>
+<li><a class="reference external" href="#olwidget-js-changes">olwidget.js changes</a></li>
+</ul>
+</li>
+<li><a class="reference external" href="#in-version-0-3">In version 0.3</a><ul>
+<li><a class="reference external" href="#id1">django-olwidget changes</a></li>
+</ul>
+</li>
+<li><a class="reference external" href="#in-version-0-2">In version 0.2</a><ul>
+<li><a class="reference external" href="#id2">django-olwidget changes</a></li>
+<li><a class="reference external" href="#id3">olwidget.js changes</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+            <h4>Previous topic</h4>
+            <p class="topless"><a href="examples.html"
+                                  title="previous chapter">Examples</a></p>
+          <div id="searchbox" style="display: none">
+            <h3>Quick search</h3>
+              <form class="search" action="search.html" method="get">
+                <input type="text" name="q" size="18" />
+                <input type="submit" value="Go" />
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+              </form>
+              <p class="searchtip" style="font-size: 90%">
+              Enter search terms or a module, class or function name.
+              </p>
+          </div>
+          <script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="examples.html" title="Examples"
+             >previous</a></li>
+        <li><a href="index.html">olwidget v0.4 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+      &copy; Copyright 2010, Charlie DeTar.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.6.6.
+    </div>
+  </body>
+</html>

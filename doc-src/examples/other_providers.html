@@ -1,0 +1,62 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <!-- olwidget includes -->
+        <script type='text/javascript' src='http://openlayers.org/api/2.9/OpenLayers.js'></script>
+        <script type='text/javascript' src='http://openstreetmap.org/openlayers/OpenStreetMap.js'></script>
+        <script type='text/javascript' src='http://dev.virtualearth.net/mapcontrol/mapcontrol.ashx?v=6.1'></script> 
+
+        <!-- Yahoo API key for "olwidget documentation" -->
+        <script type='text/javascript' src='http://api.maps.yahoo.com/ajaxymap?v=3.0&appid=JNrvOMXV34Ft.LUs2zzCI9yVPrIX1KDJ1tiNHFam9mLWl64qgtbSjenTP.ua1UWbPCbp0w6r.A--'></script>
+
+        <!-- Google API key generated for olwidget.org -->
+        <script type="text/javascript" src="http://maps.google.com/maps?file=api&v=2&key=ABQIAAAARaukg-vCnyMKCmf7W1mdOhRjXvsKc3juVddS1EQML_-vy6qUDRS3299mtIKSRBHXPVQ04fZiM38NdA"></script>
+
+        <!-- CloudMade API key generated for olwidget.org -->
+        <script type="text/javascript" src="../../js/cloudmade.js#06c005818e31487cb270b0bdfc71e115"></script>
+
+        <script type='text/javascript' src='../../js/olwidget.js'></script>
+        <link rel="stylesheet" type="text/css" media="all" href="../../css/olwidget.css" />
+        <title>Other Map Providers</title>
+        <style type='text/css'>
+            textarea {
+                width: 300px;
+                height: 200px;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Other Map Providers</h1>
+        <p>An example using all the available layers, including Google, Yahoo, Microsoft, Open Street Maps, and CloudMade.  Additional layers from other providers supported by OpenLayers can be added manually (see this page's source for an example).  Also, see an examle of <a href="just_custom_layer.html">using a custom tile layer alone</a>.</p>
+        <textarea id='my_textarea'></textarea>
+        <script type='text/javascript'>//<![CDATA[
+            var map = new olwidget.EditableMap('my_textarea', {
+                geometry: 'polygon',
+                layers: [
+                    'google.streets', 
+                    'google.hybrid', 
+                    'google.satellite', 
+                    'google.physical', 
+                    'cloudmade.999',
+                    'cloudmade.3697',
+                    'cloudmade.8',
+                    've.road',
+                    've.shaded',
+                    've.aerial',
+                    've.hybrid',
+                    'yahoo.map',
+                    'osm.mapnik', 
+                    'osm.osmarender',
+                    'wms.map',
+                    'wms.nasa'
+                ]
+            }); 
+            // How to add other layers from other providers
+            map.addLayer(new OpenLayers.Layer.WMS( "OpenLayers WMS again",
+                "http://labs.metacarta.com/wms/vmap0", {layers: 'basic'} ));
+        //]]></script>
+            <a href='#' onclick='document.getElementById("my_textarea").style.display="block";'>show textarea</a>
+
+    </body>
+</html>

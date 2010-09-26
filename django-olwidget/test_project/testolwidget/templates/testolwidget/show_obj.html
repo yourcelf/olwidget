@@ -4,10 +4,10 @@
 {% endblock %}
 {% block body %}
 
+<h1>{{ obj }}</h1>
     {{ map }}
 
-{% if object %}
-    <a href='{{ object.get_edit_url }}'>Edit this model</a>
-{% endif %}
+<br />
+<a href='{{ edit_link }}'>Edit this model</a>
 
 {% endblock %}

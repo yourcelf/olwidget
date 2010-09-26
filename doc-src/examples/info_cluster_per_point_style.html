@@ -1,0 +1,57 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <!-- olwidget includes -->
+        <script type='text/javascript' src='http://openlayers.org/api/2.9/OpenLayers.js'></script>
+        <script type='text/javascript' src='http://openstreetmap.org/openlayers/OpenStreetMap.js'></script>
+        <script type='text/javascript' src='../../js/olwidget.js'></script>
+        <link rel="stylesheet" type="text/css" media="all" href="../../css/olwidget.css" />
+        <title>Cluster Pagination Example</title>
+    </head>
+    <body>
+        <h1>Individual point styles when using cluster strategy</h1>
+        <p>When clustering points, OpenLayers replaces the vector features with
+        clustered features.  Thus, the usual method of doing <a
+            href='info_cluster_per_point_style.html'>per-geometry styles</a>
+        doesn't work.  Instead, it is necessary to use "symbolizers" and pass
+        extra style context with definitions for expanding the symbolizers. See <a href="http://openflights.org/blog/2009/10/21/customized-openlayers-cluster-strategies/">this openflights.org blog post</a> for a complete example.</p>
+        <div id='map' style='width: 500px; height: 400px; position: relative;'></div>
+        <script type='text/javascript'>//<![CDATA[
+            var data = [];
+            var dx = 3;
+            var dy = 3;
+            var px, py;
+            for (var x = -10; x <= 10; x += dx) {
+                for (var y = -5.5; y <= 5.5; y += dy) {
+                    px = x + (2 * dx * (Math.random() - 0.5));
+                    py = y + (2 * dy * (Math.random() - 0.5));
+                    data.push(["POINT(" + px + " " + py + ")", {
+                        html: "<div><p><b>x</b>: " + px + "<br /><b>y</b>: " + py + "</p></div>",
+                        specialAttribute: x
+                    }]);
+                }
+
+            }
+            var map = new olwidget.InfoMap('map', data, { 
+                cluster: true,
+                overlayStyle: { 
+                    fillColor: "${specialAttributeHandler}",
+                },
+                overlayStyleContext: {
+                    specialAttributeHandler: function(feature) {
+                        if (feature.cluster && feature.cluster.length === 1) {
+                            if (feature.cluster[0].attributes.specialAttribute < 0) {
+                                return "#0000FF";
+                            } else {
+                                return "#FF0000";
+                            }
+                        } else {
+                            return "#00FF00";
+                        }
+                    }
+                }
+            }); 
+        //]]></script>
+    </body>
+</html>

@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block head %}{{ form.media }}{% endblock %}
+{% block body %}
+<h1>Editing {{ obj }}</h1>
+<form method='post' action=''>
+    <table>
+        {{ form }}
+        <tr><td></td><td><input type='submit' /></td></tr>
+    </table>
+</form>
+{% endblock %}

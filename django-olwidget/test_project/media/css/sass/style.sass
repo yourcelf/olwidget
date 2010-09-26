@@ -1,0 +1,73 @@
+@import compass/reset.sass
+
+!pagebg = #D8C358 + #999
+!title = #25271E
+!text = #25271E
+!link = #6D0839
+!vlink = #6D0839 + #555
+!hoverlink = #FBEFF4 - #555
+
+// typography
+h1,h2,h3,h4,h5,h6
+  font-family: Cambria, Georgia, Times, "Times New Roman", serif
+
+body
+  font-family: Cambria, Georgia, Times, "Times New Roman", serif
+  font-size: 10pt
+  line-height: 1.5em
+  margin-left: 2em
+  a
+    color = !link
+  a:visited
+    color = !vlink
+  a:hover
+    color = !hoverlink
+  background-color = !pagebg
+  color = !text
+
+h1, h2, h3, h4, h5, h6
+  margin-left: -0.5em
+  font-size: 1.8em
+  margin-top: 0.5em
+  margin-bottom: 0.5em
+  font-weight: bold
+h2 
+  font-size: 1.4em
+h3
+  font-size: 1.2em
+h4
+  font-size: 1em
+h5
+  font-size: 0.8em
+h6
+  font-size: 0.6em
+
+p
+  margin-top: 1.5em
+  margin-bottom: 1.5em
+
+p, li, pre
+  width: 533px
+
+small
+  font-size: 0.8em
+
+strong
+  font-weight: bold
+
+li
+  list-style-type: disc
+  margin-left: 1em
+  margin-bottom: 0.2em
+ul
+  margin-bottom: 0.5em
+
+tt, pre
+  font-family: monospace
+  font-size: 0.8em
+pre
+  margin-left: 1em
+  border-left: 4px solid
+
+td
+  padding: 0.5em
