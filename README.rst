@@ -13,6 +13,16 @@ library, ``olwidget.js``, can be used standalone or in Django via the
 
 For more information, please see http://olwidget.org.
 
+Development version
+-------------------
+
+To get the development version, checkout the branch ``multi``::
+
+    git clone git://github.com/yourcelf/olwidget.git --branch multi 
+
+The development version includes many features that are not present in the
+stable version, but is also less tested and may contain more bugs.
+
 About
 -----
 
