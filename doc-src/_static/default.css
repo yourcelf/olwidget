@@ -9,3 +9,6 @@ a.headerlink, a.headerlink:hover {
 .literal {
     background-color: #FEFEE4;
 }
+ol, ul {
+    padding-left: 1em;
+}
