@@ -97,7 +97,7 @@ html_theme = 'default'
 # further.  For a list of options available for each theme, see the
 # documentation.
 html_theme_options = {
-    "rightsidebar": True,
+#    "rightsidebar": True,
 }
 
 # Add any paths that contain custom themes here, relative to this directory.

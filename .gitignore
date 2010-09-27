@@ -1,6 +1,5 @@
 doc-src/_build/*
-doc/.buildinfo
-doc/.doctrees/*
+doc/*
 *.pyc
 *.swp
 .sass-cache

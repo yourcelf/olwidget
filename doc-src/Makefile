@@ -31,6 +31,7 @@ clean:
 	-rm -rf ../doc/*
 
 html:
+	mkdir -p ../doc
 	rm -rf ../doc/_static
 	$(SPHINXBUILD) -b html . ../doc/
 	rm -f ../doc/examples
