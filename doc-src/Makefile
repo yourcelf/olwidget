@@ -35,8 +35,11 @@ html:
 	rm -rf ../doc/_static
 	$(SPHINXBUILD) -b html . ../doc/
 	rm -f ../doc/examples
-	ln -s ../doc-src/examples ../doc/examples
-	cp -r _static ../doc/
+	cp -r examples ../doc/examples
+	cp -r ../js ../doc/examples
+	cp -r ../css ../doc/examples
+	cp -r ../img ../doc/examples
+	cp -r _static ../doc/examples
 	@echo
 	@echo "Build finished.  The HTML pages are in ../doc"
 
