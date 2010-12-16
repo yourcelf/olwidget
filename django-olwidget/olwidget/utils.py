@@ -31,15 +31,7 @@ def _separated_lowercase_to_lower_camelcase(input_):
 def get_ewkt(value, srid=DEFAULT_PROJ):
     return _add_srid(_get_wkt(value, srid), srid)
 
-def collection_ewkt(fields, srid=DEFAULT_PROJ):
-    return _add_srid(_collection_wkt(fields, srid), srid)
-
-_ewkt_re = re.compile("^SRID=(?P<srid>\d+);(?P<wkt>.+)$", re.I)
-def _get_wkt(value, srid):
-    """
-    `value` is either a WKT string or a geometry field.  Returns WKT in the
-    projection for the given SRID.
-    """
+def get_ogr(value, srid=DEFAULT_PROJ):
     ogr = None
     if value:
         if isinstance(value, OGRGeometry):
@@ -52,10 +44,22 @@ def _get_wkt(value, srid):
                 ogr = OGRGeometry(match.group('wkt'), match.group('srid'))
             else:
                 ogr = OGRGeometry(value)
+    if ogr and srid:
+        ogr.transform(srid)
+    return ogr
 
+def collection_ewkt(fields, srid=DEFAULT_PROJ):
+    return _add_srid(_collection_wkt(fields, srid), srid)
+
+_ewkt_re = re.compile("^SRID=(?P<srid>\d+);(?P<wkt>.+)$", re.I)
+def _get_wkt(value, srid):
+    """
+    `value` is either a WKT string or a geometry field.  Returns WKT in the
+    projection for the given SRID.
+    """
+    ogr = get_ogr(value, srid)
     wkt = ''
     if ogr:
-        ogr.transform(srid)
         wkt = ogr.wkt 
     return wkt
 

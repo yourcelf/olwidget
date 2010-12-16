@@ -142,3 +142,18 @@ class TestForm(TestCase):
                 EditableLayerField({'geometry': 'point'}),
             ])
         unicode(MixedForm())
+
+    def test_has_changed(self):
+        vals = {
+                'start': "SRID=4326;POINT(0 0)",
+                'route': "SRID=4326;LINESTRING(0 0,1 1)",
+        }
+        instance = MyModel.objects.create(**vals)
+        form = MyModelForm(vals, instance=instance)
+        self.assertFalse(form.has_changed())
+        
+        form = MyModelForm({
+            'start': "SRID=4326;POINT(0 0.1)",
+            'route': "SRID=4326;LINESTRING(0 0,1 1)",
+        }, instance=instance)
+        self.assertTrue(form.has_changed())
