@@ -34,6 +34,19 @@ class MyModelForm(MapModelForm):
         )
 
 #
+# MapModelForm with single set of options.  The two should be equivalent.
+#
+class SingleStyleMapModelForm(MapModelForm):
+    class Meta:
+        model = MyModel
+        options = {'layers': ['google.streets']}
+
+class SingleStyleMapModelFormEquivalent(MapModelForm):
+    class Meta:
+        model = MyModel
+        maps = ((('start', 'route', 'end'), {'layers': ['google.streets']}),)
+
+#
 # tests
 #
 
@@ -157,3 +170,10 @@ class TestForm(TestCase):
             'route': "SRID=4326;LINESTRING(0 0,1 1)",
         }, instance=instance)
         self.assertTrue(form.has_changed())
+
+    def test_single_style_option_form(self):
+        f1 = SingleStyleMapModelForm()
+        f2 = SingleStyleMapModelFormEquivalent()
+
+        self.assertEquals(unicode(f1.media), unicode(f2.media))
+        self.assertEquals(unicode(f1), unicode(f2))

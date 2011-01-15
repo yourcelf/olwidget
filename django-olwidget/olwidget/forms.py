@@ -35,7 +35,8 @@ class MapModelFormOptions(forms.models.ModelFormOptions):
     def __init__(self, options=None):
         super(MapModelFormOptions, self).__init__(options)
         self.maps = getattr(options, 'maps', None)
-
+        if not self.maps:
+            self.maps = getattr(options, 'options', None)
 
 class MapModelFormMetaclass(type):
     """ 
@@ -115,8 +116,11 @@ def apply_maps_to_modelform_fields(fields, maps, default_options=None, default_t
     of [field_list, options_dict] pairs.  For each pair, a new map field is
     created that contans all the fields in ``field_list``.
     """
+    map_field_names = (name for name,field in fields.iteritems() if isinstance(field, (MapField, GeometryField)))
     if not maps:
-        maps = [((name,),) for name,field in fields.iteritems() if isinstance(field, (MapField, GeometryField))]
+        maps = [((name,),) for name in map_field_names]
+    elif isinstance(maps, dict):
+        maps = [[tuple(map_field_names), maps]]
 
     default_options = default_options or {}
     initial_data_keymap = {}
