@@ -1050,8 +1050,8 @@ olwidget.EditableLayerSwitcher = OpenLayers.Class(OpenLayers.Control.LayerSwitch
         var context = {
             "inputElem": input,
             "layer": layer,
-            "layerSwitcher": this,
-        }
+            "layerSwitcher": this
+        };
         OpenLayers.Event.observe(input, "mouseup",
             OpenLayers.Function.bindAsEventListener(this.onInputClick, 
                                                     context)

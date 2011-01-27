@@ -125,7 +125,7 @@ class Map(forms.Widget):
         if (initial is None) or (not isinstance(initial, (tuple, list))):
             initial = [u''] * len(data)
         for widget, initial, data in zip(self.vector_layers, initial, data):
-            if widget._has_changed(initial, data):
+            if utils.get_ogr(initial) != utils.get_ogr(data):
                 return True
         return False
 
