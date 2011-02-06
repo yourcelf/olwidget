@@ -19,4 +19,7 @@ class TestGoogProjAdmin(TestCase):
         self.assertEquals(r.status_code, 200)
 
         self.assertEquals(len(GoogProjModel.objects.all()), 1)
-        self.assertEquals(GEOSGeometry("SRID=900913;POINT(10 10)"), GoogProjModel.objects.all()[0].point)
+        a = GEOSGeometry("SRID=900913;POINT(10 10)")
+        b = GoogProjModel.objects.all()[0].point
+        # Floating point comparison -- ensure distance is miniscule.
+        self.assertTrue(a.distance(b) < 1.0e-9)

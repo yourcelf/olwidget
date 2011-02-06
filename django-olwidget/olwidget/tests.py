@@ -33,6 +33,33 @@ class MyModelForm(MapModelForm):
             (('route',), None),
         )
 
+# Required=false form
+class RequirednessForm(forms.Form):
+    optional = MapField(
+            fields=[EditableLayerField(required=False, options={
+                'geometry': 'point',
+                'name': 'optional',
+            })],
+            options={
+                'overlay_style': {'fill_color': '#00ff00'},
+            })
+    required = MapField(
+            fields=[EditableLayerField(required=True, options={
+                'geometry': 'point',
+                'name': 'required',
+            })],
+            options={
+                'overlay_style': {'fill_color': '#00ff00'},
+            })
+    unspecified = MapField(
+            fields=[EditableLayerField({
+                'geometry': 'point',
+                'name': 'unspecified',
+            })],
+            options={
+                'overlay_style': {'fill_color': '#00ff00'},
+            })
+
 #
 # MapModelForm with single set of options.  The two should be equivalent.
 #
@@ -177,3 +204,19 @@ class TestForm(TestCase):
 
         self.assertEquals(unicode(f1.media), unicode(f2.media))
         self.assertEquals(unicode(f1), unicode(f2))
+
+    def test_required(self):
+        form = RequirednessForm({
+            'optional': None,
+            'required': None,
+            'unspecified': None,
+        })
+        #print form.fields['optional'].required
+        self.assertFalse(form.is_valid())
+
+        form = RequirednessForm({
+            'optional': None,
+            'required': "SRID=4326;POINT(0 0)",
+            'unspecified': "SRID=4326;POINT(0 0)",
+        })
+        self.assertTrue(form.is_valid())
