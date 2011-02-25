@@ -1,9 +1,16 @@
 import re
+import settings
 
 from django.contrib.gis.gdal import OGRException, OGRGeometry
 from django.contrib.gis.geos import GEOSGeometry
 
 DEFAULT_PROJ = "4326"
+DEFAULT_OPTIONS = getattr(settings, 'OLWIDGET_DEFAULTS', {})
+
+def get_options(o):
+    options = DEFAULT_OPTIONS.copy()
+    options.update(o or {})
+    return options
 
 def url_join(*args):
     return reduce(_reduce_url_parts, args)

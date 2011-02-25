@@ -54,7 +54,7 @@ class Map(forms.Widget):
         for layer in vector_layers:
             self.vector_layers.append(layer)
         self.layer_names = layer_names
-        self.options = options or {}
+        self.options = utils.get_options(options)
         # Though this layer is the olwidget.js default, it must be explicitly
         # set so {{ form.media }} knows to include osm.
         self.options['layers'] = self.options.get('layers', ['osm.mapnik'])
@@ -302,7 +302,7 @@ class MapDisplay(EditableMap):
     Convenience Map widget for a single non-editable layer, with no popups.
     """
     def __init__(self, fields=None, options=None, **kwargs):
-        options = options or {}
+        options = utils.get_options(options)
         options['editable'] = False
         super(MapDisplay, self).__init__(options, **kwargs)
         if fields:

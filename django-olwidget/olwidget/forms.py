@@ -122,7 +122,7 @@ def apply_maps_to_modelform_fields(fields, maps, default_options=None, default_t
     elif isinstance(maps, dict):
         maps = [[tuple(map_field_names), maps]]
 
-    default_options = default_options or {}
+    default_options = utils.get_options(default_options)
     initial_data_keymap = {}
 
     for map_definition in maps:
