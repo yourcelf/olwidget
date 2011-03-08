@@ -4,7 +4,6 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.conf import settings
 
-from olwidget.fields import MapField, EditableLayerField
 from olwidget.widgets import Map, EditableLayer, InfoLayer, InfoMap
 
 from testolwidget.models import *

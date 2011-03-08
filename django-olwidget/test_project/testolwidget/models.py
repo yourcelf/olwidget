@@ -1,5 +1,4 @@
 from django.contrib.gis.db import models
-from django.core.urlresolvers import reverse
 
 class Country(models.Model):
     name = models.CharField(max_length=255)

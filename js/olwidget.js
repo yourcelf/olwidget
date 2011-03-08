@@ -1026,7 +1026,7 @@ olwidget.EditableLayerSwitcher = OpenLayers.Class(OpenLayers.Control.LayerSwitch
     },
     draw: function() {
         OpenLayers.Control.prototype.draw.apply(this);
-        this.loadContents()
+        this.loadContents();
         this.redraw();
         this.stopEditing();
         return this.div;

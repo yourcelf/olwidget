@@ -1,5 +1,4 @@
 import django.utils.copycompat as copy
-from django.forms.widgets import Textarea
 from django.template.loader import render_to_string
 from django.utils import simplejson
 from django.conf import settings

@@ -78,9 +78,8 @@ class MixedForm(forms.Form):
             }),
         EditableLayerField({
             'geometry': 'point',
-            'name': 'Capitals',
-            'is_collection': True,
             'name': "Country capitals",
+            'is_collection': True,
         }),
         ], {'layers': ['google.satellite']})
 

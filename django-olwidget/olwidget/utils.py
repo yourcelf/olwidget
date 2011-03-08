@@ -1,7 +1,7 @@
 import re
 import settings
 
-from django.contrib.gis.gdal import OGRException, OGRGeometry
+from django.contrib.gis.gdal import OGRGeometry
 from django.contrib.gis.geos import GEOSGeometry
 
 DEFAULT_PROJ = "4326"

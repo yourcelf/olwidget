@@ -25,7 +25,6 @@ map, just subclass GeoModelAdmin, and define "options", for example::
 
 A complete list of options is in the olwidget documentation.
 """
-import copy
 
 # Get the parts necessary for the methods we override #{{{
 from django.contrib.admin import ModelAdmin
@@ -34,7 +33,7 @@ from django.contrib.gis.geos import GeometryCollection
 from django.shortcuts import render_to_response
 from django import template
 from django.contrib.admin.options import IncorrectLookupParameters, csrf_protect_m
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponseRedirect
 from django.core.exceptions import PermissionDenied
 from django.utils.translation import ugettext as _
 from django.utils.translation import ungettext
@@ -42,7 +41,7 @@ from django.utils.translation import ungettext
 from django.utils.encoding import force_unicode
 
 from olwidget.forms import apply_maps_to_modelform_fields, fix_initial_data, fix_cleaned_data
-from olwidget.widgets import EditableMap, InfoMap
+from olwidget.widgets import InfoMap
 from olwidget.utils import DEFAULT_PROJ
 
 __all__ = ('GeoModelAdmin',)

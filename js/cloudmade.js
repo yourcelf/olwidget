@@ -2,7 +2,7 @@
 // source: http://stackoverflow.com/questions/2255689/how-to-get-the-file-path-of-the-currenctly-executing-javascript-code
 (function() {
     var scripts = document.getElementsByTagName("script");
-    var __FILE__ = scripts[scripts.length-1].src;
+    var __FILE__ = scripts[scripts.length - 1].src;
     window.CLOUDMADE_API_KEY = __FILE__.split("#")[1];
 })()
 
