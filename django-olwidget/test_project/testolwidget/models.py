@@ -58,3 +58,9 @@ class Nullable(models.Model):
 
     def __unicode__(self):
         return str(self.location)
+
+class GoogProjModel(models.Model):
+    point = models.PointField(srid='900913')
+    objects = models.GeoManager()
+
+

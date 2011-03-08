@@ -1,9 +1,16 @@
 import re
+import settings
 
 from django.contrib.gis.gdal import OGRException, OGRGeometry
 from django.contrib.gis.geos import GEOSGeometry
 
 DEFAULT_PROJ = "4326"
+DEFAULT_OPTIONS = getattr(settings, 'OLWIDGET_DEFAULTS', {})
+
+def get_options(o):
+    options = DEFAULT_OPTIONS.copy()
+    options.update(o or {})
+    return options
 
 def url_join(*args):
     return reduce(_reduce_url_parts, args)
@@ -28,7 +35,12 @@ def _separated_lowercase_to_lower_camelcase(input_):
     return re.sub('_\w', lambda match: match.group(0)[-1].upper(), input_)
 
 
-def get_ewkt(value, srid=DEFAULT_PROJ):
+def get_ewkt(value, srid=None):
+    if srid is None:
+        if hasattr(value, 'srid'):
+            srid = value.srid
+        else:
+            srid = DEFAULT_PROJ
     return _add_srid(_get_wkt(value, srid), srid)
 
 def get_ogr(value, srid=DEFAULT_PROJ):

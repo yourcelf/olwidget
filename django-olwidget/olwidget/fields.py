@@ -21,10 +21,7 @@ class MapField(forms.fields.Field):
         self.fields = fields
         kwargs['widget'] = kwargs.get('widget', 
                 Map(layers, options, template, layer_names))
-        super(MapField, self).__init__(fields, **kwargs)
-
-    def validate(self, value):
-        pass
+        super(MapField, self).__init__(**kwargs)
 
     def clean(self, value):
         """

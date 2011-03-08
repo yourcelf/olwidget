@@ -2,7 +2,7 @@ from django import forms
 from django.contrib import admin
 from olwidget.admin import GeoModelAdmin
 
-from testolwidget.models import Country, EnergyVortex, AlienActivity, Tree, Nullable
+from testolwidget.models import Country, EnergyVortex, AlienActivity, Tree, Nullable, GoogProjModel
 
 # Default map
 #admin.site.register(Country, GeoModelAdmin)
@@ -106,3 +106,13 @@ class NullableAdmin(GeoModelAdmin):
     }
     list_map = ['location']
 admin.site.register(Nullable, NullableAdmin)
+
+class GoogProjAdmin(GeoModelAdmin):
+    options = {
+        'map_options': {
+            'projection': 'EPSG:900913',
+            'display_projection': 'EPSG:900913',
+        },
+        'hide_textarea': False,
+    }
+admin.site.register(GoogProjModel, GoogProjAdmin)
