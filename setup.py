@@ -23,12 +23,6 @@ setup(name='django-olwidget',
     packages=['olwidget'],
     package_dir={'': 'django-olwidget'},
     data_files=[
-        ('olwidget/media/olwidget/js', ['js/olwidget.js', 'js/cloudmade.js']),
-        ('olwidget/media/olwidget/css', ['css/olwidget.css']),
-        ('olwidget/media/olwidget/img', ['img/popup_icons.png',
-            'img/extra_edit_icons.png',
-            'img/jquery_ui_license.txt',
-        ]),
         ('olwidget/templates/olwidget/', [
             'django-olwidget/olwidget/templates/olwidget/admin_olwidget.html',
             'django-olwidget/olwidget/templates/olwidget/editable_layer.html',

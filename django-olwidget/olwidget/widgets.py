@@ -10,10 +10,14 @@ from olwidget import utils
 # Default settings for paths and API URLs.  These can all be overridden by
 # specifying a value in settings.py
 
-setattr(settings, "OLWIDGET_MEDIA_URL", 
-    getattr(settings, 
-        "OLWIDGET_MEDIA_URL", 
-        utils.url_join(settings.MEDIA_URL, "olwidget")))
+setattr(settings, "OLWIDGET_STATIC_URL",
+    getattr(settings,
+        "OLWIDGET_STATIC_URL",
+        utils.url_join(settings.STATIC_URL, "olwidget")))
+
+# Backwards compatibility with old settings name.
+if getattr(settings, "OLWIDGET_MEDIA_URL", None):
+    setattr(settings, "OLWIDGET_STATIC_URL", settings.OLWIDGET_MEDIA_URL)
 
 api_defaults = {
     'GOOGLE_API_KEY': "",
@@ -24,9 +28,9 @@ api_defaults = {
     'OSM_API': "http://openstreetmap.org/openlayers/OpenStreetMap.js",
     'OL_API': "http://openlayers.org/api/2.9/OpenLayers.js",
     'MS_VE_API' : "http://dev.virtualearth.net/mapcontrol/mapcontrol.ashx?v=6.1",
-    'CLOUDMADE_API': utils.url_join(settings.OLWIDGET_MEDIA_URL, "js/cloudmade.js"),
-    'OLWIDGET_JS': utils.url_join(settings.OLWIDGET_MEDIA_URL, "js/olwidget.js"),
-    'OLWIDGET_CSS': utils.url_join(settings.OLWIDGET_MEDIA_URL, "css/olwidget.css"),
+    'CLOUDMADE_API': utils.url_join(settings.OLWIDGET_STATIC_URL, "js/cloudmade.js"),
+    'OLWIDGET_JS': utils.url_join(settings.OLWIDGET_STATIC_URL, "js/olwidget.js"),
+    'OLWIDGET_CSS': utils.url_join(settings.OLWIDGET_STATIC_URL, "css/olwidget.css"),
 }
 
 for key, default in api_defaults.iteritems():
