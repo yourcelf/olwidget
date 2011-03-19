@@ -102,6 +102,8 @@ class Map(forms.Widget):
             'layer_js': layer_js,
             'layer_html': layer_html,
             'map_opts': simplejson.dumps(utils.translate_options(self.options)),
+            'STATIC_URL': settings.STATIC_URL,
+            'MEDIA_URL': settings.MEDIA_URL,
         }
         return render_to_string(self.template, context)
 
@@ -238,6 +240,8 @@ class InfoLayer(BaseVectorLayer):
         context = {
             'info_array': info_json,
             'options': simplejson.dumps(utils.translate_options(self.options)),
+            'STATIC_URL': settings.STATIC_URL,
+            'MEDIA_URL': settings.MEDIA_URL,
         }
         js = mark_safe(render_to_string(self.template, context))
         html = ""
@@ -267,6 +271,8 @@ class EditableLayer(BaseVectorLayer):
         context = {
             'id': attrs['id'],
             'options': simplejson.dumps(utils.translate_options(self.options)),
+            'STATIC_URL': settings.STATIC_URL,
+            'MEDIA_URL': settings.MEDIA_URL,
         }
         js = mark_safe(render_to_string(self.template, context))
         html = mark_safe(forms.Textarea().render(name, wkt, attrs))
