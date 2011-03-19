@@ -57,6 +57,9 @@ class Map(forms.Widget):
         for layer in vector_layers:
             self.vector_layers.append(layer)
         self.layer_names = layer_names
+        if options is None:
+            if hasattr(settings, 'OLWIDGET_DEFAULT_OPTIONS'):
+                options = settings.OLWIDGET_DEFAULT_OPTIONS
         self.options = utils.get_options(options)
         # Though this layer is the olwidget.js default, it must be explicitly
         # set so {{ form.media }} knows to include osm.

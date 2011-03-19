@@ -522,6 +522,11 @@ This allows the map to hold defaults for all layers, but let the layers
 override them.  The following is a list of all available options.  Some are
 specific to map display, and others specific to layer display.
 
+You can also define ``OLWIDGET_DEFAULT_OPTIONS`` in your settings file.
+These options will be used only in the event an options parameter isn't passed
+into your ``olwidget`` objects.
+
+
 General map display
 -------------------
 ``layers`` (list; default ``['osm.mapnik']``) 
