@@ -176,6 +176,11 @@ var olwidget = {
             }
         }
         return destination;
+    },
+
+    isCollectionEmpty: function(geom) {
+        /* Is the provided collection empty? */
+        return !(geom && (geom.constructor != Array || geom[0] != undefined))
     }
 };
 
@@ -553,6 +558,9 @@ olwidget.InfoLayer = OpenLayers.Class(olwidget.BaseVectorLayer, {
         var features = [];
         for (var i = 0; i < this.info.length; i++) {
             var feature = olwidget.ewktToFeature(this.info[i][0]);
+            if (olwidget.isCollectionEmpty(feature)) {
+                continue;
+            }
             feature = olwidget.transformVector(feature,
                 this.map.displayProjection, this.map.projection);
 
@@ -775,8 +783,7 @@ olwidget.EditableLayer = OpenLayers.Class(olwidget.BaseVectorLayer, {
         }
         if (wkt) {
             var geom = olwidget.ewktToFeature(wkt);
-            // filter empty geometry collctions.
-            if (geom && (geom.constructor != Array || geom[0] != undefined)) {
+            if (!olwidget.isCollectionEmpty(geom)) {
                 geom = olwidget.transformVector(geom, 
                     this.map.displayProjection, 
                     this.map.projection);
