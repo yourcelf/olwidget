@@ -1117,17 +1117,19 @@ olwidget.EditableLayerSwitcher = OpenLayers.Class(OpenLayers.Control.LayerSwitch
             OpenLayers.Function.bindAsEventListener(this.mouseDown, this));
         OpenLayers.Event.observe(this.div, "dblclick", this.ignoreEvent);
 
-        // Container for corners.
+        // Optionally create rounded corners
         this.container = document.createElement("div");
         OpenLayers.Element.addClass(this.container, "container");
         this.div.appendChild(this.container);
-        OpenLayers.Rico.Corner.round(this.div, {
-            corners: "bl br",
-            bgColor: "transparent",
-            color: this.roundedCornerColor,
-            blend: false
-        });
-        OpenLayers.Rico.Corner.changeOpacity(this.container, 0.75);
+        if (this.roundedCorner) {
+            OpenLayers.Rico.Corner.round(this.div, {
+                corners: "bl br",
+                bgColor: "transparent",
+                color: this.roundedCornerColor,
+                blend: false
+            });
+            OpenLayers.Rico.Corner.changeOpacity(this.container, 0.75);
+        }
 
         // Container for layers
         this.layersDiv = document.createElement("div");
