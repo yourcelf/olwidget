@@ -993,16 +993,11 @@ olwidget.EditableLayerSwitcher = OpenLayers.Class(OpenLayers.Control.LayerSwitch
         if (this.currentlyEditing) {
             this.stopEditing();
         }
-        this.panel = new OpenLayers.Control.Panel({
+        this.panel = new olwidget.EditingToolbar({
             defaultControl: layer.defaultControl,
             displayClass: 'olControlEditingToolbar'
         });
-        // monkey patch to keep undo button states
-        this.panel.onClick = function(ctrl, evt) {
-            OpenLayers.Event.stop(evt ? evt : window.event);
-            this.activateControl(ctrl);
-            layer.setUndoButtonStates();
-        };
+        this.panel.layer = layer;
         this.panel.addControls(layer.controls);
         this.map.addControl(this.panel);
 
@@ -1211,6 +1206,17 @@ olwidget.EditableLayerSwitcher = OpenLayers.Class(OpenLayers.Control.LayerSwitch
     CLASS_NAME: "olwidget.EditableLayerSwitcher"
 });
 
+/*
+ * Our editing toolbar.
+ */
+olwidget.EditingToolbar = OpenLayers.Class(OpenLayers.Control.Panel, {
+    onClick: function(ctrl, evt) {
+        // Keep undo button states
+        OpenLayers.Event.stop(evt ? evt : window.event);
+        this.activateControl(ctrl);
+        layer.setUndoButtonStates();
+    },
+});
 
 /*
  * Paginated, framed popup type, CSS stylable.
