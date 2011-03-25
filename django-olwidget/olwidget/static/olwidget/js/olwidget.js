@@ -616,77 +616,31 @@ olwidget.EditableLayer = OpenLayers.Class(olwidget.BaseVectorLayer, {
         // init undo stack
         this.addUndoState();
     },
+    _addDrawFeature: function(obj_type, obj_options, controls) {
+        var drawControl = new OpenLayers.Control.DrawFeature(
+            this, obj_type, obj_options);
+        drawControl.activate = function() {
+            OpenLayers.Control.prototype.activate.apply(this, []);
+            this.map.div.style.cursor = "crosshair";
+        };
+        var oldDeactivate = drawControl.deactivate;
+        drawControl.deactivate = function() {
+            OpenLayers.Control.prototype.deactivate.apply(this, []);
+            this.map.div.style.cursor = "auto";
+        };
+        controls.push(drawControl);
+        if (!this.defaultControl) {
+            this.defaultControl = drawControl;
+        }
+    },
+
     buildControls: function() {
         var controls = [];
-        var nav = new OpenLayers.Control.Navigation({
-            "title": "Move the map"
-        });
-        controls.push(nav);
+        var context = this;
 
-        // Drawing control(s)
-        var geometries;
-        if (this.opts.geometry.constructor == Array) {
-            geometries = this.opts.geometry; 
-        } else {
-            geometries = [this.opts.geometry];
-        }
-        this.defaultControl = null;
-        for (var i = 0; i < geometries.length; i++) {
-            var drawControl;
-            if (geometries[i] == 'linestring') {
-                drawControl = new OpenLayers.Control.DrawFeature(this, 
-                    OpenLayers.Handler.Path, {
-                        'displayClass': 'olControlDrawFeaturePath',
-                        'title': "Draw lines"
-                    });
-            } else if (geometries[i] == 'polygon') {
-                drawControl = new OpenLayers.Control.DrawFeature(this,
-                    OpenLayers.Handler.Polygon, {
-                        'displayClass': 'olControlDrawFeaturePolygon',
-                        "title": "Draw polygons"
-                    });
-            } else if (geometries[i] == 'point') {
-                drawControl = new OpenLayers.Control.DrawFeature(this,
-                    OpenLayers.Handler.Point, {
-                        'displayClass': 'olControlDrawFeaturePoint',
-                        "title": "Draw points"
-                    });
-            }
-            drawControl.activate = function() {
-                OpenLayers.Control.prototype.activate.apply(this, []);
-                this.map.div.style.cursor = "crosshair";
-            };
-            var oldDeactivate = drawControl.deactivate;
-            drawControl.deactivate = function() {
-                OpenLayers.Control.prototype.deactivate.apply(this, []);
-                this.map.div.style.cursor = "auto";
-            };
-            controls.push(drawControl);
-            if (!this.defaultControl) {
-                this.defaultControl = drawControl;
-            }
-        }
-
-        // don't add duplicate functionality from single point maps.
-        if (this.opts.geometry != 'point' || this.opts.isCollection) {
-            // Modify feature control
-            var mod = new OpenLayers.Control.ModifyFeature(this, {
-                clickout: true,
-                title: "Modify features"
-            });
-            controls.push(mod);
-
-            // Delete vertex
-            controls.push(new olwidget.DeleteVertex(this, {
-                title: "Delete vertices"
-            }));
-        }
-        
         //
         // Custom controls:
         //
-
-        var context = this;
         
         // Clear all
         controls.push(new OpenLayers.Control.Button({
@@ -716,6 +670,70 @@ olwidget.EditableLayer = OpenLayers.Class(olwidget.BaseVectorLayer, {
             title: "Undo"
         });
         controls.push(this.undoButton);
+
+        // don't add duplicate functionality from single point maps.
+        if (this.opts.geometry != 'point' || this.opts.isCollection) {
+            // Delete vertex
+            controls.push(new olwidget.DeleteVertex(this, {
+                title: "Delete vertices"
+            }));
+        }
+
+
+        var nav = new OpenLayers.Control.Navigation({
+            "title": "Move the map"
+        });
+        controls.push(nav);
+
+        // Drawing control(s)
+        var geometries;
+        if (this.opts.geometry.constructor == Array) {
+            geometries = this.opts.geometry; 
+        } else {
+            geometries = [this.opts.geometry];
+        }
+        this.defaultControl = null;
+
+        var has_point, has_linestring, has_polygon = false;
+        var has_linestring = false;
+        var has_polygon = false;
+        for (var i = 0; i < geometries.length; i++) {
+            if (geometries[i] == 'linestring')
+                has_linestring = true;
+            else if (geometries[i] == 'polygon')
+                has_polygon = true;
+            else if (geometries[i] == 'point')
+                has_point = true;
+        }
+        if (has_polygon) {
+            this._addDrawFeature(OpenLayers.Handler.Polygon, {
+                'displayClass': 'olControlDrawFeaturePolygon',
+                "title": "Draw polygons",
+            }, controls);
+        }
+        if (has_linestring) {
+            this._addDrawFeature(OpenLayers.Handler.Path, {
+                'displayClass': 'olControlDrawFeaturePath',
+                'title': "Draw lines"
+            }, controls);
+        }
+        if (has_point) {
+            this._addDrawFeature(OpenLayers.Handler.Point, {
+                'displayClass': 'olControlDrawFeaturePoint',
+                "title": "Draw points"
+            }, controls);
+        }
+
+        // don't add duplicate functionality from single point maps.
+        if (this.opts.geometry != 'point' || this.opts.isCollection) {
+            // Modify feature control
+            var mod = new OpenLayers.Control.ModifyFeature(this, {
+                clickout: true,
+                title: "Modify features"
+            });
+            controls.push(mod);
+        }
+
         this.controls = controls;
     },
     clearFeatures: function() {
