@@ -46,6 +46,7 @@ MEDIA_ROOT = os.path.join(SETTINGS_ROOT, "media/")
 # trailing slash if there is a path component (optional in other cases).
 # Examples: "http://media.lawrence.com", "http://example.com/media/"
 MEDIA_URL = '/media/'
+STATIC_URL = MEDIA_URL
 
 # URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
 # trailing slash.
@@ -92,6 +93,6 @@ GOOGLE_API_KEY = "ABQIAAAARaukg-vCnyMKCmf7W1mdOhQCULP4XOMyhPd8d_NrQQEO8sT8XBTLlW
 #GOOGLE_API_KEY = "ABQIAAAARaukg-vCnyMKCmf7W1mdOhTUM1TfCWCpQbByeYgbUi08Ugq4ShQ2qaNvdgbJz36kf2mKYgbUTR6R7A" # 18.85.23.189:8000
 YAHOO_APP_ID = "JNrvOMXV34Ft.LUs2zzCI9yVPrIX1KDJ1tiNHFam9mLWl64qgtbSjenTP.ua1UWbPCbp0w6r.A--" # olwidget documentation
 
-OLWIDGET_DEFAULTS = {
+OLWIDGET_DEFAULT_OPTIONS = {
     'layers': ['google.streets']
 }

@@ -57,10 +57,12 @@ familiar to users of other reusable Django apps:
 
         -e git://github.com/yourcelf/olwidget.git#egg=django-olwidget
 
-2.  Copy or link the ``media/olwidget`` directory into to your project's
-    ``MEDIA_ROOT``.  If you wish to name the directory something other than
-    ``olwidget``, define ``OLWIDGET_MEDIA_URL`` with the URL for the media
-    files in your settings file. 
+2.  Copy or link the ``static/olwidget`` directory into to your project's 
+    static files directory.  If you wish to name the directory something other
+    than ``olwidget``, define ``OLWIDGET_STATIC_URL`` with the URL for the
+    media files in your settings file. (Note: In previous versions, this was
+    ``OLWIDGET_MEDIA_URL``; this was changed in keeping with Django 1.3's
+    staticfiles support).
     
 3.  Include ``'olwidget'`` in your project's settings ``INSTALLED_APPS`` list.
 
@@ -522,10 +524,8 @@ This allows the map to hold defaults for all layers, but let the layers
 override them.  The following is a list of all available options.  Some are
 specific to map display, and others specific to layer display.
 
-You can also define ``OLWIDGET_DEFAULT_OPTIONS`` in your settings file.
-These options will be used only in the event an options parameter isn't passed
-into your ``olwidget`` objects.
-
+The base default options dict can be defined in your settings file as
+``OLWIDGET_DEFAULT_OPTIONS``.
 
 General map display
 -------------------

@@ -5,7 +5,7 @@ from django.contrib.gis.gdal import OGRGeometry
 from django.contrib.gis.geos import GEOSGeometry
 
 DEFAULT_PROJ = "4326"
-DEFAULT_OPTIONS = getattr(settings, 'OLWIDGET_DEFAULTS', {})
+DEFAULT_OPTIONS = getattr(settings, 'OLWIDGET_DEFAULT_OPTIONS', {})
 
 def get_options(o):
     options = DEFAULT_OPTIONS.copy()

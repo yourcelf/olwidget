@@ -3,6 +3,20 @@
 Backwards incompatible changes
 ==============================
 
+In development version
+~~~~~~~~~~~~~~~~~~~~~~
+In keeping with Django 1.3's new support for static media files, the location
+of olwidget's media has changed, to:
+
+    olwidget/static/olwidget
+
+In addition, the ``OLWIDGET_MEDIA_URL`` setting has been renamed
+``OLWIDGET_STATIC_URL``, and templates rendered by olwidget now receive
+``STATIC_URL`` instead of ``MEDIA_URL`` as context.  The setting ``STATIC_URL``
+is also required.
+
+This has the potential to break symlinks to olwidget's static media files.
+
 In version 0.4
 ~~~~~~~~~~~~~~
 Version 0.4 represents a complete overhaul of olwidget to build in support for

@@ -1,3 +1,5 @@
+import warnings
+
 import django.utils.copycompat as copy
 from django.template.loader import render_to_string
 from django.utils import simplejson
@@ -14,10 +16,6 @@ setattr(settings, "OLWIDGET_STATIC_URL",
     getattr(settings,
         "OLWIDGET_STATIC_URL",
         utils.url_join(settings.STATIC_URL, "olwidget")))
-
-# Backwards compatibility with old settings name.
-if getattr(settings, "OLWIDGET_MEDIA_URL", None):
-    setattr(settings, "OLWIDGET_STATIC_URL", settings.OLWIDGET_MEDIA_URL)
 
 api_defaults = {
     'GOOGLE_API_KEY': "",
@@ -57,9 +55,6 @@ class Map(forms.Widget):
         for layer in vector_layers:
             self.vector_layers.append(layer)
         self.layer_names = layer_names
-        if options is None:
-            if hasattr(settings, 'OLWIDGET_DEFAULT_OPTIONS'):
-                options = settings.OLWIDGET_DEFAULT_OPTIONS
         self.options = utils.get_options(options)
         # Though this layer is the olwidget.js default, it must be explicitly
         # set so {{ form.media }} knows to include osm.
@@ -103,7 +98,6 @@ class Map(forms.Widget):
             'layer_html': layer_html,
             'map_opts': simplejson.dumps(utils.translate_options(self.options)),
             'STATIC_URL': settings.STATIC_URL,
-            'MEDIA_URL': settings.MEDIA_URL,
         }
         return render_to_string(self.template, context)
 
@@ -241,7 +235,6 @@ class InfoLayer(BaseVectorLayer):
             'info_array': info_json,
             'options': simplejson.dumps(utils.translate_options(self.options)),
             'STATIC_URL': settings.STATIC_URL,
-            'MEDIA_URL': settings.MEDIA_URL,
         }
         js = mark_safe(render_to_string(self.template, context))
         html = ""
@@ -272,7 +265,6 @@ class EditableLayer(BaseVectorLayer):
             'id': attrs['id'],
             'options': simplejson.dumps(utils.translate_options(self.options)),
             'STATIC_URL': settings.STATIC_URL,
-            'MEDIA_URL': settings.MEDIA_URL,
         }
         js = mark_safe(render_to_string(self.template, context))
         html = mark_safe(forms.Textarea().render(name, wkt, attrs))
