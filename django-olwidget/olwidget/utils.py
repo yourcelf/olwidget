@@ -1,6 +1,6 @@
 import re
-import settings
 
+from django.conf import settings
 from django.contrib.gis.gdal import OGRGeometry
 from django.contrib.gis.geos import GEOSGeometry
 
