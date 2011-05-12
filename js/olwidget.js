@@ -313,7 +313,7 @@ olwidget.Map = OpenLayers.Class(OpenLayers.Map, {
             }
             if (!extent.equals(new OpenLayers.Bounds())) {
                 this.zoomToExtent(extent);
-                //this.zoomTo(Math.min(this.getZoom(), this.opts.defaultZoom));
+                this.zoomTo(Math.min(this.getZoom(), this.opts.defaultZoom));
                 return;
             }
         }
