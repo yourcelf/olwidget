@@ -623,7 +623,6 @@ olwidget.EditableLayer = OpenLayers.Class(olwidget.BaseVectorLayer, {
             OpenLayers.Control.prototype.activate.apply(this, []);
             this.map.div.style.cursor = "crosshair";
         };
-        var oldDeactivate = drawControl.deactivate;
         drawControl.deactivate = function() {
             OpenLayers.Control.prototype.deactivate.apply(this, []);
             this.map.div.style.cursor = "auto";
@@ -694,7 +693,7 @@ olwidget.EditableLayer = OpenLayers.Class(olwidget.BaseVectorLayer, {
         }
         this.defaultControl = null;
 
-        var has_point, has_linestring, has_polygon = false;
+        var has_point;
         var has_linestring = false;
         var has_polygon = false;
         for (var i = 0; i < geometries.length; i++) {
@@ -1503,7 +1502,6 @@ olwidget.DeleteVertex = OpenLayers.Class(OpenLayers.Control.ModifyFeature, {
             }
         };
         this.editingFeature = null;
-        var control = this;
         this.handlers.feature = new OpenLayers.Handler.Feature(
             this, this.layer, {
                 over: this.overVertex,
@@ -1566,7 +1564,7 @@ olwidget.DeleteVertex = OpenLayers.Class(OpenLayers.Control.ModifyFeature, {
         this.virtualVertices = [];
         var control = this;
         function collectComponentVertices(geometry) {
-            var i, vertex, component, len;
+            var i, vertex, component;
             if(geometry.CLASS_NAME == "OpenLayers.Geometry.Point") {
                 vertex = new OpenLayers.Feature.Vector(geometry);
                 vertex._sketch = true;

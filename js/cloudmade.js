@@ -4,7 +4,7 @@
     var scripts = document.getElementsByTagName("script");
     var __FILE__ = scripts[scripts.length - 1].src;
     window.CLOUDMADE_API_KEY = __FILE__.split("#")[1];
-})()
+})();
 
 // Adapted from example provided by CloudMade wiki:
 // http://developers.cloudmade.com/wiki/openlayers-api/CloudMade_Tiles

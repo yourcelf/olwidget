@@ -91,7 +91,6 @@ class Map(forms.Widget):
             layer_js.append(js)
             layer_html.append(html)
 
-        attrs = attrs or {}
         context = {
             'id': map_id,
             'layer_js': layer_js,
