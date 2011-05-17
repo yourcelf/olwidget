@@ -693,7 +693,7 @@ olwidget.EditableLayer = OpenLayers.Class(olwidget.BaseVectorLayer, {
         }
         this.defaultControl = null;
 
-        var has_point;
+        var has_point = false;
         var has_linestring = false;
         var has_polygon = false;
         for (var i = 0; i < geometries.length; i++) {
