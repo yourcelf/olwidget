@@ -44,7 +44,7 @@ class MapModelFormMetaclass(type):
     mostly copied from django's ModelFormMetaclass, but we change the
     hard-coded parent class name and add our map field processing parts.
     """
-    def __new__(cls, name, bases, attrs):
+    def __new__(mcs, name, bases, attrs):
         formfield_callback = attrs.pop('formfield_callback',
                 lambda f, **kwargs: f.formfield(**kwargs))
         try:
@@ -53,7 +53,7 @@ class MapModelFormMetaclass(type):
             # We are defining MapModelForm itself.
             parents = None
         declared_fields = forms.models.get_declared_fields(bases, attrs, False)
-        new_class = super(MapModelFormMetaclass, cls).__new__(cls, name, bases,
+        new_class = super(MapModelFormMetaclass, mcs).__new__(mcs, name, bases,
                 attrs)
         if not parents:
             return new_class

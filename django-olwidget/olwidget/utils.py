@@ -16,8 +16,10 @@ def url_join(*args):
     return reduce(_reduce_url_parts, args)
     
 def _reduce_url_parts(a, b):
+    b = b or ""
     if a and a[-1] == "/":
         return a + b
+    a = a or ""
     return a + "/" + b
 
 def translate_options(options):
