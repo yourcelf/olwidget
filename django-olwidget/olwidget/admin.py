@@ -53,6 +53,7 @@ class GeoModelAdmin(ModelAdmin):
     list_map_options = None
     maps = None
     change_list_template = "admin/olwidget_change_list.html"
+    default_field_class = None
 
     def get_form(self, *args, **kwargs):
         """ 
@@ -83,7 +84,8 @@ class GeoModelAdmin(ModelAdmin):
         # Rearrange fields
         ModelForm.initial_data_keymap = apply_maps_to_modelform_fields(
                 ModelForm.base_fields, self.maps, self.options,
-                self.map_template)
+                self.map_template,
+                default_field_class=self.default_field_class)
         return ModelForm
 
     def get_changelist_map(self, cl):
