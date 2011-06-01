@@ -106,8 +106,11 @@ def fix_cleaned_data(cleaned_data, initial_data_keymap):
     for group, keys in initial_data_keymap.iteritems():
         if cleaned_data.has_key(group):
             vals = cleaned_data.pop(group)
-            for key, val in zip(keys, vals):
-                cleaned_data[key] = val
+            if isinstance(vals, (list, tuple)):
+                for key, val in zip(keys, vals):
+                    cleaned_data[key] = val
+            else:
+                cleaned_data[keys[0]] = vals
     return cleaned_data
 
 def apply_maps_to_modelform_fields(fields, maps, default_options=None, default_template=None):

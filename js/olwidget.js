@@ -288,6 +288,8 @@ olwidget.Map = OpenLayers.Class(OpenLayers.Map, {
             featureunhighlighted: this.featureUnhighlighted,
             scope: this
         });
+        // Allow dragging when over features.
+        this.selectControl.handlers.feature.stopDown = false;
         this.events.on({
             zoomend: this.zoomEnd,
             scope: this

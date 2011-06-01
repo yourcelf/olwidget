@@ -98,7 +98,20 @@ class Map(forms.Widget):
             'map_opts': simplejson.dumps(utils.translate_options(self.options)),
             'STATIC_URL': settings.STATIC_URL,
         }
+        context.update(self.get_extra_context())
         return render_to_string(self.template, context)
+
+    def get_extra_context(self):
+        """Hook that subclasses can override to add extra data for use
+        by the javascript in self.template. This is invoked by
+        self.render().
+
+        Return value should be a dictionary where keys are strings and
+        values are valid javascript, eg. JSON-encoded data.  You'll
+        also want to override the template to make use of the provided
+        data.
+        """
+        return {}
 
     def value_from_datadict(self, data, files, name):
         """ Return an array of all layers' values. """
