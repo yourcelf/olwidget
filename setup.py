@@ -1,14 +1,8 @@
 #!/usr/bin/env python
 import os
 
-try:
-    from setuptools import setup, find_packages
-except ImportError:
-    from ez_setup import use_setuptools
-    use_setuptools()
-    from setuptools import setup, find_packages
-
 from distutils.command.install import INSTALL_SCHEMES
+from distutils.core import setup
 
 root = os.path.abspath(os.path.dirname(__file__))
 os.chdir(root)
