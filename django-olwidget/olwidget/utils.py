@@ -1,7 +1,6 @@
 import re
 
 from django.conf import settings
-from django.contrib.gis.gdal import OGRGeometry
 from django.contrib.gis.geos import GEOSGeometry
 
 DEFAULT_PROJ = "4326"
@@ -45,22 +44,20 @@ def get_ewkt(value, srid=None):
             srid = DEFAULT_PROJ
     return _add_srid(_get_wkt(value, srid), srid)
 
-def get_ogr(value, srid=DEFAULT_PROJ):
-    ogr = None
+def get_geos(value, srid=DEFAULT_PROJ):
+    geos = None
     if value:
-        if isinstance(value, OGRGeometry):
-            ogr = value
-        elif isinstance(value, GEOSGeometry):
-            ogr = value.ogr
+        if isinstance(value, GEOSGeometry):
+            geos = value
         elif isinstance(value, basestring):
             match = _ewkt_re.match(value)
             if match:
-                ogr = OGRGeometry(match.group('wkt'), match.group('srid'))
+                geos = GEOSGeometry(match.group('wkt'), match.group('srid'))
             else:
-                ogr = OGRGeometry(value)
-    if ogr and srid:
-        ogr.transform(srid)
-    return ogr
+                geos = GEOSGeometry(value, srid)
+    if geos and geos.srid and int(srid) != geos.srid:
+        geos.transform(int(srid))
+    return geos
 
 def collection_ewkt(fields, srid=DEFAULT_PROJ):
     return _add_srid(_collection_wkt(fields, srid), srid)
@@ -71,10 +68,10 @@ def _get_wkt(value, srid):
     `value` is either a WKT string or a geometry field.  Returns WKT in the
     projection for the given SRID.
     """
-    ogr = get_ogr(value, srid)
+    geos = get_geos(value, srid)
     wkt = ''
-    if ogr:
-        wkt = ogr.wkt 
+    if geos:
+        wkt = geos.wkt 
     return wkt
 
 def _collection_wkt(fields, srid):

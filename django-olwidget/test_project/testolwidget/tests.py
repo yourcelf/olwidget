@@ -23,3 +23,4 @@ class TestGoogProjAdmin(TestCase):
         b = GoogProjModel.objects.all()[0].point
         # Floating point comparison -- ensure distance is miniscule.
         self.assertTrue(a.distance(b) < 1.0e-9)
+

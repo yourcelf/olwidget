@@ -24,7 +24,7 @@ api_defaults = {
     'GOOGLE_API': "http://maps.google.com/maps?file=api&v=2",
     'YAHOO_API': "http://api.maps.yahoo.com/ajaxymap?v=3.0",
     'OSM_API': "http://openstreetmap.org/openlayers/OpenStreetMap.js",
-    'OL_API': "http://openlayers.org/api/2.9/OpenLayers.js",
+    'OL_API': "http://openlayers.org/api/2.11-rc1/OpenLayers.js",
     'MS_VE_API' : "http://dev.virtualearth.net/mapcontrol/mapcontrol.ashx?v=6.1",
     'CLOUDMADE_API': utils.url_join(settings.OLWIDGET_STATIC_URL, "js/cloudmade.js"),
     'OLWIDGET_JS': utils.url_join(settings.OLWIDGET_STATIC_URL, "js/olwidget.js"),
@@ -139,7 +139,7 @@ class Map(forms.Widget):
         if (initial is None) or (not isinstance(initial, (tuple, list))):
             initial = [u''] * len(data)
         for widget, initial, data in zip(self.vector_layers, initial, data):
-            if utils.get_ogr(initial) != utils.get_ogr(data):
+            if utils.get_geos(initial) != utils.get_geos(data):
                 return True
         return False
 

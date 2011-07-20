@@ -586,7 +586,8 @@ General map display
 
     Any additional parameters available to the `OpenLayers.Map.Constructor
     <http://dev.openlayers.org/docs/files/OpenLayers/Map-js.html#OpenLayers.Map.Constructor>`_
-    may be included, and will be passed directly.
+    may be included, and will be passed after converting mixedCaseSyntax to
+    lowercase_with_underscores.
 ``popups_outside`` (boolean; default ``false``)
     If false, popups are contained within the map's viewport.  If true, popups
     may expand outside the map's viewport.
