@@ -217,7 +217,8 @@ olwidget.Map = OpenLayers.Class(OpenLayers.Map, {
             defaultLon: 0,
             defaultLat: 0,
             defaultZoom: 4,
-            zoomToDataExtent: true
+            zoomToDataExtent: true,
+            zoomToDataExtentMin: 17
         };
 
         // deep copy all options into "defaults".
@@ -315,7 +316,7 @@ olwidget.Map = OpenLayers.Class(OpenLayers.Map, {
             }
             if (!extent.equals(new OpenLayers.Bounds())) {
                 this.zoomToExtent(extent);
-                this.zoomTo(Math.min(this.getZoom(), this.opts.defaultZoom));
+                this.zoomTo(Math.min(this.getZoom(), this.opts.zoomToDataExtentMin));
                 return;
             }
         }
