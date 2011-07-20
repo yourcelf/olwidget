@@ -280,7 +280,11 @@ olwidget.Map = OpenLayers.Class(OpenLayers.Map, {
         }
         if (layers.length > 0) {
             this.addLayers(layers);
-            this.initCenter();
+            if (this.baseLayer) {
+                // Only initCenter if we have base layers -- otherwise, user is
+                // responsible for adding and then calling initCenter.
+                this.initCenter();
+            }
         }
         this.selectControl = new OpenLayers.Control.SelectFeature(
             this.vectorLayers);
