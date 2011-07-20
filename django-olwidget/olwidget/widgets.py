@@ -24,7 +24,7 @@ api_defaults = {
     'GOOGLE_API': "http://maps.google.com/maps?file=api&v=2",
     'YAHOO_API': "http://api.maps.yahoo.com/ajaxymap?v=3.0",
     'OSM_API': "http://openstreetmap.org/openlayers/OpenStreetMap.js",
-    'OL_API': "http://openlayers.org/api/2.11-rc1/OpenLayers.js",
+    'OL_API': "http://openlayers.org/api/2.10/OpenLayers.js",
     'MS_VE_API' : "http://dev.virtualearth.net/mapcontrol/mapcontrol.ashx?v=6.1",
     'CLOUDMADE_API': utils.url_join(settings.OLWIDGET_STATIC_URL, "js/cloudmade.js"),
     'OLWIDGET_JS': utils.url_join(settings.OLWIDGET_STATIC_URL, "js/olwidget.js"),
