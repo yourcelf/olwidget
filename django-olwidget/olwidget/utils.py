@@ -97,7 +97,7 @@ def _add_srid(wkt, srid):
 
 def options_for_field(db_field):
     is_collection = db_field.geom_type in ('MULTIPOINT', 'MULTILINESTRING', 
-            'MULTIPOLYGON', 'GEOMETRYCOLLECTION')
+            'MULTIPOLYGON', 'GEOMETRYCOLLECTION', 'GEOMETRY')
     if db_field.geom_type == 'GEOMETRYCOLLECTION':
         geometry = ['polygon', 'point', 'linestring']
     else:
