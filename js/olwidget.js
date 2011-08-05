@@ -144,6 +144,32 @@ var olwidget = {
             });
         }
     },
+    custom: {
+        // Support for arbitrary OpenLayers base layers.
+        // To use this, ensure that customBaseLayers[type] exists, and
+        // has both a 'class' string (name of the OL constructor) and
+        // an 'args' array to pass to that constructor.
+        map: function(type) {
+            var classname = customBaseLayers[type]['class'];
+            var class_ = OpenLayers.Layer[classname];
+            var args = customBaseLayers[type].args;
+            // Can't use .apply() directly with an OL constructor,
+            // because we don't have a suitable `this` argument.
+            // Instead make a constructor function with a .prototype
+            // property the same as our class.prototype.
+            // The `new` keyword creates an instance from that prototype
+            // which will be used as `this` in the constructor call.
+            // `new` is also the only way to get the new instance to have
+            // the correct actual prototype, which is *not* the same as
+            // class.prototype. Thanks Tim Schaub for explaining this bit of
+            // javascript OOP to me.
+            var constructor = function() {
+                class_.prototype.initialize.apply(this, args);
+            };
+            constructor.prototype = class_.prototype;
+            return new constructor();
+        }
+    },
     /*
      * Utilities
      */

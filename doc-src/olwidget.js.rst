@@ -306,7 +306,31 @@ General map display
     ``'ve.shaded'``, ``'ve.aerial'``, ``'ve.hybrid'``, ``'wms.map'``,
     ``'wms.nasa'``, ``'yahoo.map'``, and ``'cloudmade.<num>'`` (where ``<num>``
     is the number for a cloudmade style).  A blank map can be obtained using
-    ``'wms.blank'``.  Additional providers or options can be manually added
+    ``'wms.blank'``.
+
+    Other providers can be added by choosing ``custom.<name>`` where
+    ``<name>`` corresponds to a property in a ``customBaseLayers``
+    object that you would need to create. It must have a ``class``
+    property corresponding to an OpenLayers layer subclass, and an
+    ``args`` property that is a list of arguments to pass to that
+    constructor.  For example::
+
+     var customBaseLayers = {
+       'opengeo_osm':  # to use this, your olwidget layers would include ['custom.opengeo_osm']
+        {"class": "WMS",  # The OpenLayers.Layer subclass to use.
+         "args": [  # These are passed as arguments to the constructor.
+            "OpenStreetMap (OpenGeo)",
+            "http://maps.opengeo.org/geowebcache/service/wms",
+            {"layers": "openstreetmap",
+             "format": "image/png",
+             "bgcolor": "#A1BDC4",
+             },
+            {"wrapDateLine": True
+             },
+            ],
+         }}
+
+    Additional options and layers can also be manually added
     using the normal OpenLayers apis (see `this provider example
     <examples/other_providers.html>`_).
 
