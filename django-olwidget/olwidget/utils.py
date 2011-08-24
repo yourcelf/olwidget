@@ -11,6 +11,9 @@ def get_options(o):
     options.update(o or {})
     return options
 
+def get_custom_base_layers():
+    return getattr(settings, 'OLWIDGET_CUSTOM_BASE_LAYERS', {})
+
 def url_join(*args):
     return reduce(_reduce_url_parts, args)
     

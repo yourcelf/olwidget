@@ -59,6 +59,7 @@ class Map(forms.Widget):
         # Though this layer is the olwidget.js default, it must be explicitly
         # set so {{ form.media }} knows to include osm.
         self.options['layers'] = self.options.get('layers', ['osm.mapnik'])
+        self.custom_base_layers = utils.get_custom_base_layers()
         self.template = template or self.default_template
         super(Map, self).__init__()
 
@@ -96,6 +97,7 @@ class Map(forms.Widget):
             'layer_js': layer_js,
             'layer_html': layer_html,
             'map_opts': simplejson.dumps(utils.translate_options(self.options)),
+            'custom_base_layers': simplejson.dumps(utils.translate_options(self.custom_base_layers)),
             'STATIC_URL': settings.STATIC_URL,
         }
         context.update(self.get_extra_context())

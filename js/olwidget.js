@@ -150,9 +150,9 @@ var olwidget = {
         // has both a 'class' string (name of the OL constructor) and
         // an 'args' array to pass to that constructor.
         map: function(type) {
-            var classname = customBaseLayers[type]['class'];
+            var classname = olwidget._customBaseLayers[type]['class'];
             var class_ = OpenLayers.Layer[classname];
-            var args = customBaseLayers[type].args;
+            var args = olwidget._customBaseLayers[type].args;
             // Can't use .apply() directly with an OL constructor,
             // because we don't have a suitable `this` argument.
             // Instead make a constructor function with a .prototype
@@ -207,7 +207,13 @@ var olwidget = {
     isCollectionEmpty: function(geom) {
         /* Is the provided collection empty? */
         return !(geom && (geom.constructor != Array || geom[0] != undefined))
-    }
+    },
+
+    _customBaseLayers: {},
+    registerCustomBaseLayers: function(layer_descriptions) {
+        OpenLayers.Util.extend(this._customBaseLayers, layer_descriptions);
+    },
+
 };
 
 /*
