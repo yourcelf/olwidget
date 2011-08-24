@@ -1,6 +1,7 @@
 <div id="{{ id }}"></div>
 {{ layer_html|join:"" }}
 <script type="text/javascript">
+    olwidget.registerCustomBaseLayers({{ custom_base_layers|safe }});
     new olwidget.Map("{{ id }}", [
             {{ layer_js|join:"," }}
         ], 
