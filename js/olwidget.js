@@ -230,9 +230,6 @@ olwidget.Map = OpenLayers.Class(OpenLayers.Map, {
         opts.mapOptions.projection = new OpenLayers.Projection(opts.mapOptions.projection);
         opts.mapOptions.displayProjection = new OpenLayers.Projection(
             opts.mapOptions.displayProjection);
-        opts.defaultCenter = new OpenLayers.LonLat(opts.defaultLon, opts.defaultLat);
-        opts.defaultCenter.transform(opts.mapOptions.displayProjection,
-                                     opts.mapOptions.projection);
 
         for (var i = 0; i < opts.mapOptions.controls.length; i++) {
             opts.mapOptions.controls[i] = new OpenLayers.Control[opts.mapOptions.controls[i]]();
