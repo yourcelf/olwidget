@@ -541,7 +541,7 @@ General map display
     WMS
         ``'wms.map'``, ``'wms.nasa'``, ``'wms.blank'`` (blank map)  
     Yahoo
-        ``'yahoo.map'``
+        ``'yahoo.map'``, ``'yahoo.satellie'``, ``'yahoo.hybrid'``
     CloudMade
         ``'cloudmade.<num>'`` (where ``<num>`` is the number for a cloudmade
         style).
