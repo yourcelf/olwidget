@@ -40,15 +40,15 @@
     right: 0;
     cursor: auto;
 }
-.olwidgetEditableLayerSwitcher .maxmin, .olwidgetEditableLayerSwitcher .label {
+.olwidgetEditableLayerSwitcher .olwidgetMaxMin, .olwidgetEditableLayerSwitcher .olwidgetLabel {
     color: white;
     font-weight: bold;
     font-size: smaller;
 }
-.olwidgetEditableLayerSwitcher .container {
+.olwidgetEditableLayerSwitcher .olwidgetContainer {
     background-color: darkblue;
 }
-.olwidgetEditableLayerSwitcher .maxmin {
+.olwidgetEditableLayerSwitcher .olwidgetMaxMin {
     cursor: pointer;
     padding: 0.5em;
     float: left;
@@ -68,10 +68,10 @@
     padding-left: 0.5em;
     padding-bottom: 0.5em;
 }
-.olwidgetEditableLayerSwitcher .label {
+.olwidgetEditableLayerSwitcher .olwidgetLabel {
     padding-right: 2em;
 }
-.olwidgetEditableLayerSwitcher .disabled {
+.olwidgetEditableLayerSwitcher .olwidgetDisabled {
     font-style: italic;
     color: gray;
 }
