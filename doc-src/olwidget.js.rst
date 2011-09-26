@@ -304,7 +304,8 @@ General map display
     ``'osm.osmarender'``, ``'google.streets'``, ``'google.physical'``,
     ``'google.satellite'``, ``'google.hybrid'``, ``'ve.road'``,
     ``'ve.shaded'``, ``'ve.aerial'``, ``'ve.hybrid'``, ``'wms.map'``,
-    ``'wms.nasa'``, ``'yahoo.map'``, and ``'cloudmade.<num>'`` (where ``<num>``
+    ``'wms.nasa'``, ``'yahoo.map'``, ``'yahoo.satellite'``, ``'yahoo.hybrid'``
+    and ``'cloudmade.<num>'`` (where ``<num>``
     is the number for a cloudmade style).  A blank map can be obtained using
     ``'wms.blank'``.  Additional providers or options can be manually added
     using the normal OpenLayers apis (see `this provider example
