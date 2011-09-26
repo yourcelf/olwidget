@@ -139,7 +139,7 @@ var olwidget = {
 
             var typeCode = this.types[type]();
             return new OpenLayers.Layer.VirtualEarth("Bing Maps (" + type + ")",
-                {sphericalMercator: true, minZoomLevel: 2, type: typeCode });
+                {sphericalMercator: true, minZoomLevel: 4, type: typeCode });
         },
         types: {
             road: function() { return VEMapStyle.Road; },
@@ -238,6 +238,10 @@ olwidget.Map = OpenLayers.Class(OpenLayers.Map, {
         // construct objects for serialized options
         var me = opts.mapOptions.maxExtent;
         opts.mapOptions.maxExtent = new OpenLayers.Bounds(me[0], me[1], me[2], me[3]);
+        if (opts.mapOptions.restrictedExtent) {
+            var re = opts.mapOptions.restrictedExtent;
+            opts.mapOptions.restrictedExtent = new OpenLayers.Bounds(re[0], re[1], re[2], re[3]);
+        }
         opts.mapOptions.projection = new OpenLayers.Projection(opts.mapOptions.projection);
         opts.mapOptions.displayProjection = new OpenLayers.Projection(
             opts.mapOptions.displayProjection);
