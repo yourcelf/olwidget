@@ -621,7 +621,7 @@ layer override the corresponding options from the map.
     * ``stroke_width``: (int) width in pixels of lines and borders
     * ``stroke_linecap``: (string) Default is ``round``. Options are ``butt``,
       ``round``, ``square``.
-    * ``stroke_dash_style``: (string) Default is ``solid``. Options are
+    * ``stroke_dashstyle``: (string) Default is ``solid``. Options are
       ``dot``, ``dash``, ``dashdot``, ``longdash``, ``longdashdot``, ``solid``.
     * ``cursor``: (string) Cursor to be used when mouse is over a feature.
       Default is an empty string.
