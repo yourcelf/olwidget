@@ -111,9 +111,20 @@ var olwidget = {
     },
     yahoo: {
         map: function(type) {
+            if (type != 'map') {
+                return this[type]();
+            }
             return new OpenLayers.Layer.Yahoo("Yahoo",
                     {sphericalMercator: true, numZoomLevels: 20});
-        }
+        },
+        satellite: function(type) {
+            return new OpenLayers.Layer.Yahoo("Yahoo",
+                    {type: YAHOO_MAP_SAT, sphericalMercator: true, numZoomLevels: 20});
+        },
+        hybrid: function(type) {
+            return new OpenLayers.Layer.Yahoo("Yahoo",
+                    {type: YAHOO_MAP_HYB, sphericalMercator: true, numZoomLevels: 20});
+        },
     },
     ve: {
         map: function(type) {
