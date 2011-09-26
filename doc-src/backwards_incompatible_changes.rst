@@ -17,6 +17,12 @@ is also required.
 
 This has the potential to break symlinks to olwidget's static media files.
 
+The olwidget CSS class names have been 
+`changed <https://github.com/yourcelf/olwidget/commit/156c0c95e286d11d4b1d9d9b51a48cd36318749>`_ 
+to be prefixed with "olwidget", to avoid colliding with other generic class
+names like "container".  Custom css that expects to select olwidget's elements
+will need to be updated to use olwidget-prefixed names.
+
 In version 0.4
 ~~~~~~~~~~~~~~
 Version 0.4 represents a complete overhaul of olwidget to build in support for
