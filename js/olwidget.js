@@ -144,32 +144,6 @@ var olwidget = {
             });
         }
     },
-    custom: {
-        // Support for arbitrary OpenLayers base layers.
-        // To use this, ensure that customBaseLayers[type] exists, and
-        // has both a 'class' string (name of the OL constructor) and
-        // an 'args' array to pass to that constructor.
-        map: function(type) {
-            var classname = olwidget._customBaseLayers[type]['class'];
-            var class_ = OpenLayers.Layer[classname];
-            var args = olwidget._customBaseLayers[type].args;
-            // Can't use .apply() directly with an OL constructor,
-            // because we don't have a suitable `this` argument.
-            // Instead make a constructor function with a .prototype
-            // property the same as our class.prototype.
-            // The `new` keyword creates an instance from that prototype
-            // which will be used as `this` in the constructor call.
-            // `new` is also the only way to get the new instance to have
-            // the correct actual prototype, which is *not* the same as
-            // class.prototype. Thanks Tim Schaub for explaining this bit of
-            // javascript OOP to me.
-            var constructor = function() {
-                class_.prototype.initialize.apply(this, args);
-            };
-            constructor.prototype = class_.prototype;
-            return new constructor();
-        }
-    },
     /*
      * Utilities
      */
@@ -289,7 +263,17 @@ olwidget.Map = OpenLayers.Class(OpenLayers.Map, {
         var layers = [];
         for (var i = 0; i < opts.layers.length; i++) {
             var parts = opts.layers[i].split(".");
-            layers.push(olwidget[parts[0]].map(parts[1]));
+            var map_service = olwidget[parts[0]];
+            var map_type = parts[1];
+
+            // If we have a .map dispatch method, use that.
+            if (map_service.map) {
+                layers.push(map_service.map(map_type));
+            }
+            // Otherwise, map_service is a layer object.
+            else {
+                layers.push(map_service);
+            }
 
             // workaround for problems with Microsoft layers and vector layer
             // drift (see http://openlayers.com/dev/examples/ve-novibrate.html)

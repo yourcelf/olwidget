@@ -308,28 +308,22 @@ General map display
     is the number for a cloudmade style).  A blank map can be obtained using
     ``'wms.blank'``.
 
-    Other providers can be added by choosing ``custom.<name>`` where
-    ``<name>`` corresponds to a property that has been registered with
-    ``olwidget.registerCustomBaseLayers()``.  The property must have a
-    ``class`` property corresponding to an OpenLayers layer subclass
-    and an ``args`` property that is a list of arguments to pass to that
-    constructor.  For example::
-    
-     olwidget.registerCustomBaseLayers({
-        'opengeo_osm':  // to use this, your olwidget layers would include ['custom.opengeo_osm']
-            {"class": "WMS",  // The OpenLayers.Layer subclass to use.
-             "args": [  // These are passed as arguments to the constructor.
-                "OpenStreetMap (OpenGeo)",
-                "http://maps.opengeo.org/geowebcache/service/wms",
-                {"layers": "openstreetmap",
-                 "format": "image/png",
-                 "bgcolor": "#A1BDC4",
-                 },
-                {"wrapDateLine": true
-                 },
-                ],
-             }
-     })
+    Other providers can be added by simply setting
+    ``olwidget.layernamehere`` to an OpenLayers Layer object.  For
+    example::
+
+        olwidget.opengeo_osm = new OpenLayers.Layer.WMS(
+            'OpenStreetMap (OpenGeo)',
+            'http://maps.opengeo.org/geowebcache/service/wms',
+            {
+                layers: 'openstreetmap',
+                format: 'image/png',
+                bgColor: '#A1BDC4',
+            },
+            {wrapDateLine: true}
+        );
+   
+    The new base layer is now accessible as ``opengeo_osm``.
 
     Additional options and layers can also be manually added
     using the normal OpenLayers apis (see `this provider example

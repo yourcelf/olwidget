@@ -550,28 +550,24 @@ General map display
     ``CLOUDMADE_API_KEY`` in your ``settings.py`` if you use any of those
     layers.
 
-    Custom base layers from other providers can be used by choosing
-    ``custom.<name>``, where ``<name>`` corresponds to a custom base
-    layer that's been listed in the ``OLWIDGET_CUSTOM_BASE_LAYERS`` setting
-    option.  Here's an example::
+    Custom layer types from other providers can be used by listing their
+    JavaScript construction string in the ``OLWIDGET_CUSTOM_LAYER_TYPES``
+    setting option.  Here's an example::
 
-        OLWIDGET_CUSTOM_BASE_LAYERS = {
-            'opengeo_osm':  # to use this, your olwidget layers would include ['custom.opengeo_osm']
-                {"class": "WMS",  # The OpenLayers.Layer subclass to use.
-                 "args": [  # These are passed as arguments to the constructor.
-                    "OpenStreetMap (OpenGeo)",
-                    "http://maps.opengeo.org/geowebcache/service/wms",
-                    {"layers": "openstreetmap",
-                     "format": "image/png",
-                     "bgcolor": "#A1BDC4",
-                     },
-                    {"wrapDateLine": True
-                     },
-                    ],
-                 }
+        OLWIDGET_CUSTOM_LAYER_TYPES = {
+            'opengeo_osm': """new OpenLayers.Layer.WMS(
+                'OpenStreetMap (OpenGeo)',
+                'http://maps.opengeo.org/geowebcache/service/wms',
+                {
+                 layers: 'openstreetmap',
+                 format: 'image/png',
+                 bgColor: '#A1BDC4',
+                },
+                {wrapDateLine: true}
+            )"""
         }
 
-    We can then access this base layer as ``custom.opengeo_osm``.
+    We can then access this layer type as ``opengeo_osm``.
 
 ``default_lat`` (float; default 0)
     Latitude for the center point of the map.
