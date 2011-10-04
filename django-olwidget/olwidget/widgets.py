@@ -123,7 +123,7 @@ class Map(forms.Widget):
         layer_types_js = ""
         for typename in self.custom_layer_types:
             js_def = self.custom_layer_types[typename]
-            layer_types_js += "olwidget.%s = %s;" % (typename, js_def)
+            layer_types_js += "olwidget.%s = {map: function() { return new %s }};" % (typename, js_def)
         return layer_types_js
 
     def _get_layer_names(self, name):

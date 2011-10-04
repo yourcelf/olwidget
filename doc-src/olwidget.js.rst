@@ -308,23 +308,6 @@ General map display
     is the number for a cloudmade style).  A blank map can be obtained using
     ``'wms.blank'``.
 
-    Other providers can be added by simply setting
-    ``olwidget.layernamehere`` to an OpenLayers Layer object.  For
-    example::
-
-        olwidget.opengeo_osm = new OpenLayers.Layer.WMS(
-            'OpenStreetMap (OpenGeo)',
-            'http://maps.opengeo.org/geowebcache/service/wms',
-            {
-                layers: 'openstreetmap',
-                format: 'image/png',
-                bgColor: '#A1BDC4',
-            },
-            {wrapDateLine: true}
-        );
-   
-    The new base layer is now accessible as ``opengeo_osm``.
-
     Additional options and layers can also be manually added
     using the normal OpenLayers apis (see `this provider example
     <examples/other_providers.html>`_).

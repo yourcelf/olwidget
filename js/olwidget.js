@@ -266,14 +266,7 @@ olwidget.Map = OpenLayers.Class(OpenLayers.Map, {
             var map_service = olwidget[parts[0]];
             var map_type = parts[1];
 
-            // If we have a .map dispatch method, use that.
-            if (map_service.map) {
-                layers.push(map_service.map(map_type));
-            }
-            // Otherwise, map_service is a layer object.
-            else {
-                layers.push(map_service);
-            }
+            layers.push(map_service.map(map_type));
 
             // workaround for problems with Microsoft layers and vector layer
             // drift (see http://openlayers.com/dev/examples/ve-novibrate.html)

@@ -555,7 +555,7 @@ General map display
     setting option.  Here's an example::
 
         OLWIDGET_CUSTOM_LAYER_TYPES = {
-            'opengeo_osm': """new OpenLayers.Layer.WMS(
+            'opengeo_osm': """OpenLayers.Layer.WMS(
                 'OpenStreetMap (OpenGeo)',
                 'http://maps.opengeo.org/geowebcache/service/wms',
                 {
