@@ -21,7 +21,7 @@ api_defaults = {
     'GOOGLE_API_KEY': "",
     'YAHOO_APP_ID': "",
     'CLOUDMADE_API_KEY': "",
-    'GOOGLE_API': "//maps.google.com/maps?file=api&v=2",
+    'GOOGLE_API': "//maps.google.com/maps/api/js?v=3&sensor=false",
     'YAHOO_API': "http://api.maps.yahoo.com/ajaxymap?v=3.0",
     'OSM_API': "//openstreetmap.org/openlayers/OpenStreetMap.js",
     'OL_API': "http://openlayers.org/api/2.10/OpenLayers.js",
@@ -150,7 +150,10 @@ class Map(forms.Widget):
             if layer.startswith("osm."):
                 js.add(settings.OSM_API)
             elif layer.startswith("google."):
-                js.add(settings.GOOGLE_API + "&key=%s" % settings.GOOGLE_API_KEY)
+                GOOGLE_API_URL = settings.GOOGLE_API
+                if settings.GOOGLE_API_KEY:
+                    GOOGLE_API_URL += "&key=%s" % settings.GOOGLE_API_KEY
+                js.add(GOOGLE_API_URL)
             elif layer.startswith("yahoo."):
                 js.add(settings.YAHOO_API + "&appid=%s" % settings.YAHOO_APP_ID)
             elif layer.startswith("ve."):

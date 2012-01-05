@@ -181,3 +181,8 @@
     bottom: 0em !important;
     right: 0;
 }
+
+/* Hide the erroneous OpenLayers Google copyright popup */
+.olLayerGoogleCopyright {
+    display: none;
+}
