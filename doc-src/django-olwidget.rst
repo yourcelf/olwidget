@@ -66,10 +66,11 @@ familiar to users of other reusable Django apps:
     
 3.  Include ``'olwidget'`` in your project's settings ``INSTALLED_APPS`` list.
 
-4.  (Optional) If you want to use Google, Yahoo or CloudMade map layers, you
-    must include ``GOOGLE_API_KEY``, ``YAHOO_APP_ID`` or ``CLOUDMADE_API_KEY``
-    in your settings file.  ``olwidget`` uses an OpenStreetMaps layer by
-    default, which requires no key.
+4.  (Optional) If you want to use Yahoo or CloudMade map layers,
+    ``YAHOO_APP_ID`` or ``CLOUDMADE_API_KEY`` in your settings file.
+    ``olwidget`` uses an OpenStreetMaps layer by default, which requires no
+    key.  If you use Google layers and require an API key, specify
+    ``GOOGLE_API_KEY`` (no key is required for low request volumes).
 
 ``olwidget`` includes a test project demonstrating some of the ``olwidget`` app's
 functionality; this can be found in the ``django-olwidget/test_project``
