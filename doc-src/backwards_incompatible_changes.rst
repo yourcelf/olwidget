@@ -13,15 +13,18 @@ of olwidget's media has changed, to:
 In addition, the ``OLWIDGET_MEDIA_URL`` setting has been renamed
 ``OLWIDGET_STATIC_URL``, and templates rendered by olwidget now receive
 ``STATIC_URL`` instead of ``MEDIA_URL`` as context.  The setting ``STATIC_URL``
-is also required.
-
-This has the potential to break symlinks to olwidget's static media files.
+is also required.  This has the potential to break symlinks to olwidget's
+static media files.
 
 The olwidget CSS class names have been 
 `changed <https://github.com/yourcelf/olwidget/commit/156c0c95e286d11d4b1d9d9b51a48cd36318749>`_ 
 to be prefixed with "olwidget", to avoid colliding with other generic class
 names like "container".  Custom css that expects to select olwidget's elements
 will need to be updated to use olwidget-prefixed names.
+
+Since Google Maps API v2 is now deprecated, ``olwidget`` has `switched to Google
+Maps API v3 <https://github.com/yourcelf/olwidget/8b24080b5d06538dd81d24a1606e07fc1268707a>`_.  Customizations that depend on Google Maps v2 will need to be
+updated to use v3 instead.
 
 In version 0.4
 ~~~~~~~~~~~~~~
