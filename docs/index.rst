@@ -22,8 +22,24 @@ Features
  * Multiple map providers (including OpenStreetMaps, Google, Yahoo, Microsoft, CloudMade, etc)
  * Maps with informational windows, clustered points, and paginated data displays
  * Extended features for maps in Django admin, including overview maps on changelist pages, support for multiple geometries and collection types, and customizable map colors, start points, and zoom levels
+ * Same license as Django (see `COPYING.rst <https://github.com/yourcelf/olwidget/blob/master/COPYING.rst>`_ for details)
 
+Download
+~~~~~~~~
 
+Install from `pypi <http://pypi.python.org/pypi/django-olwidget/>`_ using ``easy_install``::
+
+    easy_install django-olwidget
+
+or ``pip``::
+
+    pip install django-olwidget
+    
+The latest version is `on github <https://github.com/yourcelf/olwidget>`_::
+
+    git clone https://github.com/yourcelf/olwidget.git
+
+Found a bug?  Please file an issue on github.
 
 Documentation
 ~~~~~~~~~~~~~
