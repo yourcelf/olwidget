@@ -1,0 +1,94 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <!-- olwidget includes -->
+        <script type='text/javascript' src='http://openlayers.org/api/2.11/OpenLayers.js'></script>
+        <!--<script type='text/javascript' src='file:///home/cfd/Desktop/openlayers/lib/OpenLayers.js'></script>-->
+        <script type='text/javascript' src='http://openstreetmap.org/openlayers/OpenStreetMap.js'></script>
+        <script type='text/javascript' src='js/olwidget.js'></script>
+        <link rel="stylesheet" type="text/css" media="all" href="css/olwidget.css" />
+        <title>Multi-layer map style inheritance</title>
+    </head>
+    <body>
+        <h1>Multi-layer map style inheritance</h1>
+        <p>
+        The default style used by olwidget is a bright magenta.  This style is
+        designed for maximum visibility on varied base layers &ndash; it is
+        "flourescent" &ndash; but it is not ideal for many applications.  
+        </p>
+        <p>
+        This map demonstrates using olwidget's style inheritance.  Styles can
+        be defined at the geometry level, the layer level, and the map level.
+        The inheritance structure ensures that the style propagates nicely:
+        <pre>
+        default styles (magenta) &lt; map styles &lt; layer styles &lt; geometry styles (info layers only)
+        </pre>
+        Single layer map types such as <tt>olwidget.InfoMap</tt> have the same
+        inheritance structure, but lack a separate "layer" level style.
+        Editable types don't have a separate "geometry" level style.
+        </p>  
+        <p>
+        In this example, there are several levels of style.  For example, consider the "Colorado" geometry:
+        </p>
+<style type='text/css'>
+    .stylemap td, .stylemap th{
+        font-family: monospace;
+        border: 1px solid #eee;
+        padding: 0.2em;
+    }
+    .stylemap {
+        border-collapse: collapse;
+        margin-bottom: 1em;
+    }
+</style>
+<table class="stylemap">
+<tr><th>Default style</th><th>Map style</th><th>States layer style</th><th>"Colorado" geometry style</th><th>Result</th></tr>
+<tr><td>fillColor: '#ff00ff'</td><td>fillColor: "red"</td><td align='center'>&rarr;</td><td>fillColor: "green"</td><td>fillColor: "green"</td></tr>
+<tr><td>strokeColor: '#ff00ff'</td><td>strokeColor: "red"</td><td align='center'>&rarr;</td><td align='center'>&rarr;</td><td>strokeColor: "red"</td></tr>
+<tr><td>fillOpacity: 0.5</td><td align='center'>&rarr;</td><td align='center'>&rarr;</td><td align='center'>&rarr;</td><td>fillOpacity: 0.5</td></tr>
+<tr><td>strokeWidth: 2</td><td>strokeWidth: 6</td><td>strokeWidth: 1</td><td align='center'>&rarr;</td><td>strokeWidth: 1</td></tr>
+</table>
+    <p>The same principles of inheritance hold for other layer options specified at the map level, such as names and clustering.</p>
+        <div id='map'></div>
+        <textarea id="mytextarea">SRID=4326;MULTIPOINT(-117.26977538634 38.667603046244,-115.42407226141 37.665665734503,-113.182861324 39.112265295646,-111.77661132406 38.081930369136,-109.88696288664 39.384518354717,-108.04125976171 38.254678997726,-106.10766601178 39.384518354717,-103.47094726189 38.530224396399)</textarea>
+        <div id='map2'></div>    
+        <script type='text/javascript'>//<![CDATA[
+            var map = new olwidget.Map('map', [
+                    new olwidget.InfoLayer([
+                        ["SRID=4326;POLYGON((-114.57812499571 35.002213355554,-119.983398433 39.035503789299,-119.96142577675 41.958772881889,-113.94091796449 41.991443384158,-113.98486327699 35.986115861163,-114.66601562071 36.199179748906,-114.64404296446 35.540381471529,-114.57812499571 35.002213355554))", {html: "Nevada", style: { fillColor: "blue" }}],
+                        ["SRID=4326;POLYGON((-111.04052733965 41.991443384159,-111.01855468341 40.987463518131,-109.04101562098 40.987463518131,-108.97509765224 36.993008044829,-114.02880858954 36.993008044829,-114.02880858954 41.991443384159,-111.04052733965 41.991443384159))", "Utah"],
+                        ["SRID=4326;POLYGON((-109.0190429649 41.020627429588,-102.03173827768 41.020627429587,-101.98779296518 36.975456262998,-109.01904296489 37.010555776952,-109.0190429649 41.020627429588))", 
+                        {html: "Colorado", style: { fillColor: "green"}}]
+                    ], {
+                        name: "States",
+                        overlayStyle: {
+                            strokeWidth: 1
+                        }
+                    }),
+                    new olwidget.InfoLayer([["SRID=4326;MULTILINESTRING((-119.99438476132 39.554139418671,-119.2253417926 39.571078777709,-118.67602538638 39.976381003647,-118.65405273012 40.110951028224,-118.36840819888 40.228481827541,-118.2805175739 40.663241262962,-117.99487304266 40.713224761404,-117.95092773015 40.912783706845,-117.55541991767 41.078624111533,-117.40161132393 40.896176723525,-117.22583007394 40.896176723525,-116.8522949177 40.629898104952,-116.47875976146 40.713224761404,-116.30297851147 40.646571766282,-116.03930663648 40.763170764752,-115.62182616774 40.912783706845,-115.46801757401 40.912783706845,-115.31420898026 41.062058847596,-114.54516601154 41.095185201675,-113.99584960532 40.696567760891,-113.0510253866 40.696567760891,-112.85327148036 40.862950247089,-112.43579101163 40.696567760891,-111.90844726164 40.779811098594,-111.9304199179 41.12829485925,-112.08422851164 41.491398386361,-112.12817382414 41.705008449176,-112.54565429287 41.917911188441,-112.8752441366 42.015935262244),(-111.95239257415 40.763170764752,-111.90844726164 40.429489463173,-111.53491210541 40.161346291112,-111.82055663665 39.908996411486,-111.82055663665 39.689538407078,-112.06225585539 39.350544536236,-112.41381835538 38.856069065756,-112.56762694912 38.684756885192,-112.58959960536 38.495838660512,-112.65551757412 38.151078945808,-112.89721679285 37.804681903948,-113.16088866784 37.508960756312,-113.49047851159 37.124517275163,-113.75415038657 36.896423148779,-114.23754882405 36.702886324534,-114.50122069904 36.720500784637,-114.85278319903 36.438185313348,-115.13842773026 36.154839082805,-115.24829101152 35.977225669658),(-111.86450194915 41.095185201675,-111.64477538666 41.045489410196,-111.51293944916 41.095185201675,-111.35913085542 40.846330754672,-111.49096679291 40.679906594621,-111.42504882416 40.446213070864,-111.66674804291 40.278789854871),(-111.55688476166 40.06051839736,-110.91967773043 39.841545469743,-110.83178710543 39.588013998969,-110.32641601171 39.333551429432,-110.21655273046 38.975742682037),(-112.47973632412 38.616116867451,-112.28198241788 38.547411105301,-111.88647460539 38.975742682037,-111.6228027304 38.924478701148,-111.46899413666 38.770464400241,-110.15063476171 38.958658808098,-109.68920898049 38.924478701148,-109.40356444925 38.890282118952,-109.11791991801 39.231506053734,-108.89819335552 39.214484039933,-108.54663085553 39.044036968642,-108.28295898054 38.684756885192,-108.0852050743 38.719052228798,-107.75561523056 38.323663767904),(-108.50268554309 39.078159379162,-108.30493163685 39.095214399416,-108.06323241811 39.486340614172,-107.29418944939 39.604945081982,-106.67895507441 39.689538407078,-106.28344726193 39.588013998968,-106.08569335569 39.40149906542,-106.01977538694 39.655713496888,-105.27270507447 39.757138531523,-104.98706054323 39.571078777708,-104.72338866824 39.571078777708,-104.70141601199 39.790913738495,-104.02026366827 39.638794831407,-103.73461913703 39.265537696598,-102.0207519496 39.333551429432),(-104.94311523073 39.824672370485,-104.26196288701 40.262024668005,-103.33911132455 40.262024668005,-103.16333007455 40.746526263698,-102.10864257459 40.995756060582),(-105.00903319948 39.942697003014,-104.89916991824 40.995756060582),(-104.89916991824 39.418475643116,-104.85522460574 38.787593563479,-104.5695800745 38.358131559494,-104.67944335575 37.995402606499,-104.85522460574 37.630870920454,-104.437744137 37.212063395006,-104.4816894495 37.00178241715),(-105.03100585573 39.908996411486,-105.31665038697 39.740244713545,-104.70141601199 39.621872026283,-104.94311523073 39.892139895227),(-104.92114257448 39.384518354718,-104.94311523073 39.621872026283))", "Ye olde blacktop"]], {
+                        name: "Roads",
+                        overlayStyle: {
+                            strokeColor: "black"
+                        }
+                    }),
+                    new olwidget.EditableLayer("mytextarea", {
+                        geometry: "point",
+                        isCollection: true,
+                        overlayStyle: {
+                            externalGraphic: "alien.png",
+                            graphicWidth: 21,
+                            graphicHeight: 25
+                        },
+                        name: "Aliens"
+                    }),
+                ], {
+                overlayStyle: {
+                    strokeWidth: 6,
+                    fillColor: "red",
+                    strokeColor: "red"
+                }
+            }); 
+        //]]></script>
+    </body>
+</html>
