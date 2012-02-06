@@ -6,8 +6,8 @@ incorporating editable and informational maps into web pages. The javascript
 library, ``olwidget.js``, can be used standalone or in Django via the olwidget
 Django app.
 
- * `Documentation and installation instructions <http://olwidget.org/olwidget/v0.4/doc/>`_
- * `Example maps <http://olwidget.org/olwidget/v0.4/doc/examples.html>`_
+ * `Documentation and installation instructions <http://docs.olwidget.org/>`_
+ * `Example maps <http://docs.olwidget.org/en/latest/examples.html>`_
  * `Bugs <http://github.com/yourcelf/olwidget/issues>`_
  * `Mailing list <http://groups.google.com/group/olwidget>`_
 
