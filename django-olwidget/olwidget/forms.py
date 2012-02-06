@@ -38,6 +38,7 @@ class MapModelFormOptions(forms.models.ModelFormOptions):
         if not self.maps:
             self.maps = getattr(options, 'options', None)
         self.default_field_class = getattr(options, 'default_field_class', None)
+        self.template = getattr(options, 'template', None)
 
 class MapModelFormMetaclass(type):
     """ 
@@ -77,7 +78,8 @@ class MapModelFormMetaclass(type):
 
         # Transform base fields by extracting types mentioned in 'maps'
         initial_data_keymap = apply_maps_to_modelform_fields(
-                fields, opts.maps, default_field_class=opts.default_field_class)
+                fields, opts.maps, default_field_class=opts.default_field_class,
+                default_template=opts.template)
 
         new_class.initial_data_keymap = initial_data_keymap
         new_class.declared_fields = declared_fields
