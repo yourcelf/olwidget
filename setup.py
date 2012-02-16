@@ -23,25 +23,25 @@ setup(name='django-olwidget',
     packages=['olwidget'],
     package_dir={'': 'django-olwidget'},
     data_files=[
-        ('olwidget/templates/olwidget/', [
+        ('olwidget/templates/olwidget', [
             'django-olwidget/olwidget/templates/olwidget/admin_olwidget.html',
             'django-olwidget/olwidget/templates/olwidget/editable_layer.html',
             'django-olwidget/olwidget/templates/olwidget/multi_layer_map.html',
             'django-olwidget/olwidget/templates/olwidget/info_layer.html',
         ]),
-        ('olwidget/static/olwidget/css/', [
+        ('olwidget/static/olwidget/css', [
             'css/olwidget.css'
         ]),
-        ('olwidget/static/olwidget/js/', [
+        ('olwidget/static/olwidget/js', [
             'js/olwidget.js',
             'js/cloudmade.js',
         ]),
-        ('olwidget/static/olwidget/img/', [
+        ('olwidget/static/olwidget/img', [
             'img/extra_edit_icons.png',
             'img/jquery_ui_license.txt',
             'img/popup_icons.png',
         ]),
-        ('olwidget/templates/admin/', [
+        ('olwidget/templates/admin', [
             'django-olwidget/olwidget/templates/admin/olwidget_change_list.html'
         ]),
     ],
