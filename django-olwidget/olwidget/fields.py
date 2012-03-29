@@ -35,7 +35,7 @@ class EditableLayerField(GeometryField):
     """
     Equivalent to:
 
-    forms.CharField(widget=EditableLayer(options={...}))
+    GeometryField(widget=EditableLayer(options={...}))
     """
     def __init__(self, options=None, **kwargs):
         kwargs['widget'] = kwargs.get('widget', EditableLayer(options))
