@@ -191,7 +191,7 @@ var olwidget = {
 
     isCollectionEmpty: function(geom) {
         /* Is the provided collection empty? */
-        return !(geom && (geom.constructor != Array || geom[0] != undefined))
+        return !(geom && (geom.constructor != Array || geom[0] != undefined));
     }
 };
 
@@ -726,7 +726,7 @@ olwidget.EditableLayer = OpenLayers.Class(olwidget.BaseVectorLayer, {
         if (has_polygon) {
             this._addDrawFeature(OpenLayers.Handler.Polygon, {
                 'displayClass': 'olControlDrawFeaturePolygon',
-                "title": "Draw polygons",
+                "title": "Draw polygons"
             }, controls);
         }
         if (has_linestring) {
@@ -1233,7 +1233,7 @@ olwidget.EditingToolbar = OpenLayers.Class(OpenLayers.Control.Panel, {
         OpenLayers.Event.stop(evt ? evt : window.event);
         this.activateControl(ctrl);
         this.layer.setUndoButtonStates();
-    },
+    }
 });
 
 /*
