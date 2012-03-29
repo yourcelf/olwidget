@@ -1,0 +1,45 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <!-- olwidget includes -->
+        <script type='text/javascript' src='http://openlayers.org/api/2.11/OpenLayers.js'></script>
+        <script type='text/javascript' src='js/olwidget.js'></script>
+        <link rel="stylesheet" type="text/css" media="all" href="css/olwidget.css" />
+        <title>Custom tile layer alone</title>
+        <style type='text/css'>
+            textarea {
+                width: 300px;
+                height: 200px;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Custom tile layer alone</h1>
+        <p>This example shows how to use a custom tile layer alone.</p>
+        <textarea id='myTextarea'></textarea>
+        <script type='text/javascript'>//<![CDATA[
+
+var map = new olwidget.EditableMap('myTextarea', {
+  geometry: 'point',
+  layers: [],
+  mapOptions: {
+    projection: "EPSG:4326",
+    displayProjection: "EPSG:4326",
+    maxExtent: [-180, -90, 180, 90],
+  }
+});
+
+var layer = new OpenLayers.Layer.WMS( "VMap0",
+    "http://labs.metacarta.com/wms/vmap0", {layers: 'basic', format: 'image/png'} 
+);
+map.addLayer(layer); 
+// Must initialize the center after adding layers for the map to show up.
+map.initCenter();
+
+
+        //]]></script>
+        <a href='#' onclick='document.getElementById("myTextarea").style.display="block";'>show textarea</a>
+
+    </body>
+</html>

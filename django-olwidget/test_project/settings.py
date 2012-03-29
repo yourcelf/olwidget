@@ -94,5 +94,5 @@ GOOGLE_API_KEY = "ABQIAAAARaukg-vCnyMKCmf7W1mdOhQCULP4XOMyhPd8d_NrQQEO8sT8XBTLlW
 YAHOO_APP_ID = "JNrvOMXV34Ft.LUs2zzCI9yVPrIX1KDJ1tiNHFam9mLWl64qgtbSjenTP.ua1UWbPCbp0w6r.A--" # olwidget documentation
 
 OLWIDGET_DEFAULT_OPTIONS = {
-    'layers': ['google.streets']
+    'layers': ['google.streets', 'google.physical', 'google.satellite', 'google.hybrid', 've.road', 've.shaded', 've.aerial', 've.hybrid'],
 }

@@ -82,4 +82,3 @@ class MixedForm(forms.Form):
             'is_collection': True,
         }),
         ], {'layers': ['google.satellite']})
-

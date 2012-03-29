@@ -73,6 +73,20 @@ class SingleStyleMapModelFormEquivalent(MapModelForm):
         model = MyModel
         maps = ((('start', 'route', 'end'), {'layers': ['google.streets']}),)
 
+class CustomTemplateMapModelForm(MapModelForm):
+    class Meta:
+        model = MyModel
+        template = "olwidget/test_map_template.html"
+
+class MixedTemplateMapModelForm(MapModelForm):
+    class Meta:
+        model = MyModel
+        template = 'olwidget/multi_layer_map.html'
+        maps = (
+            (('start',), {}, 'olwidget/test_map_template.html'),
+            (('end',), {}, 'olwidget/test_map_template.html'),
+        )
+
 #
 # tests
 #
@@ -104,8 +118,7 @@ class TestForm(TestCase):
                 EditableLayerField(),
             ))
 
-        form = MyMultiForm({'mymap_0': 0, 'mymap_2': 1})
-         #print(form)
+        form = MyMultiForm({'mymap_0': "POINT(0 0)", 'mymap_2': "POINT(1 1)"})
 
         self.assertTrue(form.is_bound)
         self.assertTrue(form.is_valid())
@@ -220,3 +233,15 @@ class TestForm(TestCase):
             'unspecified': "SRID=4326;POINT(0 0)",
         })
         self.assertTrue(form.is_valid())
+
+    def test_custom_template_map_model_form(self):
+        form = CustomTemplateMapModelForm()
+        for field in ('start', 'route', 'end'):
+            self.assertEquals(unicode(form[field]), u'<h1>Boogah!</h1>\n')
+
+    def test_mixed_template_map_model_form(self):
+        form = MixedTemplateMapModelForm()
+        for field in ('start', 'end'):
+            self.assertEquals(unicode(form[field]), u'<h1>Boogah!</h1>\n')
+        self.assertNotEquals(unicode(form['route']), u'<h1>Boogah!</h1>\n')
+

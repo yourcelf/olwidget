@@ -37,6 +37,8 @@ class MapModelFormOptions(forms.models.ModelFormOptions):
         self.maps = getattr(options, 'maps', None)
         if not self.maps:
             self.maps = getattr(options, 'options', None)
+        self.default_field_class = getattr(options, 'default_field_class', None)
+        self.template = getattr(options, 'template', None)
 
 class MapModelFormMetaclass(type):
     """ 
@@ -75,7 +77,9 @@ class MapModelFormMetaclass(type):
             fields = declared_fields
 
         # Transform base fields by extracting types mentioned in 'maps'
-        initial_data_keymap = apply_maps_to_modelform_fields(fields, opts.maps)
+        initial_data_keymap = apply_maps_to_modelform_fields(
+                fields, opts.maps, default_field_class=opts.default_field_class,
+                default_template=opts.template)
 
         new_class.initial_data_keymap = initial_data_keymap
         new_class.declared_fields = declared_fields
@@ -106,16 +110,22 @@ def fix_cleaned_data(cleaned_data, initial_data_keymap):
     for group, keys in initial_data_keymap.iteritems():
         if cleaned_data.has_key(group):
             vals = cleaned_data.pop(group)
-            for key, val in zip(keys, vals):
-                cleaned_data[key] = val
+            if isinstance(vals, (list, tuple)):
+                for key, val in zip(keys, vals):
+                    cleaned_data[key] = val
+            else:
+                cleaned_data[keys[0]] = vals
     return cleaned_data
 
-def apply_maps_to_modelform_fields(fields, maps, default_options=None, default_template=None):
+def apply_maps_to_modelform_fields(fields, maps, default_options=None, 
+                                   default_template=None, default_field_class=None):
     """
     Rearranges fields to match those defined in ``maps``.  ``maps`` is a list
     of [field_list, options_dict] pairs.  For each pair, a new map field is
     created that contans all the fields in ``field_list``.
     """
+    if default_field_class is None:
+        default_field_class = MapField
     map_field_names = (name for name,field in fields.iteritems() if isinstance(field, (MapField, GeometryField)))
     if not maps:
         maps = [((name,),) for name in map_field_names]
@@ -157,7 +167,7 @@ def apply_maps_to_modelform_fields(fields, maps, default_options=None, default_t
             map_opts = {}
             map_opts.update(default_options)
             map_opts.update(options or {})
-            map_field = MapField(layer_fields, map_opts, layer_names=names,
+            map_field = default_field_class(layer_fields, map_opts, layer_names=names,
                 label=", ".join(forms.forms.pretty_name(f) for f in field_list),
                 template=template)
         fields.insert(min_pos, map_name, map_field)
