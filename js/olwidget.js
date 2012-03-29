@@ -124,7 +124,7 @@ var olwidget = {
         hybrid: function(type) {
             return new OpenLayers.Layer.Yahoo("Yahoo",
                     {type: YAHOO_MAP_HYB, sphericalMercator: true, numZoomLevels: 20});
-        },
+        }
     },
     ve: {
         map: function(type) {
@@ -446,10 +446,11 @@ olwidget.Map = OpenLayers.Class(OpenLayers.Map, {
     deleteAllPopups: function() {
         // must clone this.popups array first; it's modified during iteration
         var popups = [];
-        for (var i = 0; i < this.popups.length; i++) {
+        var i;
+        for (i = 0; i < this.popups.length; i++) {
             popups.push(this.popups[i]);
         }
-        for (var i = 0; i < popups.length; i++) {
+        for (i = 0; i < popups.length; i++) {
             this.removePopup(popups[i]);
         }
         this.popups = [];
