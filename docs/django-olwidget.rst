@@ -550,6 +550,26 @@ General map display
     Remember to include ``GOOGLE_API_KEY``, ``YAHOO_APP_ID``, or
     ``CLOUDMADE_API_KEY`` in your ``settings.py`` if you use any of those
     layers.
+
+    Custom layer types from other providers can be used by listing their
+    JavaScript construction string in the ``OLWIDGET_CUSTOM_LAYER_TYPES``
+    setting option.  Here's an example::
+
+        OLWIDGET_CUSTOM_LAYER_TYPES = {
+            'opengeo_osm': """OpenLayers.Layer.WMS(
+                'OpenStreetMap (OpenGeo)',
+                'http://maps.opengeo.org/geowebcache/service/wms',
+                {
+                 layers: 'openstreetmap',
+                 format: 'image/png',
+                 bgColor: '#A1BDC4',
+                },
+                {wrapDateLine: true}
+            )"""
+        }
+
+    We can then access this layer type as ``opengeo_osm``.
+
 ``default_lat`` (float; default 0)
     Latitude for the center point of the map.
 ``default_lon`` (float; default 0)

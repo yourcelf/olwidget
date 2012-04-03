@@ -59,6 +59,7 @@ class Map(forms.Widget):
         # Though this layer is the olwidget.js default, it must be explicitly
         # set so {{ form.media }} knows to include osm.
         self.options['layers'] = self.options.get('layers', ['osm.mapnik'])
+        self.custom_layer_types = utils.get_custom_layer_types()
         self.template = template or self.default_template
         super(Map, self).__init__()
 
@@ -96,6 +97,7 @@ class Map(forms.Widget):
             'layer_js': layer_js,
             'layer_html': layer_html,
             'map_opts': simplejson.dumps(utils.translate_options(self.options)),
+            'setup_custom_layer_types': self._custom_layer_types_js(),
             'STATIC_URL': settings.STATIC_URL,
         }
         context.update(self.get_extra_context())
@@ -116,6 +118,13 @@ class Map(forms.Widget):
     def value_from_datadict(self, data, files, name):
         """ Return an array of all layers' values. """
         return [vl.value_from_datadict(data, files, lyr_name) for vl, lyr_name in zip(self.vector_layers, self._get_layer_names(name))]
+
+    def _custom_layer_types_js(self):
+        layer_types_js = ""
+        for typename in self.custom_layer_types:
+            js_def = self.custom_layer_types[typename]
+            layer_types_js += "olwidget.%s = {map: function() { return new %s }};" % (typename, js_def)
+        return layer_types_js
 
     def _get_layer_names(self, name):
         """ 

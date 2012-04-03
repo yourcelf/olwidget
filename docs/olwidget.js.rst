@@ -307,7 +307,9 @@ General map display
     ``'wms.nasa'``, ``'yahoo.map'``, ``'yahoo.satellite'``, ``'yahoo.hybrid'``
     and ``'cloudmade.<num>'`` (where ``<num>``
     is the number for a cloudmade style).  A blank map can be obtained using
-    ``'wms.blank'``.  Additional providers or options can be manually added
+    ``'wms.blank'``.
+
+    Additional options and layers can also be manually added
     using the normal OpenLayers apis (see `this provider example
     <examples/other_providers.html>`_).
 

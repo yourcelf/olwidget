@@ -187,10 +187,13 @@ var olwidget = {
         }
         return destination;
     },
-
     isCollectionEmpty: function(geom) {
         /* Is the provided collection empty? */
         return !(geom && (geom.constructor != Array || geom[0] != undefined));
+    },
+    _customBaseLayers: {},
+    registerCustomBaseLayers: function(layer_descriptions) {
+        OpenLayers.Util.extend(this._customBaseLayers, layer_descriptions);
     }
 };
 
@@ -268,7 +271,10 @@ olwidget.Map = OpenLayers.Class(OpenLayers.Map, {
         var layers = [];
         for (var i = 0; i < opts.layers.length; i++) {
             var parts = opts.layers[i].split(".");
-            layers.push(olwidget[parts[0]].map(parts[1]));
+            var map_service = olwidget[parts[0]];
+            var map_type = parts[1];
+
+            layers.push(map_service.map(map_type));
 
             // workaround for problems with Microsoft layers and vector layer
             // drift (see http://openlayers.com/dev/examples/ve-novibrate.html)
