@@ -92,7 +92,10 @@ var olwidget = {
                     {sphericalMercator: true, numZoomLevels: 20});
         },
         physical: function() {
-            return new OpenLayers.Layer.Google("Google Physical",
+            return this.terrain();
+        },
+        terrain: function() {
+            return new OpenLayers.Layer.Google("Google Terrain",
                     {sphericalMercator: true, type: google.maps.MapTypeId.TERRAIN});
         },
         satellite: function() {
