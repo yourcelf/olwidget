@@ -81,10 +81,6 @@ var olwidget = {
                         "http://c.tile.openstreetmap.org/${z}/${x}/${y}.png"
                     ],
                     { numZoomLevels: 19 });
-        },
-        osmarender: function() {
-            return new OpenLayers.Layer.OSM.Osmarender(
-                    'OpenStreetMap (Osmarender)');
         }
     },
     google: {
