@@ -215,6 +215,18 @@ class BaseVectorLayer(forms.Widget):
         (javascript, html) = self.prepare(name, value, attrs)
         return javascript
 
+    def get_extra_context(self):
+        """Hook that subclasses can override to add extra data for use
+        by the javascript in self.template. This should be invoked by
+        self.prepare().
+
+        Note that the base class itself doesn't invoke this, but
+        subclasses which render templates typically do.  You'll also
+        want to override relevant templates to make use of the
+        provided data.
+        """
+        return {}
+
     def __unicode__(self):
         return self.render(None, None)
 
@@ -251,6 +263,7 @@ class InfoLayer(BaseVectorLayer):
             'options': simplejson.dumps(utils.translate_options(self.options)),
             'STATIC_URL': settings.STATIC_URL,
         }
+        context.update(self.get_extra_context())
         js = mark_safe(render_to_string(self.template, context))
         html = ""
         return (js, html)
@@ -281,6 +294,7 @@ class EditableLayer(BaseVectorLayer):
             'options': simplejson.dumps(utils.translate_options(self.options)),
             'STATIC_URL': settings.STATIC_URL,
         }
+        context.update(self.get_extra_context())
         js = mark_safe(render_to_string(self.template, context))
         html = mark_safe(forms.Textarea().render(name, wkt, attrs))
         return (js, html)
