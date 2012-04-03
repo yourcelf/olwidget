@@ -121,6 +121,7 @@ class TestForm(TestCase):
         form = MyMultiForm({'mymap_0': "POINT(0 0)", 'mymap_2': "POINT(1 1)"})
 
         self.assertTrue(form.is_bound)
+        self.assertEqual(form.errors, {})
         self.assertTrue(form.is_valid())
 
 
