@@ -32,23 +32,6 @@
         <textarea id='my_textarea'></textarea>
         <script type='text/javascript'>//<![CDATA[
             // Adding a custom layer type
-            olwidget.registerCustomBaseLayers(
-            {
-                'opengeo_osm':  // to use this, your olwidget layers would include ['custom.opengeo_osm']
-                    {"class": "WMS",  // The OpenLayers.Layer subclass to use.
-                     "args": [  // These are passed as arguments to the constructor.
-                        "OpenStreetMap (OpenGeo)",
-                        "http://maps.opengeo.org/geowebcache/service/wms",
-                        {"layers": "openstreetmap",
-                         "format": "image/png",
-                         "bgcolor": "#A1BDC4",
-                         },
-                        {"wrapDateLine": true
-                         },
-                        ],
-                     }
-            })
-
             var map = new olwidget.EditableMap('my_textarea', {
                 geometry: 'polygon',
                 layers: [
@@ -67,8 +50,6 @@
                     'osm.mapnik', 
                     'wms.map',
                     'wms.nasa',
-                    // Our custom layer type
-                    'custom.opengeo_osm',
                 ]
             }); 
             
