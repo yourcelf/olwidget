@@ -56,7 +56,7 @@ class GeoModelAdmin(ModelAdmin):
     default_field_class = None
 
     def get_form(self, *args, **kwargs):
-        """ 
+        """
         Get a ModelForm with our own `__init__` and `clean` methods.  However,
         we need to allow ModelForm's metaclass_factory to run unimpeded, so
         dynamically override the methods rather than subclassing.
@@ -76,7 +76,7 @@ class GeoModelAdmin(ModelAdmin):
             orig_clean(self)
             fix_cleaned_data(self.cleaned_data, self.initial_data_keymap)
             return self.cleaned_data
-        
+
         # Override methods
         ModelForm.__init__ = new_init
         ModelForm.clean = new_clean
@@ -88,13 +88,17 @@ class GeoModelAdmin(ModelAdmin):
                 default_field_class=self.default_field_class)
         return ModelForm
 
-    def get_changelist_map(self, cl):
-        """ 
+    def get_changelist_map(self, cl, request=None):
+        """
         Display a map in the admin changelist, with info popups
         """
         if self.list_map:
             info = []
-            for obj in cl.get_query_set():
+            if request:
+                qs = cl.get_query_set(request)
+            else:
+                qs = cl.get_query_set()
+            for obj in qs:
                 # Transform the fields into one projection.
                 geoms = []
                 for field in self.list_map:
@@ -120,6 +124,14 @@ class GeoModelAdmin(ModelAdmin):
 
     @csrf_protect_m
     def changelist_view(self, request, extra_context=None):
+        import django
+        if django.VERSION >= (1, 4, 0, 'final', 0):
+            template_response = super(GeoModelAdmin, self).changelist_view(request, extra_context)
+            map_ = self.get_changelist_map(template_response.context_data['cl'], request)
+            if map_:
+                template_response.context_data['media'] += map_.media
+                template_response.context_data['map'] = map_
+            return template_response
         #
         # This implementation is all copied from the parent, and only modified
         # for a few lines where marked to add a map to the change list.
@@ -236,7 +248,7 @@ class GeoModelAdmin(ModelAdmin):
             'actions_selection_counter': self.actions_selection_counter,
         }
         context.update(extra_context or {})
-        
+
         # MODIFICATION
         map_ = self.get_changelist_map(cl)
         if map_:
