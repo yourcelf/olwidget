@@ -28,6 +28,7 @@ setup(name='django-olwidget',
             'django-olwidget/olwidget/templates/olwidget/editable_layer.html',
             'django-olwidget/olwidget/templates/olwidget/multi_layer_map.html',
             'django-olwidget/olwidget/templates/olwidget/info_layer.html',
+            'django-olwidget/olwidget/templates/olwidget/test_map_template.html',
         ]),
         ('olwidget/static/olwidget/css', [
             'css/olwidget.css'

@@ -5,7 +5,6 @@ SETTINGS_ROOT = os.path.dirname(__file__)
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
-TEST_RUNNER = "django.contrib.gis.tests.run_tests"
 POSTGIS_TEMPLATE = "template_postgis"
 
 ADMINS = (
@@ -14,12 +13,14 @@ ADMINS = (
 
 MANAGERS = ADMINS
 
-DATABASE_ENGINE = 'postgresql_psycopg2'  # 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
-DATABASE_NAME = 'olwidget_dev' # Or path to database file if using sqlite3.
-DATABASE_USER = 'django_dev'   # Not used with sqlite3.
-DATABASE_PASSWORD = 'django_dev'         # Not used with sqlite3.
-DATABASE_HOST = ''             # Set to empty string for localhost. Not used with sqlite3.
-DATABASE_PORT = ''             # Set to empty string for default. Not used with sqlite3.
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.contrib.gis.db.backends.postgis',
+        'NAME': 'olwidget_dev',
+        'USER': 'django_dev',
+        'PASSWORD': 'django_dev',
+    }
+}
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
@@ -58,14 +59,15 @@ SECRET_KEY = 'j2i1*i)uh*-&cdn^+0*i3^cw9gx-^jrc2&yfn!o-xy)$ij154j'
 
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
-    'django.template.loaders.filesystem.load_template_source',
-    'django.template.loaders.app_directories.load_template_source',
-#     'django.template.loaders.eggs.load_template_source',
+    'django.template.loaders.filesystem.Loader',
+    'django.template.loaders.app_directories.Loader',
 )
 
 MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
 )
 
@@ -94,5 +96,5 @@ GOOGLE_API_KEY = "ABQIAAAARaukg-vCnyMKCmf7W1mdOhQCULP4XOMyhPd8d_NrQQEO8sT8XBTLlW
 YAHOO_APP_ID = "JNrvOMXV34Ft.LUs2zzCI9yVPrIX1KDJ1tiNHFam9mLWl64qgtbSjenTP.ua1UWbPCbp0w6r.A--" # olwidget documentation
 
 OLWIDGET_DEFAULT_OPTIONS = {
-    'layers': ['google.streets', 'google.physical', 'google.satellite', 'google.hybrid', 've.road', 've.shaded', 've.aerial', 've.hybrid'],
+    'layers': ['osm.mapnik'],
 }

@@ -32,7 +32,7 @@ admin.site.register(Country, CountryAdmin)
 # Custom multi-layer map with a few options.
 class EnergyVortexAdmin(GeoModelAdmin):
     options = {
-        'layers': ['google.satellite', 'osm.osmarender', 'yahoo.map'],
+        'layers': ['osm.osmarender', 'osm.mapnik', 'yahoo.map'],
         'overlay_style': {
             'fill_color': '#ff9c00',
             'stroke_color': '#ff9c00',
@@ -86,8 +86,8 @@ class AlienActivityAdmin(GeoModelAdmin):
                 'fill_color': '#ffffff',
                 'stroke_color': '#ccffcc',
                 'stroke_width': 4,
-            }, 
-            'layers': ['google.satellite'],
+            },
+            'layers': ['osm.mapnik'],
         }),
     )
     list_map_options = {
