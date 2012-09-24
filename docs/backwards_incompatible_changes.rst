@@ -26,6 +26,10 @@ Since Google Maps API v2 is now deprecated, ``olwidget`` has `switched to Google
 Maps API v3 <https://github.com/yourcelf/olwidget/8b24080b5d06538dd81d24a1606e07fc1268707a>`_.  Customizations that depend on Google Maps v2 will need to be
 updated to use v3 instead.
 
+In version 0.6
+~~~~~~~~~~~~~~
+Support for Django less than 1.4 is removed.
+
 In version 0.4
 ~~~~~~~~~~~~~~
 Version 0.4 represents a complete overhaul of olwidget to build in support for

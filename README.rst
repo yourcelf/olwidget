@@ -1,4 +1,4 @@
-olwidget v0.4+
+olwidget v0.6
 ===================================================
 
 ``olwidget`` is a javascript library and Django application for easily
