@@ -127,10 +127,11 @@ class GeoModelAdmin(ModelAdmin):
         import django
         if django.VERSION >= (1, 4, 0, 'final', 0):
             template_response = super(GeoModelAdmin, self).changelist_view(request, extra_context)
-            map_ = self.get_changelist_map(template_response.context_data['cl'], request)
-            if map_:
-                template_response.context_data['media'] += map_.media
-                template_response.context_data['map'] = map_
+            if hasattr(template_response, 'context_data') and 'cl' in template_response.context_data:
+                map_ = self.get_changelist_map(template_response.context_data['cl'], request)
+                if map_:
+                    template_response.context_data['media'] += map_.media
+                    template_response.context_data['map'] = map_
             return template_response
         #
         # This implementation is all copied from the parent, and only modified
