@@ -274,7 +274,6 @@ olwidget.Map = OpenLayers.Class(OpenLayers.Map, {
             var map_service = olwidget[parts[0]];
             var map_type = parts[1];
 
-            console.log(map_type);
             layers.push(map_service.map(map_type));
 
             // workaround for problems with Microsoft layers and vector layer
