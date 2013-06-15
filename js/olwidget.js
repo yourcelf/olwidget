@@ -1039,6 +1039,13 @@ olwidget.EditableLayerSwitcher = OpenLayers.Class(OpenLayers.Control.LayerSwitch
             this.map.selectControl.deactivate();
         }
 
+        // fix ugly MSIE errors on editing toolbar disappear:
+        // bind event listeners to drawFeature controls activation event
+        for(var i=0; i < this.panel.controls.length; i++){          
+            this.panel.controls[i].events.register('activate', this, function(evt){
+                this.panel.redraw();
+            });
+        }
     },
     setChecked: function(layer) {
         for (var i = 0; i < this.editableLayers.length; i++) {
