@@ -1,6 +1,6 @@
 import warnings
 
-import django.utils.copycompat as copy
+import copy
 from django.template.loader import render_to_string
 from django.utils import simplejson
 from django.conf import settings
