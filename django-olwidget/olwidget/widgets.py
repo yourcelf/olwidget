@@ -1,8 +1,7 @@
-import warnings
-
+import json
 import copy
+
 from django.template.loader import render_to_string
-from django.utils import simplejson
 from django.conf import settings
 from django import forms
 from django.utils.safestring import mark_safe
@@ -96,7 +95,7 @@ class Map(forms.Widget):
             'id': map_id,
             'layer_js': layer_js,
             'layer_html': layer_html,
-            'map_opts': simplejson.dumps(utils.translate_options(self.options)),
+            'map_opts': json.dumps(utils.translate_options(self.options)),
             'setup_custom_layer_types': self._custom_layer_types_js(),
             'STATIC_URL': settings.STATIC_URL,
         }
@@ -262,14 +261,14 @@ class InfoLayer(BaseVectorLayer):
                 wkt_array.append([wkt, utils.translate_options(attr)])
             else:
                 wkt_array.append([wkt, attr])
-        info_json = simplejson.dumps(wkt_array)
+        info_json = json.dumps(wkt_array)
 
         if name and not self.options.has_key('name'):
             self.options['name'] = forms.forms.pretty_name(name)
 
         context = {
             'info_array': info_json,
-            'options': simplejson.dumps(utils.translate_options(self.options)),
+            'options': json.dumps(utils.translate_options(self.options)),
             'STATIC_URL': settings.STATIC_URL,
         }
         context.update(self.get_extra_context())
@@ -300,7 +299,7 @@ class EditableLayer(BaseVectorLayer):
         wkt = utils.get_ewkt(value)
         context = {
             'id': attrs['id'],
-            'options': simplejson.dumps(utils.translate_options(self.options)),
+            'options': json.dumps(utils.translate_options(self.options)),
             'STATIC_URL': settings.STATIC_URL,
         }
         context.update(self.get_extra_context())
