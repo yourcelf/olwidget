@@ -1,3 +1,8 @@
+Maintainers needed
+==================
+
+I no longer have time to maintain this project.  If you're interested in taking over please contact me.
+
 olwidget v0.6
 ===================================================
 
